@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Zap, Shield, Clock } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { motion } from "framer-motion";
-import vendingMachineImage from "@assets/Gemini_Generated_Image_yew2n6yew2n6yew2_1769183883909.png";
 
 const features = [
   { icon: Zap, text: "Tecnologia de Punta" },
@@ -117,45 +116,91 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          {/* Right content - Vending Machine Image */}
+          {/* Right content - Vending Machine Illustration */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative hidden lg:flex justify-center items-center"
+            className="relative hidden lg:flex justify-center"
           >
             <div className="relative">
-              {/* Vending Machine Image */}
-              <motion.img
-                src={vendingMachineImage}
-                alt="Maquinas Vending Todo Vending CA"
-                className="w-auto max-w-lg h-auto max-h-[550px] object-contain drop-shadow-2xl"
-                data-testid="img-hero-vending"
-                animate={{
-                  y: [0, -10, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              />
+              {/* Vending Machine SVG Illustration */}
+              <div className="w-80 h-[500px] bg-gradient-to-b from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 rounded-2xl shadow-2xl overflow-hidden border-4 border-slate-700 dark:border-slate-600">
+                {/* Machine top */}
+                <div className="h-16 bg-primary flex items-center justify-center">
+                  <span className="text-primary-foreground font-bold text-lg tracking-wider">
+                    TODO VENDING
+                  </span>
+                </div>
+                
+                {/* Display area with product slots */}
+                <div className="p-4 bg-slate-200 dark:bg-slate-300 m-3 rounded-lg h-72">
+                  <div className="grid grid-cols-3 gap-2 h-full">
+                    {[...Array(9)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="bg-white dark:bg-slate-100 rounded-md flex items-center justify-center shadow-inner"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 + i * 0.05 }}
+                      >
+                        <div
+                          className={`w-8 h-12 rounded ${
+                            i % 3 === 0
+                              ? "bg-red-400"
+                              : i % 3 === 1
+                              ? "bg-blue-400"
+                              : "bg-green-400"
+                          }`}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
 
-              {/* Decorative glowing elements */}
+                {/* Keypad area */}
+                <div className="mx-4 flex gap-3">
+                  <div className="flex-1 bg-slate-700 rounded-lg p-3">
+                    <div className="grid grid-cols-3 gap-1">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                        <div
+                          key={num}
+                          className="bg-slate-600 rounded text-center py-1 text-xs text-slate-300"
+                        >
+                          {num}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="w-16 bg-slate-600 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-6 bg-green-500 rounded flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">TAP</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pickup slot */}
+                <div className="mx-4 mt-4 h-16 bg-slate-950 rounded-lg flex items-center justify-center border-2 border-slate-600">
+                  <motion.div
+                    className="text-slate-500 text-sm"
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    Retire su producto aqui
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Decorative elements */}
               <motion.div
-                className="absolute -top-6 -right-6 w-24 h-24 bg-primary/30 rounded-full blur-2xl"
-                animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.7, 0.4] }}
+                className="absolute -top-4 -right-4 w-20 h-20 bg-primary/20 rounded-full blur-xl"
+                animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 4, repeat: Infinity }}
               />
               <motion.div
-                className="absolute -bottom-6 -left-6 w-28 h-28 bg-accent/30 rounded-full blur-2xl"
-                animate={{ scale: [1.4, 1, 1.4], opacity: [0.5, 0.3, 0.5] }}
+                className="absolute -bottom-4 -left-4 w-24 h-24 bg-accent/20 rounded-full blur-xl"
+                animate={{ scale: [1.3, 1, 1.3] }}
                 transition={{ duration: 5, repeat: Infinity }}
-              />
-              <motion.div
-                className="absolute top-1/2 -right-8 w-16 h-16 bg-primary/20 rounded-full blur-xl"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
               />
             </div>
           </motion.div>
