@@ -129,7 +129,7 @@ export function HeroSection() {
               <img 
                 src={vendingMachineImage} 
                 alt="Maquinas expendedoras Todo Vending CA - Snacks y bebidas"
-                className="w-auto h-[500px] object-contain drop-shadow-2xl"
+                className="w-auto h-[625px] object-contain drop-shadow-2xl"
                 data-testid="img-hero-vending"
               />
 
