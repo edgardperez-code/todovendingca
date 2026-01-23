@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Zap, Shield, Clock } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { motion } from "framer-motion";
+import vendingMachineImage from "@assets/maquina_vending_imagen_pagina_sencilla_1769184299728.png";
 
 const features = [
   { icon: Zap, text: "Tecnologia de Punta" },
@@ -124,72 +125,13 @@ export function HeroSection() {
             className="relative hidden lg:flex justify-center"
           >
             <div className="relative">
-              {/* Vending Machine SVG Illustration */}
-              <div className="w-80 h-[500px] bg-gradient-to-b from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 rounded-2xl shadow-2xl overflow-hidden border-4 border-slate-700 dark:border-slate-600">
-                {/* Machine top */}
-                <div className="h-16 bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-lg tracking-wider">
-                    TODO VENDING
-                  </span>
-                </div>
-                
-                {/* Display area with product slots */}
-                <div className="p-4 bg-slate-200 dark:bg-slate-300 m-3 rounded-lg h-72">
-                  <div className="grid grid-cols-3 gap-2 h-full">
-                    {[...Array(9)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="bg-white dark:bg-slate-100 rounded-md flex items-center justify-center shadow-inner"
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 + i * 0.05 }}
-                      >
-                        <div
-                          className={`w-8 h-12 rounded ${
-                            i % 3 === 0
-                              ? "bg-red-400"
-                              : i % 3 === 1
-                              ? "bg-blue-400"
-                              : "bg-green-400"
-                          }`}
-                        />
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Keypad area */}
-                <div className="mx-4 flex gap-3">
-                  <div className="flex-1 bg-slate-700 rounded-lg p-3">
-                    <div className="grid grid-cols-3 gap-1">
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                        <div
-                          key={num}
-                          className="bg-slate-600 rounded text-center py-1 text-xs text-slate-300"
-                        >
-                          {num}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="w-16 bg-slate-600 rounded-lg flex items-center justify-center">
-                    <div className="w-10 h-6 bg-green-500 rounded flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">TAP</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pickup slot */}
-                <div className="mx-4 mt-4 h-16 bg-slate-950 rounded-lg flex items-center justify-center border-2 border-slate-600">
-                  <motion.div
-                    className="text-slate-500 text-sm"
-                    animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    Retire su producto aqui
-                  </motion.div>
-                </div>
-              </div>
+              {/* Vending Machine Image */}
+              <img 
+                src={vendingMachineImage} 
+                alt="Maquinas expendedoras Todo Vending CA - Snacks y bebidas"
+                className="w-auto h-[500px] object-contain drop-shadow-2xl"
+                data-testid="img-hero-vending"
+              />
 
               {/* Decorative elements */}
               <motion.div
