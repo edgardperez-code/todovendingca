@@ -107,15 +107,27 @@ export async function sendContactNotification(data: ContactEmailData): Promise<b
       </div>
     `;
 
-    await client.emails.send({
-      from: fromEmail,
+    // Use Resend's default domain for sending (works without domain verification)
+    // The configured fromEmail may not be verified, so we use onboarding@resend.dev
+    const senderEmail = 'Todo Vending CA <onboarding@resend.dev>';
+    
+    const result = await client.emails.send({
+      from: senderEmail,
       to: 'todovendingca@gmail.com',
       subject: `Nuevo contacto de ${data.name} - Todo Vending CA`,
       html: emailHtml,
       replyTo: data.email
     });
 
-    console.log('Contact email sent successfully to todovendingca@gmail.com');
+    console.log('Resend API response:', JSON.stringify(result, null, 2));
+    console.log('From email used:', fromEmail);
+    
+    if (result.error) {
+      console.error('Resend error:', result.error);
+      return false;
+    }
+    
+    console.log('Contact email sent successfully to todovendingca@gmail.com, ID:', result.data?.id);
     return true;
   } catch (error) {
     console.error('Error sending contact email:', error);
