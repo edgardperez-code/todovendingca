@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Zap, Shield, Clock } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { motion } from "framer-motion";
-import vendingMachineImage from "@assets/maquina_vending_imagen_pagina_sencilla_1769184299728.png";
+import vendingMachineImage from "@assets/maquina_vending_hero.webp";
 
 const features = [
   { icon: Zap, text: "Tecnologia de Punta" },
