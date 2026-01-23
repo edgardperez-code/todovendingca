@@ -1,46 +1,6 @@
 // Resend email integration for Todo Vending CA contact form
+// Using direct RESEND_API_KEY secret for simplified configuration
 import { Resend } from 'resend';
-
-let connectionSettings: any;
-
-async function getCredentials() {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found');
-  }
-
-  connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
-    throw new Error('Resend not connected');
-  }
-  return {
-    apiKey: connectionSettings.settings.api_key, 
-    fromEmail: connectionSettings.settings.from_email
-  };
-}
-
-async function getResendClient() {
-  const { apiKey, fromEmail } = await getCredentials();
-  return {
-    client: new Resend(apiKey),
-    fromEmail
-  };
-}
 
 interface ContactEmailData {
   name: string;
@@ -52,7 +12,15 @@ interface ContactEmailData {
 
 export async function sendContactNotification(data: ContactEmailData): Promise<boolean> {
   try {
-    const { client, fromEmail } = await getResendClient();
+    // Use the RESEND_API_KEY secret directly
+    const apiKey = process.env.RESEND_API_KEY;
+    
+    if (!apiKey) {
+      console.error('RESEND_API_KEY not configured');
+      return false;
+    }
+    
+    const client = new Resend(apiKey);
     
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -107,12 +75,10 @@ export async function sendContactNotification(data: ContactEmailData): Promise<b
       </div>
     `;
 
-    // Use Resend's default domain for sending (works without domain verification)
-    // The configured fromEmail may not be verified, so we use onboarding@resend.dev
-    const senderEmail = 'Todo Vending CA <onboarding@resend.dev>';
-    
+    // Use Resend's default onboarding domain - this allows sending to any email
+    // without needing to verify a custom domain
     const result = await client.emails.send({
-      from: senderEmail,
+      from: 'Todo Vending CA <onboarding@resend.dev>',
       to: 'todovendingca@gmail.com',
       subject: `Nuevo contacto de ${data.name} - Todo Vending CA`,
       html: emailHtml,
@@ -120,7 +86,6 @@ export async function sendContactNotification(data: ContactEmailData): Promise<b
     });
 
     console.log('Resend API response:', JSON.stringify(result, null, 2));
-    console.log('From email used:', fromEmail);
     
     if (result.error) {
       console.error('Resend error:', result.error);
