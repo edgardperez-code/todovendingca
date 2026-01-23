@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, ArrowUp } from "lucide-react";
 import { SiWhatsapp, SiInstagram } from "react-icons/si";
+import logoIcon from "@/assets/logo-icon.png";
 
 const navLinks = [
   { href: "#inicio", label: "Inicio" },
@@ -24,10 +25,12 @@ export function Footer() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {/* Brand */}
             <div className="lg:col-span-1">
-              <a href="#inicio" className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-lg">TV</span>
-                </div>
+              <a href="#inicio" className="flex items-center gap-2 mb-4" data-testid="link-footer-logo">
+                <img 
+                  src={logoIcon} 
+                  alt="Todo Vending CA Logo" 
+                  className="w-10 h-10 object-contain"
+                />
                 <div>
                   <span className="font-bold text-lg text-white">Todo Vending</span>
                   <span className="text-primary font-semibold ml-1">CA</span>

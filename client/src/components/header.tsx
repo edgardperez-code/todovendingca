@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Menu, X, Phone } from "lucide-react";
 import { SiInstagram, SiWhatsapp } from "react-icons/si";
+import logoIcon from "@/assets/logo-icon.png";
 
 const navLinks = [
   { href: "#inicio", label: "Inicio" },
@@ -42,9 +43,12 @@ export function Header() {
             className="flex items-center gap-2"
             data-testid="link-logo"
           >
-            <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">TV</span>
-            </div>
+            <img 
+              src={logoIcon} 
+              alt="Todo Vending CA Logo" 
+              className="w-10 h-10 object-contain"
+              data-testid="img-logo"
+            />
             <div className="hidden sm:block">
               <span className="font-bold text-lg text-foreground">Todo Vending</span>
               <span className="text-primary font-semibold ml-1">CA</span>
