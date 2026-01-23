@@ -125,12 +125,15 @@ export function HeroSection() {
             className="relative hidden lg:flex justify-center"
           >
             <div className="relative">
-              {/* Vending Machine Image */}
+              {/* Vending Machine Image - Optimized for fast loading */}
               <motion.img 
                 src={vendingMachineImage} 
                 alt="Maquinas expendedoras Todo Vending CA - Snacks y bebidas"
                 className="w-auto h-[625px] object-contain drop-shadow-2xl"
                 data-testid="img-hero-vending"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 animate={{ scale: [1, 1.03, 1] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
