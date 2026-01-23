@@ -126,11 +126,13 @@ export function HeroSection() {
           >
             <div className="relative">
               {/* Vending Machine Image */}
-              <img 
+              <motion.img 
                 src={vendingMachineImage} 
                 alt="Maquinas expendedoras Todo Vending CA - Snacks y bebidas"
                 className="w-auto h-[625px] object-contain drop-shadow-2xl"
                 data-testid="img-hero-vending"
+                animate={{ scale: [1, 1.03, 1] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
 
               {/* Decorative elements */}
