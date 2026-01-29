@@ -21,6 +21,17 @@ export function HeroSection() {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
       
+      {/* Mobile background image with animation - only visible on mobile */}
+      <div className="absolute inset-0 lg:hidden overflow-hidden flex items-center justify-center pointer-events-none">
+        <motion.img
+          src={vendingMachineImage}
+          alt=""
+          className="absolute w-auto h-[70%] max-h-[500px] object-contain opacity-20 dark:opacity-15 z-0"
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+      
       {/* Animated background shapes */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
