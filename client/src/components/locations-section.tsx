@@ -73,6 +73,21 @@ const currentLocations = [
     name: "Centro Empresarial Colon",
     description: "Snacks y bebidas preferidos para los profesionales del centro empresarial.",
     type: "Oficinas"
+  },
+  {
+    name: "Centro Empresarial Oleus",
+    description: "Soluciones de vending para profesionales y visitantes del centro empresarial.",
+    type: "Oficinas"
+  },
+  {
+    name: "Colegio Manglar",
+    description: "Snacks y bebidas saludables para estudiantes y personal educativo.",
+    type: "Educacion"
+  },
+  {
+    name: "Clinica Zambrano",
+    description: "Opciones de snacks y bebidas disponibles las 24 horas para pacientes y visitantes.",
+    type: "Clinica"
   }
 ];
 
@@ -155,14 +170,14 @@ export function LocationsSection() {
             </h3>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {currentLocations.map((location, index) => (
               <motion.div
                 key={location.name}
-                initial={{ opacity: 0, x: index === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: index * 0.1 }}
               >
                 <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
                   <CardContent className="p-6">
