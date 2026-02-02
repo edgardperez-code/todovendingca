@@ -4,11 +4,34 @@ import { storage } from "./storage";
 import { insertContactMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { sendContactNotification } from "./email";
+import path from "path";
+import fs from "fs";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Serve sitemap.xml directly
+  app.get("/sitemap.xml", (req, res) => {
+    const sitemapPath = path.resolve(import.meta.dirname, "..", "client", "public", "sitemap.xml");
+    if (fs.existsSync(sitemapPath)) {
+      res.setHeader("Content-Type", "application/xml");
+      res.sendFile(sitemapPath);
+    } else {
+      res.status(404).send("Sitemap not found");
+    }
+  });
+
+  // Serve robots.txt directly
+  app.get("/robots.txt", (req, res) => {
+    const robotsPath = path.resolve(import.meta.dirname, "..", "client", "public", "robots.txt");
+    if (fs.existsSync(robotsPath)) {
+      res.setHeader("Content-Type", "text/plain");
+      res.sendFile(robotsPath);
+    } else {
+      res.status(404).send("Robots.txt not found");
+    }
+  });
   // Contact form submission
   app.post("/api/contact", async (req, res) => {
     try {
