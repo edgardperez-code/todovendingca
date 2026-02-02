@@ -26,7 +26,7 @@ import {
   Loader2,
   CheckCircle
 } from "lucide-react";
-import { SiWhatsapp, SiInstagram } from "react-icons/si";
+import { SiWhatsapp, SiInstagram, SiTiktok } from "react-icons/si";
 import { motion } from "framer-motion";
 import { insertContactMessageSchema, type InsertContactMessage } from "@shared/schema";
 
@@ -179,6 +179,16 @@ export function ContactSection() {
                   <Button variant="outline" size="lg" className="gap-2">
                     <SiInstagram className="h-5 w-5" />
                     Instagram
+                  </Button>
+                </a>
+                <a
+                  href="https://tiktok.com/@todo.vending"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" size="lg" className="gap-2">
+                    <SiTiktok className="h-5 w-5" />
+                    TikTok
                   </Button>
                 </a>
               </div>

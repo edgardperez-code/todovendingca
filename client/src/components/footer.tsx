@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, ArrowUp } from "lucide-react";
-import { SiWhatsapp, SiInstagram } from "react-icons/si";
+import { SiWhatsapp, SiInstagram, SiTiktok } from "react-icons/si";
 
 const navLinks = [
   { href: "#inicio", label: "Inicio" },
@@ -56,6 +56,16 @@ export function Footer() {
                 >
                   <Button variant="outline" size="icon" className="border-slate-700 bg-slate-800/50">
                     <SiInstagram className="h-4 w-4" />
+                  </Button>
+                </a>
+                <a
+                  href="https://tiktok.com/@todo.vending"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="link-footer-tiktok"
+                >
+                  <Button variant="outline" size="icon" className="border-slate-700 bg-slate-800/50">
+                    <SiTiktok className="h-4 w-4" />
                   </Button>
                 </a>
               </div>
