@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Menu, X, Phone } from "lucide-react";
-import { SiInstagram, SiWhatsapp } from "react-icons/si";
+import { SiInstagram, SiWhatsapp, SiTiktok } from "react-icons/si";
 
 const navLinks = [
   { href: "#inicio", label: "Inicio" },
@@ -77,6 +77,16 @@ export function Header() {
                 <SiInstagram className="h-5 w-5" />
               </Button>
             </a>
+            <a
+              href="https://tiktok.com/@todo.vending"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid="link-tiktok"
+            >
+              <Button variant="ghost" size="icon">
+                <SiTiktok className="h-5 w-5" />
+              </Button>
+            </a>
             <ThemeToggle />
             <a
               href="https://wa.me/+584146164177"
@@ -144,6 +154,15 @@ export function Header() {
               >
                 <Button variant="outline" size="icon">
                   <SiInstagram className="h-5 w-5" />
+                </Button>
+              </a>
+              <a
+                href="https://tiktok.com/@todo.vending"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" size="icon">
+                  <SiTiktok className="h-5 w-5" />
                 </Button>
               </a>
             </div>
