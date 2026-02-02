@@ -1,0 +1,23 @@
+# Robots.txt para Todo Vending CA
+# https://www.todovendingca.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.todovendingca.com/sitemap.xml
+
+# Bloquear rutas de desarrollo/API
+Disallow: /api/
+
+# Permitir crawlers de Google
+User-agent: Googlebot
+Allow: /
+
+# Permitir crawler de imágenes de Google
+User-agent: Googlebot-Image
+Allow: /
+
+# Permitir Bingbot
+User-agent: Bingbot
+Allow: /
