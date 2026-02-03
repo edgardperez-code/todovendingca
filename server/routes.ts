@@ -4,8 +4,59 @@ import { storage } from "./storage";
 import { insertContactMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { sendContactNotification } from "./email";
-import path from "path";
-import fs from "fs";
+
+// Sitemap XML content
+const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.todovendingca.com/</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.todovendingca.com/#nosotros</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.todovendingca.com/#servicios</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.todovendingca.com/#beneficios</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.todovendingca.com/#ubicaciones</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.todovendingca.com/#faq</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.todovendingca.com/#contacto</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+</urlset>`;
+
+// Robots.txt content
+const robotsTxt = `User-agent: *
+Allow: /
+
+Sitemap: https://www.todovendingca.com/sitemap.xml`;
 
 export async function registerRoutes(
   httpServer: Server,
@@ -13,24 +64,16 @@ export async function registerRoutes(
 ): Promise<Server> {
   // Serve sitemap.xml directly
   app.get("/sitemap.xml", (req, res) => {
-    const sitemapPath = path.resolve(import.meta.dirname, "..", "client", "public", "sitemap.xml");
-    if (fs.existsSync(sitemapPath)) {
-      res.setHeader("Content-Type", "application/xml");
-      res.sendFile(sitemapPath);
-    } else {
-      res.status(404).send("Sitemap not found");
-    }
+    res.setHeader("Content-Type", "application/xml");
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.send(sitemapXml);
   });
 
   // Serve robots.txt directly
   app.get("/robots.txt", (req, res) => {
-    const robotsPath = path.resolve(import.meta.dirname, "..", "client", "public", "robots.txt");
-    if (fs.existsSync(robotsPath)) {
-      res.setHeader("Content-Type", "text/plain");
-      res.sendFile(robotsPath);
-    } else {
-      res.status(404).send("Robots.txt not found");
-    }
+    res.setHeader("Content-Type", "text/plain");
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.send(robotsTxt);
   });
   // Contact form submission
   app.post("/api/contact", async (req, res) => {
