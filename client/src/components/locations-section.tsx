@@ -88,6 +88,11 @@ const currentLocations = [
     name: "Clinica Zambrano",
     description: "Opciones de snacks y bebidas disponibles las 24 horas para pacientes y visitantes.",
     type: "Clinica"
+  },
+  {
+    name: "Lion Gym",
+    description: "Gran variedad de Bebidas Energeticas, Barras de Proteinas y mas para potenciar tus entrenamientos en Lecheria.",
+    type: "Deportes"
   }
 ];
 
