@@ -93,6 +93,11 @@ const currentLocations = [
     name: "Lion Gym",
     description: "Gran variedad de Bebidas Energeticas, Barras de Proteinas y mas para potenciar tus entrenamientos en Lecheria.",
     type: "Deportes"
+  },
+  {
+    name: "Cancha 3x3 Parque Caribe",
+    description: "Snacks, Barras de Proteinas, Bebidas Refrescantes y Energeticas en la Cancha de Basquet 3x3 del eje costero Playa Cangrejo, Lecheria.",
+    type: "Deportes"
   }
 ];
 
