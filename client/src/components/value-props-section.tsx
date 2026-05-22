@@ -73,7 +73,7 @@ export function ValuePropsSection() {
           <Badge className="mb-4" variant="secondary">
             Nuestra Propuesta
           </Badge>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h2 data-speakable className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             <span className="text-foreground">Un</span>{" "}
             <span className="text-primary">Aliado Estrategico</span>
           </h2>

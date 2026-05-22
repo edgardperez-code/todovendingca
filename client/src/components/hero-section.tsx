@@ -73,7 +73,7 @@ export function HeroSection() {
               Lecheria, Anzoategui
             </Badge>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            <h1 data-speakable className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
               <span className="text-foreground">Tu Solucion</span>
               <br />
               <span className="text-primary">Integral</span>

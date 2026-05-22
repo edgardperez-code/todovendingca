@@ -114,7 +114,7 @@ export function LocationsSection() {
           <Badge className="mb-4" variant="secondary">
             Donde Estamos
           </Badge>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h2 data-speakable className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             <span className="text-foreground">Complementando</span>{" "}
             <span className="text-primary">Espacios</span>
           </h2>

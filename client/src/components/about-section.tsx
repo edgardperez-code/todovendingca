@@ -89,7 +89,7 @@ export function AboutSection() {
               Sobre Nosotros
             </Badge>
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <h2 data-speakable className="text-3xl md:text-4xl font-bold mb-6">
               <span className="text-foreground">Quienes Somos en</span>
               <br />
               <span className="text-primary">Todo Vending CA</span>

@@ -70,7 +70,7 @@ export function FAQSection() {
             <Badge className="mb-4" variant="secondary">
               Preguntas Frecuentes
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 data-speakable className="text-3xl md:text-4xl font-bold mb-4">
               <span className="text-foreground">Resolvemos tus</span>{" "}
               <span className="text-primary">Dudas</span>
             </h2>
