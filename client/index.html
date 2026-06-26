@@ -643,6 +643,17 @@
     }
     </script>
 
+    <!-- Developer Badge Styles -->
+    <style>
+      .tvd-badge { display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:999px; text-decoration:none; font-family:system-ui,sans-serif; font-size:12px; line-height:1; transition:all .25s ease; cursor:pointer; }
+      .tvd-badge--dark { border:1px solid #334155; background:rgba(30,41,59,.6); color:#94a3b8; backdrop-filter:blur(8px); }
+      .tvd-badge--dark:hover { border-color:rgba(59,130,246,.5); background:rgba(30,41,59,.9); color:#cbd5e1; box-shadow:0 4px 20px rgba(30,58,138,.2); }
+      .tvd-badge--dark .tvd-badge__brand { color:#60a5fa; font-weight:600; }
+      .tvd-badge--dark:hover .tvd-badge__brand { color:#93c5fd; }
+      .tvd-badge__icon-wrap { display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#3b82f6,#22d3ee); flex-shrink:0; }
+      .tvd-badge__text { white-space:nowrap; }
+    </style>
+
     <!-- Preload Hero Image for faster LCP -->
     <link rel="preload" as="image" href="/assets/maquina_vending_hero.webp" type="image/webp" fetchpriority="high" />
 
