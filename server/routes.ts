@@ -101,11 +101,13 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Serve /cafeoriente static HTML page (must be before Vite catch-all)
+  // Serve /cafeoriente static HTML page (must be before Vite catch-all).
+  // Dev: process.cwd() = workspace root (safe in ESM/tsx without __dirname shim).
+  // Prod: __dirname = dist/ (CJS bundle dir, same pattern as server/static.ts).
   const cafeOrienteHandler = (req: any, res: any) => {
     const isDev = process.env.NODE_ENV !== "production";
     const filePath = isDev
-      ? path.resolve(__dirname, "..", "client", "public", "cafeoriente", "index.html")
+      ? path.resolve(process.cwd(), "client", "public", "cafeoriente", "index.html")
       : path.resolve(__dirname, "public", "cafeoriente", "index.html");
     res.sendFile(filePath);
   };
