@@ -1,0 +1,47 @@
+Necesito publicar una nueva página de marca en la ruta /cafeoriente de este sitio, SIN modificar ni romper nada del sitio existente.
+
+Contexto del proyecto (ya lo conoces, pero para que no lo redescubras)
+Este proyecto es: React 18 + TypeScript + Vite en client/, Express 5 + TypeScript en server/, router Wouter en el frontend. En desarrollo, Vite corre como middleware dentro de Express en el puerto 5000 con un catch-all que sirve client/index.html. En producción, Vite construye el cliente a dist/public y esbuild empaqueta el servidor.
+
+He subido un archivo llamado cafe-oriente.html. Es una página 100% autocontenida (todo el CSS, JS e imágenes en base64 van dentro del mismo archivo; solo carga Google Fonts por CDN). Ya incluye SEO completo: canonical a https://www.todovendingca.com/cafeoriente, Open Graph, Twitter Cards y JSON-LD. NO es un componente React — debe servirse tal cual, fuera de la SPA.
+
+Tarea
+1. Colocar el archivo como asset estático
+Crea la carpeta client/public/cafeoriente/ y mueve el archivo ahí renombrado como index.html, quedando:
+
+client/public/cafeoriente/index.html
+Así Vite lo copiará textualmente a dist/public/cafeoriente/index.html en el build de producción, sin procesarlo. No lo pases por ningún bundler, minificador ni plugin — contiene base64 y JSON-LD que no deben alterarse.
+
+2. Ruta explícita en Express (crítico)
+El catch-all de desarrollo en server/vite.ts intercepta TODAS las rutas y devuelve el index.html de la SPA, así que en dev /cafeoriente mostraría la SPA en vez de mi página. Para evitarlo, registra en server/index.ts una ruta explícita ANTES de montar el middleware de Vite (dev) y antes del fallback estático de la SPA (producción):
+
+ts
+import path from "path";
+
+app.get(["/cafeoriente", "/cafeoriente/"], (_req, res) => {
+  const file =
+    process.env.NODE_ENV === "production"
+      ? path.resolve(import.meta.dirname, "public", "cafeoriente", "index.html")
+      : path.resolve(import.meta.dirname, "..", "client", "public", "cafeoriente", "index.html");
+  res.sendFile(file);
+});
+Ajusta las rutas de path.resolve a la estructura real del proyecto si difiere (revisa cómo server/vite.ts resuelve dist/public en producción y usa la misma lógica). El objetivo: la ruta debe responder la página tanto en npm run dev como en el deploy de producción.
+
+3. Enlace en la navegación de la SPA
+Agrega un enlace "Café Oriente" al menú de navegación existente (Navbar/Header), respetando su estilo actual (Tailwind/shadcn). MUY IMPORTANTE: usa una etiqueta <a href="/cafeoriente"> normal, NO el componente <Link> de Wouter. Wouter haría navegación client-side y la SPA no tiene esa ruta registrada, mostraría el 404 de React. Debe ser una navegación de página completa. Agrégalo también al footer si el sitio tiene enlaces ahí.
+
+4. Sitemap y robots
+Si existe client/public/sitemap.xml, agrega la entrada https://www.todovendingca.com/cafeoriente con lastmod de hoy y priority 0.8. Si no existe, créalo con la home y esta página.
+Verifica que client/public/robots.txt no bloquee /cafeoriente y que referencie el sitemap. Si no existe robots.txt, créalo permitiendo todo y apuntando al sitemap.
+5. No tocar nada más
+No modifiques rutas de Wouter, componentes de páginas existentes, la API bajo /api, ni la configuración de Vite/esbuild/Tailwind. La home y todas las rutas actuales deben funcionar exactamente igual.
+
+6. Verificación obligatoria — repórtame cada punto
+GET /cafeoriente y GET /cafeoriente/ responden 200 con MI página (verifica que el <title> contenga "Café Oriente" y NO el título de la SPA).
+La página renderiza completa: hero con sol animado, menú de 10 bebidas, foto de la máquina, pagos, FAQ y footer.
+La home / y al menos otra ruta de la SPA siguen funcionando, y el formulario de contacto no se afectó.
+En viewport móvil (375px): el menú hamburguesa de la página abre/cierra y no hay scroll horizontal.
+El <head> servido conserva intactos canonical, JSON-LD y meta tags.
+El enlace nuevo del Navbar navega correctamente a la página (recarga completa, no client-side).
+Dame la lista exacta de archivos creados o modificados.
+Si detectas que ya existe algo en /cafeoriente o cualquier conflicto, detente y pregúntame antes de sobrescribir.
