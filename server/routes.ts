@@ -105,8 +105,8 @@ export async function registerRoutes(
   const cafeOrienteHandler = (req: any, res: any) => {
     const isDev = process.env.NODE_ENV !== "production";
     const filePath = isDev
-      ? path.resolve(import.meta.dirname, "..", "client", "public", "cafeoriente", "index.html")
-      : path.resolve(import.meta.dirname, "public", "cafeoriente", "index.html");
+      ? path.resolve(__dirname, "..", "client", "public", "cafeoriente", "index.html")
+      : path.resolve(__dirname, "public", "cafeoriente", "index.html");
     res.sendFile(filePath);
   };
   app.get("/cafeoriente", cafeOrienteHandler);
