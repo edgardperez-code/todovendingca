@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertContactMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { sendContactNotification } from "./email";
+import path from "path";
 
 // Sitemap XML content
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -60,6 +61,13 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
+  <!-- Pagina: Café Oriente -->
+  <url>
+    <loc>https://www.todovendingca.com/cafeoriente</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>`;
 
 // Robots.txt content
@@ -93,6 +101,17 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Serve /cafeoriente static HTML page (must be before Vite catch-all)
+  const cafeOrienteHandler = (req: any, res: any) => {
+    const isDev = process.env.NODE_ENV !== "production";
+    const filePath = isDev
+      ? path.resolve(import.meta.dirname, "..", "client", "public", "cafeoriente", "index.html")
+      : path.resolve(import.meta.dirname, "public", "cafeoriente", "index.html");
+    res.sendFile(filePath);
+  };
+  app.get("/cafeoriente", cafeOrienteHandler);
+  app.get("/cafeoriente/", cafeOrienteHandler);
+
   // Serve sitemap.xml directly
   app.get("/sitemap.xml", (req, res) => {
     res.setHeader("Content-Type", "application/xml");

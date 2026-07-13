@@ -9,6 +9,7 @@ const navLinks = [
   { href: "#ubicaciones", label: "Ubicaciones" },
   { href: "#faq", label: "FAQ" },
   { href: "#contacto", label: "Contacto" },
+  { href: "/cafeoriente", label: "Café Oriente" },
 ];
 
 export function Footer() {
