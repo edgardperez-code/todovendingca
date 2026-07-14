@@ -1,0 +1,43 @@
+Este proyecto es React 18 + Vite en client/, Express 5 + TypeScript en server/ con API bajo /api, storage en memoria con interfaz preparada para Drizzle/PostgreSQL. Ya existe la página estática /cafeoriente servida con una ruta explícita en Express antes del catch-all de Vite — sigue exactamente el mismo patrón.
+
+He subido vasos.html: página autocontenida (CSS y JS embebidos, solo Google Fonts por CDN) con una encuesta anónima que hace POST /api/encuesta-vasos con este JSON:
+
+json
+{
+  "bebida": "Capuchino",
+  "calificacion": 4,
+  "comentario": "texto opcional, máx 300 caracteres",
+  "fecha": "2026-07-14T15:30:00.000Z"
+}
+Tarea
+1. Servir la página
+Mueve el archivo a client/public/vasos/index.html.
+Agrega en server/index.ts la ruta explícita, junto a la de /cafeoriente y con la misma lógica dev/producción:
+ts
+app.get(["/vasos", "/vasos/"], (_req, res) => {
+  // misma resolución de path que usa la ruta de /cafeoriente,
+  // apuntando a vasos/index.html
+});
+Debe registrarse ANTES del middleware de Vite (dev) y del fallback estático de la SPA (producción). No proceses el HTML con ningún bundler.
+
+2. Crear el endpoint POST /api/encuesta-vasos
+Siguiendo el patrón de storage existente en el proyecto (interfaz de storage en memoria preparada para Drizzle):
+
+Schema en shared/: agrega la entidad encuestaVasos con campos: id (autogenerado), bebida (string), calificacion (entero 1–5), comentario (string opcional), fecha (timestamp). Define el schema Zod de validación del body: bebida debe ser uno de los 10 valores válidos ("Capuchino", "Mocachino", "Café con Leche", "Latte Vainilla", "Capuchino Vainilla", "Chocolate Caliente", "Chocolate con Leche", "Café Marrón", "Café Largo Negro", "Té con Limón"), calificacion entero entre 1 y 5, comentario string de máximo 300 caracteres opcional.
+Ruta POST /api/encuesta-vasos: valida con Zod, guarda en el storage y responde 201 { ok: true }. Si la validación falla, responde 400. No guardes IP, user-agent, cookies ni ningún dato identificable — la encuesta es anónima por diseño.
+Ruta de consulta GET /api/encuesta-vasos/resumen: responde JSON con el total de respuestas, promedio de calificación general, y desglose por bebida (cantidad y promedio de cada una), más las últimas 20 respuestas con comentario. Esta ruta es para mi uso interno — protégela requiriendo un header x-admin-key que se compare contra la variable de entorno ADMIN_KEY (créala en Secrets de Replit con un valor aleatorio y dime cuál quedó configurado... mejor: genera el valor, guárdalo en Secrets y NO lo imprimas en el chat; dime solo que está en Secrets como ADMIN_KEY).
+3. Sitemap
+Agrega https://www.todovendingca.com/vasos al sitemap.xml existente con lastmod de hoy.
+
+4. No tocar nada más
+No modifiques la SPA, la página /cafeoriente, el formulario de contacto de Resend ni otras rutas de la API.
+
+5. Verificación obligatoria — repórtame cada punto
+GET /vasos y GET /vasos/ responden 200 con la página de la encuesta (título "¡Gracias por tu Café Oriente!").
+POST /api/encuesta-vasos con un body válido responde 201; con bebida inválida o calificación fuera de 1–5 responde 400.
+Completar la encuesta desde el navegador muestra la pantalla de "¡Gracias por tu opinión!".
+GET /api/encuesta-vasos/resumen sin el header responde 401; con el header correcto devuelve el resumen.
+/cafeoriente, la home y el resto de la SPA siguen funcionando.
+En viewport móvil (375px) la encuesta se ve bien y los botones son fáciles de tocar.
+Lista exacta de archivos creados o modificados.
+Advertencia importante que debes decirme al final: el storage actual es en memoria, así que las respuestas de la encuesta se pierden en cada redeploy o reinicio del Repl. Recuérdame que para conservarlas debo conectar la base de datos PostgreSQL (Drizzle ya está preparado).

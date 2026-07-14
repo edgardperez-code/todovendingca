@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Gracias por tu Café Oriente! | Cuéntanos cómo estuvo</title>
+<meta name="description" content="Escaneaste el QR de tu vaso de Café Oriente: café en grano recién molido por TodoVending, C.A. Cuéntanos en 10 segundos qué te pareció tu bebida. Encuesta 100% anónima.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.todovendingca.com/vasos">
+<meta property="og:site_name" content="TodoVending, C.A.">
+<meta property="og:locale" content="es_VE">
+<meta property="og:title" content="¡Gracias por tu Café Oriente!">
+<meta property="og:description" content="Café en grano recién molido, servido en menos de 40 segundos. Cuéntanos qué te pareció — es anónimo y toma 10 segundos.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.todovendingca.com/vasos">
+<meta property="og:image" content="https://www.todovendingca.com/cafeoriente/og-image.jpg">
+<meta name="theme-color" content="#3D2314">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --espresso:#241208;
+  --marron:#3D2314;
+  --naranja:#E06A3B;
+  --dorado:#F2B749;
+  --crema:#FFF6EA;
+  --crema-2:#F3E4CC;
+  --tinta:#2B1709;
+  --font-display:"Fraunces",Georgia,serif;
+  --font-body:"Sora",system-ui,-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--crema);
+  color:var(--tinta);
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+::selection{background:var(--dorado);color:var(--marron)}
+.wrap{width:min(560px,92%);margin-inline:auto}
+
+/* ---------- Hero compacto: el amanecer ---------- */
+header{
+  position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#1a0d04 0%,var(--marron) 52%,#6b3a1e 100%);
+  color:var(--crema);
+  text-align:center;
+  padding:3.2rem 0 4.6rem;
+}
+.sol{
+  position:absolute;left:50%;bottom:-30vmin;transform:translateX(-50%);
+  width:88vmin;height:88vmin;max-width:560px;max-height:560px;border-radius:50%;
+  background:radial-gradient(circle at 50% 30%,#ffe9b0 0%,var(--dorado) 34%,var(--naranja) 70%,rgba(224,106,59,0) 100%);
+  filter:blur(3px);opacity:.9;
+  animation:amanecer 1.8s cubic-bezier(.22,.8,.3,1) both;
+}
+@keyframes amanecer{from{transform:translateX(-50%) translateY(30vmin);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:.9}}
+.hero-inner{position:relative;z-index:2}
+.logo-cup{width:88px;height:88px;margin:0 auto 1rem;animation:sube .8s .2s cubic-bezier(.22,.8,.3,1) both}
+@keyframes sube{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+h1{
+  font-family:var(--font-display);font-weight:500;
+  font-size:clamp(1.9rem,8vw,2.7rem);line-height:1.08;letter-spacing:-.01em;
+  animation:sube .8s .35s cubic-bezier(.22,.8,.3,1) both;
+}
+h1 em{font-style:italic;color:var(--dorado)}
+.hero-sub{
+  margin:.9rem auto 0;max-width:34ch;
+  font-weight:300;font-size:.95rem;color:rgba(255,246,234,.8);
+  animation:sube .8s .5s cubic-bezier(.22,.8,.3,1) both;
+}
+.flecha{
+  display:inline-flex;margin-top:1.6rem;color:var(--dorado);text-decoration:none;
+  font-size:.78rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  flex-direction:column;align-items:center;gap:.3rem;
+  animation:sube .8s .65s cubic-bezier(.22,.8,.3,1) both;
+}
+.flecha svg{width:20px;height:20px;stroke:var(--dorado);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:rebote 1.8s ease-in-out infinite}
+@keyframes rebote{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* ---------- Marca ---------- */
+.marca{padding:3rem 0 2.4rem;text-align:center}
+.eyebrow{
+  display:inline-block;font-size:.68rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--naranja);
+}
+.marca h2{
+  font-family:var(--font-display);font-weight:600;color:var(--marron);
+  font-size:clamp(1.4rem,6vw,1.8rem);line-height:1.15;margin:.6rem 0 .9rem;
+}
+.marca p{font-size:.92rem;font-weight:300;color:#5b4330;max-width:44ch;margin-inline:auto}
+.datos{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;
+  margin-top:1.8rem;
+}
+.dato{
+  background:#fff;border:1px solid #eadcc4;border-radius:14px;padding:1rem .5rem;
+}
+.dato b{display:block;font-family:var(--font-display);font-size:1.2rem;color:var(--naranja);font-weight:600}
+.dato span{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#8a6a4a;font-weight:500}
+
+/* ---------- Encuesta ---------- */
+#encuesta{padding:1rem 0 4rem}
+.tarjeta{
+  background:linear-gradient(180deg,#2e1a0c,#241208);
+  border:1px solid rgba(242,183,73,.25);
+  border-radius:24px;
+  padding:1.8rem 1.4rem 2rem;
+  color:var(--crema);
+  box-shadow:0 24px 50px rgba(61,35,20,.25);
+}
+.tarjeta-head{text-align:center;margin-bottom:1.4rem}
+.tarjeta-head h2{font-family:var(--font-display);font-weight:600;font-size:1.45rem;line-height:1.15}
+.tarjeta-head p{font-size:.8rem;font-weight:300;color:rgba(255,246,234,.65);margin-top:.4rem}
+.anonimo{
+  display:inline-flex;align-items:center;gap:.4rem;margin-top:.7rem;
+  font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--dorado);
+  border:1px solid rgba(242,183,73,.4);border-radius:999px;padding:.35rem .9rem;
+}
+.anonimo svg{width:13px;height:13px;stroke:var(--dorado);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.paso-label{
+  font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado);
+  margin:1.4rem 0 .8rem;display:flex;align-items:center;gap:.6rem;
+}
+.paso-label::after{content:"";flex:1;height:1px;background:rgba(242,183,73,.25)}
+
+/* Paso 1: bebidas */
+.bebidas{display:grid;grid-template-columns:1fr 1fr;gap:.55rem}
+.bebida{
+  border:1px solid rgba(242,183,73,.22);border-radius:12px;
+  background:rgba(255,246,234,.05);color:var(--crema);
+  padding:.8rem .6rem;font-family:var(--font-body);font-size:.8rem;font-weight:500;
+  cursor:pointer;text-align:center;transition:background .15s,border-color .15s,transform .1s;
+  min-height:52px;display:flex;align-items:center;justify-content:center;
+}
+.bebida:active{transform:scale(.97)}
+.bebida.activa{
+  background:var(--naranja);border-color:var(--naranja);color:#fff;font-weight:600;
+  box-shadow:0 6px 18px rgba(224,106,59,.4);
+}
+
+/* Paso 2: calificación */
+.caras{display:flex;justify-content:space-between;gap:.4rem}
+.cara{
+  flex:1;border:1px solid rgba(242,183,73,.22);border-radius:14px;
+  background:rgba(255,246,234,.05);color:var(--crema);
+  padding:.75rem .2rem .6rem;cursor:pointer;text-align:center;
+  transition:background .15s,border-color .15s,transform .1s;
+}
+.cara:active{transform:scale(.95)}
+.cara .emoji{font-size:1.7rem;display:block;line-height:1.2;filter:grayscale(.6);transition:filter .15s,transform .15s}
+.cara span{font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;color:rgba(255,246,234,.55)}
+.cara.activa{background:rgba(242,183,73,.15);border-color:var(--dorado)}
+.cara.activa .emoji{filter:none;transform:scale(1.18)}
+.cara.activa span{color:var(--dorado)}
+
+/* Comentario opcional */
+textarea{
+  width:100%;border:1px solid rgba(242,183,73,.25);border-radius:12px;
+  background:rgba(255,246,234,.06);color:var(--crema);
+  font-family:var(--font-body);font-size:.85rem;font-weight:300;
+  padding:.9rem;resize:vertical;min-height:74px;
+}
+textarea::placeholder{color:rgba(255,246,234,.4)}
+textarea:focus{outline:2px solid var(--dorado);outline-offset:1px}
+
+/* Enviar */
+.btn-enviar{
+  width:100%;margin-top:1.5rem;
+  background:var(--naranja);color:#fff;border:none;border-radius:999px;
+  font-family:var(--font-body);font-weight:600;font-size:1rem;
+  padding:1.05rem;cursor:pointer;
+  transition:background .2s,transform .15s,opacity .2s;
+  box-shadow:0 10px 26px rgba(224,106,59,.4);
+}
+.btn-enviar:active{transform:scale(.98)}
+.btn-enviar:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.error-msg{
+  display:none;margin-top:.8rem;text-align:center;
+  font-size:.78rem;color:#ffb59a;
+}
+
+/* Gracias */
+.gracias{display:none;text-align:center;padding:1.6rem 0 .4rem}
+.gracias .sol-mini{
+  width:84px;height:84px;margin:0 auto 1.2rem;border-radius:50%;
+  background:radial-gradient(circle at 50% 32%,#ffe9b0,var(--dorado) 45%,var(--naranja));
+  display:grid;place-items:center;
+  animation:pop .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.gracias .sol-mini svg{width:38px;height:38px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.gracias h3{font-family:var(--font-display);font-weight:600;font-size:1.5rem;margin-bottom:.5rem}
+.gracias p{font-size:.85rem;font-weight:300;color:rgba(255,246,234,.7);max-width:32ch;margin:0 auto 1.4rem}
+.btn-conoce{
+  display:inline-block;text-decoration:none;
+  border:1px solid var(--dorado);color:var(--dorado);border-radius:999px;
+  font-weight:600;font-size:.85rem;padding:.8rem 1.6rem;
+  transition:background .2s,color .2s;
+}
+.btn-conoce:active{background:var(--dorado);color:var(--marron)}
+
+/* ---------- Conoce más ---------- */
+.conoce{
+  background:var(--marron);color:var(--crema);
+  text-align:center;padding:3rem 0;
+}
+.conoce h2{font-family:var(--font-display);font-weight:600;font-size:1.5rem;margin-bottom:.6rem}
+.conoce p{font-size:.88rem;font-weight:300;color:rgba(255,246,234,.75);max-width:40ch;margin:0 auto 1.5rem}
+.btn-primario{
+  display:inline-block;text-decoration:none;
+  background:var(--naranja);color:#fff;border-radius:999px;
+  font-weight:600;font-size:.92rem;padding:.95rem 2rem;
+  box-shadow:0 10px 26px rgba(224,106,59,.35);
+  transition:transform .15s;
+}
+.btn-primario:active{transform:scale(.97)}
+
+/* ---------- Footer ---------- */
+footer{background:var(--espresso);color:rgba(255,246,234,.5);text-align:center;padding:1.8rem 0;font-size:.68rem}
+footer a{color:var(--dorado);text-decoration:none}
+
+@media(min-width:600px){
+  .bebidas{grid-template-columns:repeat(2,1fr)}
+  .cara .emoji{font-size:2rem}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "¡Gracias por tu Café Oriente! — Encuesta de satisfacción",
+  "url": "https://www.todovendingca.com/vasos",
+  "inLanguage": "es-VE",
+  "isPartOf": { "@type": "WebSite", "url": "https://www.todovendingca.com", "name": "TodoVending, C.A." },
+  "about": {
+    "@type": "Brand",
+    "name": "Café Oriente",
+    "slogan": "El respiro que tu jornada necesita",
+    "url": "https://www.todovendingca.com/cafeoriente"
+  }
+}
+</script>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header>
+  <div class="sol" aria-hidden="true"></div>
+  <div class="wrap hero-inner">
+    <svg class="logo-cup" viewBox="0 0 64 64" aria-hidden="true">
+      <defs><linearGradient id="solg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#F2B749"/><stop offset="1" stop-color="#E06A3B"/>
+      </linearGradient></defs>
+      <circle cx="32" cy="32" r="22" fill="url(#solg)"/>
+      <path d="M12 34h40a20 20 0 0 1-40 0Z" fill="#241208"/>
+      <path d="M50 36c6 0 6 10-2 10" fill="none" stroke="#241208" stroke-width="4" stroke-linecap="round"/>
+      <path d="M25 14c-2 4 2 6 0 10M32 11c-2 4 2 6 0 10M39 14c-2 4 2 6 0 10" fill="none" stroke="#FFF6EA" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <h1>Ese café en tu mano es <em>Café Oriente</em></h1>
+    <p class="hero-sub">Molido al instante, solo para ti, en menos de 40 segundos. Gracias por escanear tu vaso.</p>
+    <a class="flecha" href="#encuesta">
+      Cuéntanos cómo estuvo
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- ================= MARCA ================= -->
+<section class="marca">
+  <div class="wrap">
+    <span class="eyebrow">Marca registrada de TodoVending, C.A.</span>
+    <h2>Aquí no existe el café instantáneo</h2>
+    <p>Café Oriente nace de granos enteros premium que la estación muele en el momento exacto de tu pedido. Por eso el aroma que acabas de sentir no se puede imitar con mezclas solubles.</p>
+    <div class="datos">
+      <div class="dato"><b>&lt; 40 s</b><span>De grano a taza</span></div>
+      <div class="dato"><b>24/7</b><span>Siempre disponible</span></div>
+      <div class="dato"><b>100%</b><span>Grano molido</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ENCUESTA ================= -->
+<section id="encuesta">
+  <div class="wrap">
+    <div class="tarjeta">
+
+      <div id="form-encuesta">
+        <div class="tarjeta-head">
+          <h2>¿Qué te pareció?</h2>
+          <p>Solo 2 toques. Tu opinión hace que cada taza sea mejor.</p>
+          <span class="anonimo">
+            <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            100% anónima
+          </span>
+        </div>
+
+        <div class="paso-label">1 · ¿Qué bebida ordenaste?</div>
+        <div class="bebidas" role="radiogroup" aria-label="Bebida que ordenaste">
+          <button type="button" class="bebida" data-bebida="Capuchino">Capuchino</button>
+          <button type="button" class="bebida" data-bebida="Mocachino">Mocachino</button>
+          <button type="button" class="bebida" data-bebida="Café con Leche">Café con Leche</button>
+          <button type="button" class="bebida" data-bebida="Latte Vainilla">Latte Vainilla</button>
+          <button type="button" class="bebida" data-bebida="Capuchino Vainilla">Capuchino Vainilla</button>
+          <button type="button" class="bebida" data-bebida="Chocolate Caliente">Chocolate Caliente</button>
+          <button type="button" class="bebida" data-bebida="Chocolate con Leche">Chocolate con Leche</button>
+          <button type="button" class="bebida" data-bebida="Café Marrón">Café Marrón</button>
+          <button type="button" class="bebida" data-bebida="Café Largo Negro">Café Largo Negro</button>
+          <button type="button" class="bebida" data-bebida="Té con Limón">Té con Limón</button>
+        </div>
+
+        <div class="paso-label">2 · ¿Cómo estuvo?</div>
+        <div class="caras" role="radiogroup" aria-label="Calificación de tu bebida">
+          <button type="button" class="cara" data-valor="1"><span class="emoji">😞</span><span>Malo</span></button>
+          <button type="button" class="cara" data-valor="2"><span class="emoji">😕</span><span>Regular</span></button>
+          <button type="button" class="cara" data-valor="3"><span class="emoji">🙂</span><span>Bueno</span></button>
+          <button type="button" class="cara" data-valor="4"><span class="emoji">😋</span><span>Muy bueno</span></button>
+          <button type="button" class="cara" data-valor="5"><span class="emoji">🤩</span><span>Excelente</span></button>
+        </div>
+
+        <div class="paso-label">3 · ¿Algo más? <span style="text-transform:none;letter-spacing:0;font-weight:400;color:rgba(255,246,234,.45)">(opcional)</span></div>
+        <textarea id="comentario" maxlength="300" placeholder="Cuéntanos qué mejorarías o qué te encantó..."></textarea>
+
+        <button class="btn-enviar" id="btn-enviar" disabled>Enviar opinión</button>
+        <p class="error-msg" id="error-msg">No pudimos enviar tu opinión. Revisa tu conexión e inténtalo de nuevo.</p>
+      </div>
+
+      <div class="gracias" id="gracias">
+        <div class="sol-mini"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h3>¡Gracias por tu opinión!</h3>
+        <p>Cada respuesta nos ayuda a que tu próximo café sea aún mejor. ¡Que tengas un excelente día! ☀️</p>
+        <a class="btn-conoce" href="/cafeoriente">Conoce Café Oriente</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONOCE MÁS ================= -->
+<section class="conoce">
+  <div class="wrap">
+    <h2>¿Quieres una estación en tu empresa?</h2>
+    <p>Llevamos Café Oriente a clínicas, oficinas e industrias: instalación, insumos y mantenimiento por cuenta de TodoVending. Tú solo disfrutas el café.</p>
+    <a class="btn-primario" href="/cafeoriente">Descubre Café Oriente</a>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <p>© 2026 TodoVending, C.A. — RIF J-50669921-4<br>
+    Café Oriente® es una marca registrada. <a href="https://www.todovendingca.com">www.todovendingca.com</a></p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  let bebida = null;
+  let valor = null;
+  const btnEnviar = document.getElementById('btn-enviar');
+  const errorMsg = document.getElementById('error-msg');
+
+  function actualizar(){
+    btnEnviar.disabled = !(bebida && valor);
+  }
+
+  document.querySelectorAll('.bebida').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.bebida').forEach(x => x.classList.remove('activa'));
+      b.classList.add('activa');
+      bebida = b.dataset.bebida;
+      actualizar();
+    });
+  });
+
+  document.querySelectorAll('.cara').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.cara').forEach(x => x.classList.remove('activa'));
+      c.classList.add('activa');
+      valor = parseInt(c.dataset.valor, 10);
+      actualizar();
+    });
+  });
+
+  btnEnviar.addEventListener('click', async () => {
+    if (!bebida || !valor) return;
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = 'Enviando...';
+    errorMsg.style.display = 'none';
+
+    const datos = {
+      bebida: bebida,
+      calificacion: valor,
+      comentario: document.getElementById('comentario').value.trim().slice(0, 300),
+      fecha: new Date().toISOString()
+    };
+
+    try {
+      const r = await fetch('/api/encuesta-vasos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      document.getElementById('form-encuesta').style.display = 'none';
+      document.getElementById('gracias').style.display = 'block';
+      window.scrollTo({ top: document.getElementById('encuesta').offsetTop - 20, behavior: 'smooth' });
+    } catch (e) {
+      console.error('Error al enviar encuesta:', e);
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = 'Enviar opinión';
+      errorMsg.style.display = 'block';
+    }
+  });
+})();
+</script>
+</body>
+</html>

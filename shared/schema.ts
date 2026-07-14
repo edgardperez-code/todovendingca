@@ -68,3 +68,34 @@ export interface ValueProp {
   description: string;
   icon: string;
 }
+
+// Encuesta de vasos (Café Oriente feedback)
+export const encuestaVasos = pgTable("encuesta_vasos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bebida: text("bebida").notNull(),
+  calificacion: text("calificacion").notNull(),
+  comentario: text("comentario"),
+  fecha: timestamp("fecha").defaultNow(),
+});
+
+export const insertEncuestaVasosSchema = createInsertSchema(encuestaVasos).omit({
+  id: true,
+  fecha: true,
+}).extend({
+  bebida: z.enum([
+    "Capuchino",
+    "Mocachino",
+    "Caf\u00e9 con Leche",
+    "Latte Vainilla",
+    "Capuchino Vainilla",
+    "Chocolate Caliente",
+    "Chocolate con Leche",
+    "Caf\u00e9 Marr\u00f3n",
+    "Caf\u00e9 Largo Negro",
+    "T\u00e9 con Lim\u00f3n",
+  ]),
+  calificacion: z.coerce.number().int().min(1).max(5),
+});
+
+export type InsertEncuestaVasos = z.infer<typeof insertEncuestaVasosSchema>;
+export type EncuestaVasos = typeof encuestaVasos.$inferSelect;
