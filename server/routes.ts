@@ -122,9 +122,21 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // /cafeoriente (pagina estatica antigua) -> 301 a /cafe-oriente (pagina SSR
-  // oficial, con schema Product/Menu/FAQ). Evita contenido duplicado y consolida
-  // el canonical en una sola URL.
+  // Serve /cafe-oriente static HTML page (diseno original, mismo archivo,
+  // solo con URLs internas actualizadas a /cafe-oriente). Debe registrarse
+  // antes del catch-all SSR para que gane la ruta.
+  const cafeOrienteHandler = (req: any, res: any) => {
+    const isDev = process.env.NODE_ENV !== "production";
+    const filePath = isDev
+      ? path.resolve(process.cwd(), "client", "public", "cafe-oriente", "index.html")
+      : path.resolve(__dirname, "public", "cafe-oriente", "index.html");
+    res.sendFile(filePath);
+  };
+  app.get("/cafe-oriente", cafeOrienteHandler);
+  app.get("/cafe-oriente/", cafeOrienteHandler);
+
+  // /cafeoriente (URL antigua, sin guion) -> 301 a /cafe-oriente. Consolida
+  // el canonical en una sola URL y evita contenido duplicado.
   app.get(["/cafeoriente", "/cafeoriente/"], (_req, res) => {
     res.redirect(301, "/cafe-oriente");
   });
