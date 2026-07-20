@@ -7,68 +7,33 @@ import { sendContactNotification } from "./email";
 import path from "path";
 
 // Sitemap XML content
+// Nota: los buscadores ignoran fragmentos (#seccion), por eso solo se listan URLs reales.
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- Pagina principal -->
   <url>
     <loc>https://www.todovendingca.com/</loc>
-    <lastmod>2026-05-22</lastmod>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.todovendingca.com/og-image.jpg</image:loc>
+      <image:title>Todo Vending CA — Maquinas Expendedoras en Venezuela</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.todovendingca.com/assets/maquina_vending_hero.webp</image:loc>
+      <image:title>Maquina expendedora Todo Vending CA en Lecheria, Anzoategui</image:title>
+    </image:image>
   </url>
-  <!-- Seccion: Sobre Nosotros -->
-  <url>
-    <loc>https://www.todovendingca.com/#nosotros</loc>
-    <lastmod>2026-05-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <!-- Seccion: Servicios — Maquinas de Snacks, Bebidas, Cafe, Instalacion, Reposicion, Mantenimiento -->
-  <url>
-    <loc>https://www.todovendingca.com/#servicios</loc>
-    <lastmod>2026-05-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <!-- Seccion: Beneficios y Propuesta de Valor -->
-  <url>
-    <loc>https://www.todovendingca.com/#beneficios</loc>
-    <lastmod>2026-05-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <!-- Seccion: Ubicaciones Actuales (Clinica Anzoategui, Centro Colon, Oleus, Colegio Manglar, Clinica Zambrano, Lion Gym) -->
-  <url>
-    <loc>https://www.todovendingca.com/#ubicaciones</loc>
-    <lastmod>2026-05-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <!-- Seccion: Preguntas Frecuentes (FAQ) -->
-  <url>
-    <loc>https://www.todovendingca.com/#faq</loc>
-    <lastmod>2026-05-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <!-- Seccion: Formulario de Contacto -->
-  <url>
-    <loc>https://www.todovendingca.com/#contacto</loc>
-    <lastmod>2026-05-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <!-- Pagina: Café Oriente -->
+  <!-- Pagina: Cafe Oriente (marca de cafe) -->
   <url>
     <loc>https://www.todovendingca.com/cafeoriente</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <!-- Pagina: Encuesta de Vasos Café Oriente -->
+  <!-- Pagina: Encuesta de Vasos Cafe Oriente -->
   <url>
     <loc>https://www.todovendingca.com/vasos</loc>
     <lastmod>2026-07-14</lastmod>
@@ -77,30 +42,58 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
   </url>
 </urlset>`;
 
-// Robots.txt content
+// Robots.txt content — abierto a buscadores y crawlers de IA (SEO + GEO/AIO)
 const robotsTxt = `User-agent: *
 Allow: /
 Disallow: /api/
 
-# GPTBot (ChatGPT)
 User-agent: GPTBot
 Allow: /
 
-# Google-Extended (Gemini/Bard)
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
 User-agent: Google-Extended
 Allow: /
 
-# PerplexityBot
 User-agent: PerplexityBot
 Allow: /
 
-# ClaudeBot (Anthropic)
+User-agent: Perplexity-User
+Allow: /
+
 User-agent: ClaudeBot
 Allow: /
 
-# CCBot (Common Crawl - used by many AI models)
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
 User-agent: CCBot
 Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+# Resumen del negocio para modelos de IA
+# https://www.todovendingca.com/llms.txt
 
 Sitemap: https://www.todovendingca.com/sitemap.xml`;
 

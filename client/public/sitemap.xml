@@ -1,45 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!--
+    Nota: los buscadores ignoran los fragmentos (#seccion) en los sitemaps,
+    por eso este sitemap solo lista URLs reales. Si en el futuro se crean
+    páginas propias (/servicios, /cafe-oriente, /ubicaciones, /faq),
+    agregarlas aquí como <url> independientes.
+  -->
   <url>
     <loc>https://www.todovendingca.com/</loc>
-    <lastmod>2026-02-02</lastmod>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://www.todovendingca.com/#nosotros</loc>
-    <lastmod>2026-02-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.todovendingca.com/#servicios</loc>
-    <lastmod>2026-02-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.todovendingca.com/#beneficios</loc>
-    <lastmod>2026-02-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.todovendingca.com/#ubicaciones</loc>
-    <lastmod>2026-02-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.todovendingca.com/#faq</loc>
-    <lastmod>2026-02-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.todovendingca.com/#contacto</loc>
-    <lastmod>2026-02-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.todovendingca.com/og-image.jpg</image:loc>
+      <image:title>Todo Vending CA — Máquinas Expendedoras en Venezuela</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.todovendingca.com/assets/maquina_vending_hero.webp</image:loc>
+      <image:title>Máquina expendedora Todo Vending CA en Lechería, Anzoátegui</image:title>
+    </image:image>
   </url>
 </urlset>
