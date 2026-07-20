@@ -26,10 +26,31 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
       <image:title>Maquina expendedora Todo Vending CA en Lecheria, Anzoategui</image:title>
     </image:image>
   </url>
-  <!-- Pagina: Cafe Oriente (marca de cafe) -->
+  <!-- Pagina: Cafe Oriente (marca de cafe, SSR) -->
   <url>
-    <loc>https://www.todovendingca.com/cafeoriente</loc>
-    <lastmod>2026-07-13</lastmod>
+    <loc>https://www.todovendingca.com/cafe-oriente</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Pagina: Maquinas Expendedoras en Lecheria -->
+  <url>
+    <loc>https://www.todovendingca.com/maquinas-expendedoras-lecheria</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Pagina: Vending para Empresas -->
+  <url>
+    <loc>https://www.todovendingca.com/vending-para-empresas</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Pagina: Vending para Gimnasios -->
+  <url>
+    <loc>https://www.todovendingca.com/vending-gimnasios</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -101,18 +122,12 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Serve /cafeoriente static HTML page (must be before Vite catch-all).
-  // Dev: process.cwd() = workspace root (safe in ESM/tsx without __dirname shim).
-  // Prod: __dirname = dist/ (CJS bundle dir, same pattern as server/static.ts).
-  const cafeOrienteHandler = (req: any, res: any) => {
-    const isDev = process.env.NODE_ENV !== "production";
-    const filePath = isDev
-      ? path.resolve(process.cwd(), "client", "public", "cafeoriente", "index.html")
-      : path.resolve(__dirname, "public", "cafeoriente", "index.html");
-    res.sendFile(filePath);
-  };
-  app.get("/cafeoriente", cafeOrienteHandler);
-  app.get("/cafeoriente/", cafeOrienteHandler);
+  // /cafeoriente (pagina estatica antigua) -> 301 a /cafe-oriente (pagina SSR
+  // oficial, con schema Product/Menu/FAQ). Evita contenido duplicado y consolida
+  // el canonical en una sola URL.
+  app.get(["/cafeoriente", "/cafeoriente/"], (_req, res) => {
+    res.redirect(301, "/cafe-oriente");
+  });
 
   // Serve /vasos static HTML page
   const vasosHandler = (req: any, res: any) => {

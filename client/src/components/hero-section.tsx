@@ -110,9 +110,10 @@ export function HeroSection() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <a
-                href="https://wa.me/+584146164177"
+                href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Contactar por WhatsApp"
                 data-testid="link-hero-whatsapp"
               >
                 <Button size="lg" className="w-full sm:w-auto gap-2 glow-primary" data-testid="button-hero-contact">

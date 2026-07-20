@@ -5,13 +5,13 @@ import { Menu, X, Phone } from "lucide-react";
 import { SiInstagram, SiWhatsapp, SiTiktok } from "react-icons/si";
 
 const navLinks = [
-  { href: "#inicio", label: "Inicio" },
-  { href: "#nosotros", label: "Nosotros" },
-  { href: "#servicios", label: "Servicios" },
-  { href: "#ubicaciones", label: "Ubicaciones" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contacto", label: "Contacto" },
-  { href: "/cafeoriente", label: "Café Oriente", external: true },
+  { href: "/#inicio", label: "Inicio" },
+  { href: "/#nosotros", label: "Nosotros" },
+  { href: "/#servicios", label: "Servicios" },
+  { href: "/#ubicaciones", label: "Ubicaciones" },
+  { href: "/#faq", label: "FAQ" },
+  { href: "/#contacto", label: "Contacto" },
+  { href: "/cafe-oriente", label: "Café Oriente", external: true },
 ];
 
 export function Header() {
@@ -39,7 +39,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <a
-            href="#inicio"
+            href="/"
             className="flex items-center gap-2"
             data-testid="link-logo"
           >
@@ -90,9 +90,10 @@ export function Header() {
             </a>
             <ThemeToggle />
             <a
-              href="https://wa.me/+584146164177"
+              href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Contactar por WhatsApp"
               data-testid="link-whatsapp-header"
             >
               <Button className="gap-2 glow-primary">
@@ -138,9 +139,10 @@ export function Header() {
             ))}
             <div className="flex items-center gap-2 pt-4 border-t mt-2">
               <a
-                href="https://wa.me/+584146164177"
+                href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Contactar por WhatsApp"
                 className="flex-1"
               >
                 <Button className="w-full gap-2">

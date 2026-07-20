@@ -138,9 +138,10 @@ export function AboutSection() {
 
             <div className="mt-8">
               <a
-                href="https://wa.me/+584146164177"
+                href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Contactar por WhatsApp"
               >
                 <Button size="lg" className="gap-2">
                   <SiWhatsapp className="h-5 w-5" />

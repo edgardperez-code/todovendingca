@@ -116,9 +116,10 @@ export function FAQSection() {
               Tienes mas preguntas? Estamos aqui para ayudarte.
             </p>
             <a
-              href="https://wa.me/+584146164177"
+              href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Contactar por WhatsApp"
             >
               <Badge className="text-base py-2 px-6 cursor-pointer">
                 Contactar por WhatsApp

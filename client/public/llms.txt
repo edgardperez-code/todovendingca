@@ -8,7 +8,8 @@
 - **Sitio web:** https://www.todovendingca.com
 - **Teléfono / WhatsApp:** +58 414-616-4177
 - **Email:** todovendingca@gmail.com
-- **Ubicación:** Lechería, estado Anzoátegui, Venezuela
+- **Dirección:** Centro Comercial Venezuela, Local 11, Calle Nueva Esparta, Lechería, estado Anzoátegui, Venezuela ([mapa](https://maps.app.goo.gl/JuHxKWCBBZS8tYwS9))
+- **Horario de atención comercial:** Lunes a viernes 8:00–17:00, sábados 8:00–12:00 (las máquinas instaladas funcionan 24/7, pero ese es el horario del negocio)
 - **Zona de servicio:** Lechería, Puerto La Cruz, Barcelona y toda la región oriental de Venezuela
 - **Instagram:** https://instagram.com/todovendingca
 - **TikTok:** https://tiktok.com/@todo.vending
@@ -49,5 +50,8 @@ El establecimiento no paga nada: Todo Vending CA instala, abastece y mantiene la
 ## Páginas
 
 - [Inicio](https://www.todovendingca.com/): presentación, servicios, ubicaciones, preguntas frecuentes y contacto.
-- [Café Oriente](https://www.todovendingca.com/cafeoriente): página de la marca de café — estación Bianchi LEI 400, menú de bebidas y puntos de servicio.
+- [Café Oriente](https://www.todovendingca.com/cafe-oriente): página de la marca de café — estación Bianchi LEI 400, menú de bebidas y preguntas frecuentes.
+- [Máquinas Expendedoras en Lechería](https://www.todovendingca.com/maquinas-expendedoras-lecheria): vending local en Lechería, clientes actuales y zona de servicio.
+- [Vending para Empresas](https://www.todovendingca.com/vending-para-empresas): soluciones de vending para oficinas, centros empresariales y clínicas.
+- [Vending para Gimnasios](https://www.todovendingca.com/vending-gimnasios): bebidas energéticas y barras de proteínas para gimnasios y centros deportivos.
 - [Encuesta de vasos](https://www.todovendingca.com/vasos): encuesta de calidad de los vasos de Café Oriente.

@@ -4,7 +4,7 @@ import { type Server } from "http";
 import viteConfig from "../vite.config";
 import fs from "fs";
 import path from "path";
-import { nanoid } from "nanoid";
+import { renderPage, type RenderModule } from "./render";
 
 const viteLogger = createLogger();
 
@@ -44,12 +44,16 @@ export async function setupVite(server: Server, app: Express) {
 
       // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
-      template = template.replace(
-        `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid()}"`,
-      );
-      const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+      template = await vite.transformIndexHtml(url, template);
+
+      // SSR real: renderiza el árbol de React para esta URL en el servidor
+      // y lo inyecta en la plantilla, junto con el <head> propio de la ruta.
+      const mod = (await vite.ssrLoadModule(
+        "/src/entry-server.tsx",
+      )) as RenderModule;
+
+      const { html: page, status } = renderPage(template, mod, url.split("?")[0]);
+      res.status(status).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);

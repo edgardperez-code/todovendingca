@@ -123,7 +123,7 @@ export function CafeOrienteSection() {
 
             {/* CTA */}
             <a
-              href="/cafeoriente"
+              href="/cafe-oriente"
               data-testid="link-cafe-oriente-cta"
               className="inline-flex items-center gap-2 font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200"
               style={{

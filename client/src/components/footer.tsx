@@ -3,13 +3,16 @@ import { Phone, Mail, MapPin, ArrowUp } from "lucide-react";
 import { SiWhatsapp, SiInstagram, SiTiktok } from "react-icons/si";
 
 const navLinks = [
-  { href: "#inicio", label: "Inicio" },
-  { href: "#nosotros", label: "Nosotros" },
-  { href: "#servicios", label: "Servicios" },
-  { href: "#ubicaciones", label: "Ubicaciones" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contacto", label: "Contacto" },
-  { href: "/cafeoriente", label: "Café Oriente" },
+  { href: "/#inicio", label: "Inicio" },
+  { href: "/#nosotros", label: "Nosotros" },
+  { href: "/#servicios", label: "Servicios" },
+  { href: "/#ubicaciones", label: "Ubicaciones" },
+  { href: "/#faq", label: "FAQ" },
+  { href: "/#contacto", label: "Contacto" },
+  { href: "/cafe-oriente", label: "Café Oriente" },
+  { href: "/maquinas-expendedoras-lecheria", label: "Vending en Lechería" },
+  { href: "/vending-para-empresas", label: "Vending para Empresas" },
+  { href: "/vending-gimnasios", label: "Vending para Gimnasios" },
 ];
 
 export function Footer() {
@@ -40,9 +43,10 @@ export function Footer() {
               </p>
               <div className="flex gap-2">
                 <a
-                  href="https://wa.me/+584146164177"
+                  href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Escribir por WhatsApp"
                   data-testid="link-footer-whatsapp"
                 >
                   <Button variant="outline" size="icon" className="border-slate-700 bg-slate-800/50">
@@ -127,9 +131,14 @@ export function Footer() {
                 </li>
                 <li className="flex items-start gap-3 text-sm">
                   <MapPin className="h-4 w-4 text-primary mt-0.5" />
-                  <span className="text-slate-400">
-                    Lecheria, Anzoategui<br />Venezuela
-                  </span>
+                  <a
+                    href="https://maps.app.goo.gl/JuHxKWCBBZS8tYwS9"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-400 hover:text-white transition-colors"
+                  >
+                    Centro Comercial Venezuela, Local 11<br />Calle Nueva Esparta, Lechería, Anzoátegui
+                  </a>
                 </li>
               </ul>
             </div>

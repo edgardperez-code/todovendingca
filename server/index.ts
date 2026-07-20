@@ -12,6 +12,16 @@ declare module "http" {
   }
 }
 
+// Canonical único: todovendingca.com (sin www) -> www.todovendingca.com, 301.
+// Evita que buscadores indexen dos dominios distintos para el mismo sitio.
+app.use((req, res, next) => {
+  const host = req.headers.host || "";
+  if (host === "todovendingca.com") {
+    return res.redirect(301, `https://www.todovendingca.com${req.originalUrl}`);
+  }
+  next();
+});
+
 app.use(
   express.json({
     verify: (req, _res, buf) => {
