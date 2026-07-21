@@ -13,7 +13,23 @@ export function serveStatic(app: Express) {
 
   // index:false para que express.static nunca responda "/" con el index.html
   // crudo: ese archivo lo procesa el render SSR de más abajo, request a request.
-  app.use(express.static(distPath, { index: false }));
+  app.use(
+    express.static(distPath, {
+      index: false,
+      setHeaders: (res, filePath) => {
+        // Los archivos bajo /assets/ llevan hash de contenido en el nombre
+        // (index-Bn9A_vG-.js): si el contenido cambia, cambia el nombre, asi
+        // que se pueden cachear "para siempre" sin riesgo de servir algo viejo.
+        if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        } else {
+          // Otros estaticos (og-image.jpg, logo.png, favicons, llms.txt, robots,
+          // sitemap) NO llevan hash: cache de 1 dia con revalidacion.
+          res.setHeader("Cache-Control", "public, max-age=86400");
+        }
+      },
+    }),
+  );
 
   const templatePath = path.resolve(distPath, "index.html");
   const template = fs.readFileSync(templatePath, "utf-8");

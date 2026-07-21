@@ -54,13 +54,7 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <!-- Pagina: Encuesta de Vasos Cafe Oriente -->
-  <url>
-    <loc>https://www.todovendingca.com/vasos</loc>
-    <lastmod>2026-07-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
+  <!-- /vasos NO se lista: es una encuesta interna (noindex), no una pagina comercial. -->
 </urlset>`;
 
 // Robots.txt content — abierto a buscadores y crawlers de IA (SEO + GEO/AIO)
