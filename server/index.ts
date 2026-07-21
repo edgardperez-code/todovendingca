@@ -104,7 +104,9 @@ app.use((req, res, next) => {
     {
       port,
       host: "0.0.0.0",
-      reusePort: true,
+      // reusePort no esta soportado en Windows (ENOTSUP); solo se habilita en
+      // plataformas tipo Unix (Railway/Linux), donde ayuda al balanceo.
+      reusePort: process.platform !== "win32",
     },
     () => {
       log(`serving on port ${port}`);

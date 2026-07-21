@@ -1,32 +1,37 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Button } from "@/components/ui/button";
-import { SiWhatsapp } from "react-icons/si";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Wallet, Building2, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { SubpageHero } from "@/components/subpage-hero";
+import { SubpageFAQ } from "@/components/subpage-faq";
+import { SubpageCTA } from "@/components/subpage-cta";
 import { useSEO } from "@/lib/seo";
-import {
-  SITE_URL,
-  BUSINESS_PHONE_DISPLAY,
-  organizationSchema,
-  breadcrumbSchema,
-  faqSchema,
-} from "@/lib/schema";
+import { SITE_URL, organizationSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 
 const faqs = [
   {
-    question: "¿Cuánto cuesta el servicio de vending para mi empresa u oficina?",
+    question: "Cuanto cuesta el servicio de vending para mi empresa u oficina?",
     answer:
-      "El servicio no tiene costo para la empresa: Todo Vending CA cubre la instalación, la máquina, la reposición de productos y el mantenimiento. No hay alquiler, cuota mensual ni compra de equipo.",
+      "El servicio no tiene costo para la empresa: Todo Vending CA cubre la instalacion, la maquina, la reposicion de productos y el mantenimiento. No hay alquiler, cuota mensual ni compra de equipo.",
   },
   {
-    question: "¿Qué necesito para instalar vending en mi oficina o clínica?",
+    question: "Que necesito para instalar vending en mi oficina o clinica?",
     answer:
-      "Un espacio de aproximadamente 1,5 m × 1 m con acceso eléctrico. Evaluamos el tráfico de personas y el horario del lugar para recomendar el tipo de máquina (snacks, bebidas o café).",
+      "Un espacio de aproximadamente 1,5 m x 1 m con acceso electrico. Evaluamos el trafico de personas y el horario del lugar para recomendar el tipo de maquina (snacks, bebidas o cafe).",
   },
   {
-    question: "¿Puedo elegir los productos según mis empleados o pacientes?",
+    question: "Puedo elegir los productos segun mis empleados o pacientes?",
     answer:
-      "Sí. La selección de productos se personaliza según el perfil de cada empresa, clínica o institución, y se ajusta con el tiempo según lo que más se consume.",
+      "Si. La seleccion de productos se personaliza segun el perfil de cada empresa, clinica o institucion, y se ajusta con el tiempo segun lo que mas se consume.",
   },
+];
+
+const beneficios = [
+  { icon: Wallet, title: "Cero inversion", desc: "Sin compra de equipo, sin alquiler, sin cuota mensual. Nada de costos para tu empresa." },
+  { icon: Building2, title: "Imagen corporativa", desc: "Maquinas modernas que mejoran la experiencia en tus instalaciones y proyectan innovacion." },
+  { icon: Sparkles, title: "Cero gestion", desc: "Nosotros reponemos, damos mantenimiento y resolvemos cualquier falla. Tu no te ocupas de nada." },
 ];
 
 export default function VendingEmpresas() {
@@ -59,91 +64,87 @@ export default function VendingEmpresas() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="pt-24 md:pt-32">
-        <section className="container mx-auto px-4 py-12 md:py-16">
-          <p className="text-sm text-primary font-semibold mb-2">SOLUCIONES B2B</p>
-          <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-6 max-w-3xl">
-            Vending para Empresas, Oficinas y Clínicas
-          </h1>
-          <p className="speakable text-lg text-muted-foreground max-w-2xl mb-8">
-            Todo Vending CA instala máquinas expendedoras en empresas, centros
-            empresariales y clínicas de Anzoátegui, sin costo de instalación ni cuotas
-            mensuales, con reposición y mantenimiento 24/7 incluidos.
-          </p>
-          <a href="https://wa.me/584146164177" target="_blank" rel="noopener noreferrer">
-            <Button size="lg" className="gap-2">
-              <SiWhatsapp className="h-5 w-5" />
-              Cotizar para mi empresa
-            </Button>
-          </a>
-        </section>
+      <main>
+        <SubpageHero
+          eyebrow="Soluciones B2B"
+          titlePlain="Vending para Empresas,"
+          titleAccent="Oficinas y Clinicas"
+          lead="Todo Vending CA instala maquinas expendedoras en empresas, centros empresariales y clinicas de Anzoategui, sin costo de instalacion ni cuotas mensuales, con reposicion y mantenimiento 24/7 incluidos."
+          ctaText="Cotizar para mi empresa"
+        />
 
-        <section className="container mx-auto px-4 py-12 border-t">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Un beneficio para tu equipo, sin costo para tu empresa</h2>
-          <p className="text-muted-foreground max-w-3xl mb-4">
-            Las cafeterías y comedores de oficina suelen tener horarios limitados. Una
-            máquina expendedora complementa ese servicio: da acceso rápido a snacks,
-            bebidas y café fuera de esos horarios, sin que la empresa tenga que comprar
-            equipos, contratar personal de reposición o asumir mantenimiento. Todo Vending
-            CA se encarga de cada parte del proceso.
-          </p>
-          <p className="text-muted-foreground max-w-3xl">
-            En clínicas y hospitales, el vending es aún más relevante: pacientes,
-            familiares y personal en turnos largos necesitan opciones disponibles fuera del
-            horario de la cafetería, incluidas madrugadas y fines de semana.
-          </p>
-        </section>
-
-        <section className="container mx-auto px-4 py-12 border-t grid md:grid-cols-3 gap-6">
-          <div>
-            <h3 className="font-semibold text-foreground mb-1">Cero inversión</h3>
-            <p className="text-sm text-muted-foreground">Sin compra de equipo, sin alquiler, sin cuota mensual.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-foreground mb-1">Imagen corporativa</h3>
-            <p className="text-sm text-muted-foreground">Máquinas modernas que mejoran la experiencia en tus instalaciones.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-foreground mb-1">Cero gestión</h3>
-            <p className="text-sm text-muted-foreground">Nosotros reponemos, damos mantenimiento y resolvemos fallas.</p>
-          </div>
-        </section>
-
-        <section className="container mx-auto px-4 py-12 border-t">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">Clientes actuales</h2>
-          <p className="text-muted-foreground max-w-3xl mb-4">
-            Empresas y clínicas que ya confían en Todo Vending CA en Lechería:
-            <strong> Clínica Anzoátegui</strong>, <strong>Clínica Zambrano</strong>,{" "}
-            <strong>Centro Empresarial Colón</strong> y <strong>Centro Empresarial Oleus</strong>.
-          </p>
-        </section>
-
-        <section className="container mx-auto px-4 py-12 border-t">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">Preguntas frecuentes</h2>
-          <div className="space-y-6 max-w-3xl">
-            {faqs.map((f) => (
-              <div key={f.question}>
-                <h3 className="font-semibold text-foreground mb-1">{f.question}</h3>
-                <p className="text-muted-foreground">{f.answer}</p>
-              </div>
-            ))}
+        <section className="py-20 md:py-28">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-3xl mx-auto text-center mb-16"
+            >
+              <Badge className="mb-4" variant="secondary">Un beneficio para tu equipo</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                <span className="text-foreground">Sin costo para</span>{" "}
+                <span className="text-primary">tu empresa</span>
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Las cafeterias y comedores tienen horarios limitados. Nuestras maquinas complementan ese
+                servicio con acceso rapido a snacks, bebidas y cafe fuera de horario, sin que compres equipos ni
+                contrates personal. En clinicas y hospitales es aun mas util: pacientes, familiares y personal
+                en turnos largos necesitan opciones a cualquier hora.
+              </p>
+            </motion.div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {beneficios.map((b, i) => (
+                <motion.div
+                  key={b.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Card className="h-full hover-elevate group">
+                    <CardContent className="pt-6">
+                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                        <b.icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <h3 className="font-semibold text-lg text-foreground mb-2">{b.title}</h3>
+                      <p className="text-muted-foreground text-sm">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
-        <section className="container mx-auto px-4 py-16 border-t text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Lleva vending a tu empresa
-          </h2>
-          <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-            Cuéntanos sobre tu espacio y coordinamos una evaluación sin compromiso.
-          </p>
-          <a href="https://wa.me/584146164177" target="_blank" rel="noopener noreferrer">
-            <Button size="lg" className="gap-2">
-              <SiWhatsapp className="h-5 w-5" />
-              Escribir por WhatsApp: {BUSINESS_PHONE_DISPLAY}
-            </Button>
-          </a>
+        <section className="py-20 md:py-28 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-3xl mx-auto text-center"
+            >
+              <Badge className="mb-4" variant="secondary">Prueba social</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                <span className="text-foreground">Empresas que ya</span>{" "}
+                <span className="text-primary">confian en nosotros</span>
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Clinica Anzoategui, Clinica Zambrano, Centro Empresarial Colon y Centro Empresarial Oleus
+                ya cuentan con maquinas de Todo Vending CA en Lecheria.
+              </p>
+            </motion.div>
+          </div>
         </section>
+
+        <SubpageFAQ items={faqs} />
+
+        <SubpageCTA
+          title="Lleva vending a tu empresa"
+          text="Cuentanos sobre tu espacio y coordinamos una evaluacion sin compromiso."
+          ctaText="Cotizar para mi empresa"
+        />
       </main>
       <Footer />
     </div>
