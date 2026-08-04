@@ -266,7 +266,7 @@ h1 em{font-style:italic;color:var(--dorado)}
    ================================================================ */
 .mocha{
   position:relative;
-  height:300vh;              /* cuanto scroll dura la animacion */
+  height:450vh;              /* cuanto scroll dura la animacion */
   background:var(--espresso);
 }
 .mocha-fijo{
@@ -872,7 +872,7 @@ footer a:hover{text-decoration:underline}
       <!-- El video: avanza segun cuanto bajas -->
       <div class="mocha-taza">
         <video id="mocha-video"
-               src="/cafe-oriente/assets/mocachino-v1.mp4"
+               src="/cafe-oriente/assets/mocachino-v2.mp4"
                poster="/cafe-oriente/assets/poster-v1.webp"
                width="720" height="1280"
                muted playsinline preload="auto"
@@ -1291,7 +1291,6 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
   var duracion = 7.9;      // se corrige con los metadatos reales
   var objetivo = 0;        // tiempo de video que pide el scroll
-  var actual   = 0;        // tiempo suavizado que se aplica
   var pasoActivo = -99;    // -1 es valido (cierre), por eso no sirve de inicial
   var listo = false;
 
@@ -1299,8 +1298,7 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
     if (listo || !isFinite(video.duration) || video.duration <= 0) return;
     duracion = video.duration;
     listo = true;
-    aplicar();
-    actual = objetivo;     // arranca en el cuadro correcto, sin barrido inicial
+    aplicar();             // arranca ya en el cuadro que toca segun el scroll
   }
   // Medir ANTES de enganchar iniciar(): con el video en cache, readyState ya
   // puede ser >=1 aqui mismo, e iniciar() llama a aplicar(). Si arriba y
@@ -1374,21 +1372,23 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
     if (!rafId && !document.hidden) rafId = requestAnimationFrame(bucle);
   }
 
+  // Seguimiento directo: el cuadro corresponde exactamente a donde esta el
+  // scroll, sin suavizado. Antes habia una interpolacion que dejaba el video
+  // medio segundo por detras del gesto y se sentia despegado del dedo.
+  // Si hay un salto en curso no se pide otro: se espera al evento 'seeked' y
+  // entonces se aplica la posicion mas reciente. Asi no se encolan saltos mas
+  // rapido de lo que el decodificador puede servirlos.
   function bucle(){
     rafId = 0;
     if (!listo) return;
 
-    actual += (objetivo - actual) * 0.18;   // suaviza para que no salte
-    if (Math.abs(objetivo - actual) < 0.004) actual = objetivo;
-
-    var t = Math.max(0, Math.min(duracion - 0.02, actual));
+    var t = Math.max(0, Math.min(duracion - 0.02, objetivo));
     var tope = topeDescargado();
     if (tope > 0.1 && t > tope - 0.05) t = tope - 0.05;
 
     if (!video.seeking && video.readyState >= 2 && Math.abs(video.currentTime - t) > 0.008){
       try { video.currentTime = t; } catch(e){}
     }
-    if (actual !== objetivo) pedirCuadro();
   }
 
   // Cuando llega mas video, termina un salto o se vuelve a la pestaña, puede
