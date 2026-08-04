@@ -91,6 +91,39 @@
       ]
     },
     {
+      "@type": "Menu",
+      "@id": "https://www.todovendingca.com/cafe-oriente#menu",
+      "name": "Menú de Café Oriente",
+      "inLanguage": "es-VE",
+      "description": "Las diez bebidas que sirve la estación automática Café Oriente. Las de café se preparan con grano entero molido en el momento del pedido; ninguna usa café instantáneo.",
+      "hasMenuSection": [
+        {
+          "@type": "MenuSection",
+          "name": "Bebidas con café",
+          "description": "Preparadas con espresso de grano recién molido.",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Capuchino", "description": "Espresso de grano, leche y espuma de leche a partes casi iguales." },
+            { "@type": "MenuItem", "name": "Mocachino", "description": "Espresso de grano, chocolate, leche, espuma de leche y cacao espolvoreado por encima." },
+            { "@type": "MenuItem", "name": "Café con Leche", "description": "Espresso de grano y leche, con más leche que café y sin espuma marcada." },
+            { "@type": "MenuItem", "name": "Latte Vainilla", "description": "Espresso de grano, leche, vainilla y espuma de leche." },
+            { "@type": "MenuItem", "name": "Capuchino Vainilla", "description": "Espresso de grano, leche, vainilla y espuma de leche, con más espuma que el latte." },
+            { "@type": "MenuItem", "name": "Café Marrón", "description": "Mitad espresso de grano y mitad leche: el marrón venezolano." },
+            { "@type": "MenuItem", "name": "Café Largo Negro", "description": "Solo espresso de grano y agua. La bebida más intensa del menú." }
+          ]
+        },
+        {
+          "@type": "MenuSection",
+          "name": "Sin café",
+          "description": "Bebidas sin cafeína de café, aptas a cualquier hora.",
+          "hasMenuItem": [
+            { "@type": "MenuItem", "name": "Chocolate Caliente", "description": "Chocolate y agua. Sin café." },
+            { "@type": "MenuItem", "name": "Chocolate con Leche", "description": "Chocolate y leche, más suave y cremoso que el chocolate caliente. Sin café." },
+            { "@type": "MenuItem", "name": "Té con Limón", "description": "Té negro, limón y agua. Sin café ni leche." }
+          ]
+        }
+      ]
+    },
+    {
       "@type": "FAQPage",
       "@id": "https://www.todovendingca.com/cafe-oriente#faq",
       "mainEntity": [
@@ -152,7 +185,7 @@ body{
   overflow-x:hidden;
 }
 /* height:auto es imprescindible: sin el, si el CSS limita el ancho, el
-   atributo height del <img> se aplica literal y la imagen sale estirada. */
+   atributo height de la imagen se aplica literal y sale estirada. */
 img{max-width:100%;display:block;height:auto}
 a{color:inherit}
 ::selection{background:var(--dorado);color:var(--marron)}

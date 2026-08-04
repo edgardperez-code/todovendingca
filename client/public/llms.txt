@@ -47,10 +47,30 @@ El establecimiento no paga nada: Todo Vending CA instala, abastece y mantiene la
 - **¿Puedo elegir los productos?** Sí, la selección se personaliza según las preferencias de cada ubicación.
 - **¿Cómo solicito una máquina?** Por WhatsApp al +58 414-616-4177, por email a todovendingca@gmail.com o mediante el formulario en https://www.todovendingca.com/#contacto.
 
+## Menú de Café Oriente
+
+Café Oriente es la marca de café de Todo Vending CA. Se sirve desde una estación automática Bianchi LEI 400 con molino integrado: el café se muele en el instante del pedido, nunca se usa café instantáneo, y cada bebida está lista en menos de 40 segundos. La estación funciona 24/7 y es 100% sin efectivo (tarjeta de débito, tarjeta de crédito, Pago Móvil y débito inmediato).
+
+Bebidas con café (todas con espresso de grano recién molido):
+
+- **Capuchino:** espresso, leche y espuma de leche a partes casi iguales.
+- **Mocachino:** espresso, chocolate, leche, espuma de leche y cacao espolvoreado.
+- **Café con Leche:** espresso y leche, con más leche que café.
+- **Latte Vainilla:** espresso, leche, vainilla y espuma de leche.
+- **Capuchino Vainilla:** espresso, leche, vainilla y espuma de leche, con más espuma que el latte.
+- **Café Marrón:** mitad espresso y mitad leche (el marrón venezolano).
+- **Café Largo Negro:** solo espresso y agua; la bebida más intensa del menú.
+
+Bebidas sin café:
+
+- **Chocolate Caliente:** chocolate y agua.
+- **Chocolate con Leche:** chocolate y leche, más suave y cremoso.
+- **Té con Limón:** té negro, limón y agua; sin café ni leche.
+
 ## Páginas
 
 - [Inicio](https://www.todovendingca.com/): presentación, servicios, ubicaciones, preguntas frecuentes y contacto.
-- [Café Oriente](https://www.todovendingca.com/cafe-oriente): página de la marca de café — estación Bianchi LEI 400, menú de bebidas y preguntas frecuentes.
+- [Café Oriente](https://www.todovendingca.com/cafe-oriente): página de la marca de café — estación Bianchi LEI 400, las diez bebidas del menú con sus ingredientes, medios de pago y preguntas frecuentes.
 - [Máquinas Expendedoras en Lechería](https://www.todovendingca.com/maquinas-expendedoras-lecheria): vending local en Lechería, clientes actuales y zona de servicio.
 - [Vending para Empresas](https://www.todovendingca.com/vending-para-empresas): soluciones de vending para oficinas, centros empresariales y clínicas.
 - [Vending para Gimnasios](https://www.todovendingca.com/vending-gimnasios): bebidas energéticas y barras de proteínas para gimnasios y centros deportivos.

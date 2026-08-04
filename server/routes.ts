@@ -29,7 +29,7 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
   <!-- Pagina: Cafe Oriente (marca de cafe, SSR) -->
   <url>
     <loc>https://www.todovendingca.com/cafe-oriente</loc>
-    <lastmod>2026-07-20</lastmod>
+    <lastmod>2026-08-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
