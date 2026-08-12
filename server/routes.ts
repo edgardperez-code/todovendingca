@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactMessageSchema, insertEncuestaVasosSchema } from "@shared/schema";
 import { z } from "zod";
-import { sendContactNotification } from "./email";
+import { sendContactNotification, sendEncuestaNotification } from "./email";
 import path from "path";
 
 // Sitemap XML content
@@ -29,7 +29,7 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
   <!-- Pagina: Cafe Oriente (marca de cafe, SSR) -->
   <url>
     <loc>https://www.todovendingca.com/cafe-oriente</loc>
-    <lastmod>2026-08-04</lastmod>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -213,30 +213,59 @@ export async function registerRoutes(
   // === ENCUESTA DE VASOS (Café Oriente feedback) ===
 
   app.post("/api/encuesta-vasos", async (req, res) => {
+    let validatedData;
     try {
-      const validatedData = insertEncuestaVasosSchema.parse(req.body);
-      const encuesta = await storage.createEncuestaVasos(validatedData);
-      res.status(201).json({ ok: true, encuesta });
+      validatedData = insertEncuestaVasosSchema.parse(req.body);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json({
+        return res.status(400).json({
           ok: false,
           error: "Datos invalidos",
           details: error.errors,
         });
-      } else {
-        console.error("Error guardando encuesta:", error);
-        res.status(500).json({
-          ok: false,
-          error: "Error interno del servidor",
-        });
       }
+      throw error;
     }
+
+    // Se intenta guardar, pero un fallo de la base de datos NO debe hacer que
+    // se pierda la respuesta: el correo de aviso se envia igual y queda como
+    // copia. Al visitante nunca se le devuelve un error si su respuesta pudo
+    // conservarse por alguna via.
+    let encuesta = null;
+    let guardadaEnBd = false;
+    try {
+      encuesta = await storage.createEncuestaVasos(validatedData);
+      guardadaEnBd = true;
+    } catch (error) {
+      console.error("Error guardando encuesta en el almacenamiento:", error);
+    }
+
+    const correoEnviado = await sendEncuestaNotification({
+      bebida: validatedData.bebida,
+      calificacion: validatedData.calificacion,
+      comentario: validatedData.comentario,
+      guardadaEnBd,
+    });
+
+    if (!guardadaEnBd && !correoEnviado) {
+      console.error("Encuesta PERDIDA: fallaron el almacenamiento y el correo");
+      return res.status(500).json({ ok: false, error: "Error interno del servidor" });
+    }
+
+    res.status(201).json({ ok: true, encuesta });
   });
 
   app.get("/api/encuesta-vasos/resumen", async (req, res) => {
-    const adminKey = req.headers["x-admin-key"];
-    if (adminKey !== process.env.ADMIN_KEY) {
+    // Si ADMIN_KEY no esta configurada, la comparacion "undefined !== undefined"
+    // daba falso y dejaba el endpoint ABIERTO a cualquiera sin cabecera. Hay que
+    // exigir que la clave exista en el entorno antes de comparar nada.
+    const claveEsperada = process.env.ADMIN_KEY;
+    if (!claveEsperada) {
+      console.error("ADMIN_KEY no configurada: se rechaza el acceso al resumen");
+      return res.status(503).json({ ok: false, error: "Servicio no configurado" });
+    }
+    const claveRecibida = req.headers["x-admin-key"];
+    if (typeof claveRecibida !== "string" || claveRecibida !== claveEsperada) {
       return res.status(401).json({ ok: false, error: "No autorizado" });
     }
 

@@ -1,5 +1,8 @@
 import { type User, type InsertUser, type ContactMessage, type InsertContactMessage, type EncuestaVasos, type InsertEncuestaVasos } from "@shared/schema";
+import { users, contactMessages, encuestaVasos } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { desc, eq } from "drizzle-orm";
+import { db as baseDatos } from "./db";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -78,4 +81,55 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Mismo contrato que MemStorage, pero contra Postgres: los datos sobreviven a
+// los reinicios y despliegues.
+export class DbStorage implements IStorage {
+  constructor(private db: NonNullable<typeof baseDatos>) {}
+
+  async getUser(id: string): Promise<User | undefined> {
+    const filas = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    return filas[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const filas = await this.db.select().from(users).where(eq(users.username, username)).limit(1);
+    return filas[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const filas = await this.db.insert(users).values(insertUser).returning();
+    return filas[0];
+  }
+
+  async createContactMessage(insertMessage: InsertContactMessage): Promise<ContactMessage> {
+    const filas = await this.db.insert(contactMessages).values(insertMessage).returning();
+    return filas[0];
+  }
+
+  async getContactMessages(): Promise<ContactMessage[]> {
+    return this.db.select().from(contactMessages).orderBy(desc(contactMessages.createdAt));
+  }
+
+  async createEncuestaVasos(data: InsertEncuestaVasos): Promise<EncuestaVasos> {
+    // calificacion llega como numero validado (1-5) pero la columna es texto,
+    // igual que en MemStorage.
+    const filas = await this.db
+      .insert(encuestaVasos)
+      .values({
+        bebida: data.bebida,
+        calificacion: String(data.calificacion),
+        comentario: data.comentario || null,
+      })
+      .returning();
+    return filas[0];
+  }
+
+  async getEncuestasVasos(): Promise<EncuestaVasos[]> {
+    return this.db.select().from(encuestaVasos).orderBy(desc(encuestaVasos.fecha));
+  }
+}
+
+// Si hay base de datos configurada se usa; si no, memoria (y el arranque avisa).
+export const storage: IStorage = baseDatos
+  ? new DbStorage(baseDatos)
+  : new MemStorage();
