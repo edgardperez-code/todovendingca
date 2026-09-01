@@ -22,6 +22,54 @@ app.use((req, res, next) => {
   next();
 });
 
+// El registro de representantes para PagoQR (Colegio Manglar) vive en el sistema
+// interno, pero los padres lo abren desde www.todovendingca.com/registro. En vez
+// de duplicar el formulario en este repo, se sirve por proxy: lo que se ve aquí
+// es siempre lo que está desplegado allá, y se actualiza solo.
+//
+// Va ANTES de express.json a propósito: así el cuerpo del POST llega crudo y se
+// reenvía tal cual, sin volver a serializarlo.
+const SISTEMA_URL = process.env.SISTEMA_URL || "https://sistema.todovendingca.com";
+const RUTAS_REGISTRO = new Set(["/registro", "/api/registro-epay"]);
+
+function leerCuerpo(req: Request): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const trozos: Buffer[] = [];
+    req.on("data", (t) => trozos.push(t as Buffer));
+    req.on("end", () => resolve(Buffer.concat(trozos)));
+    req.on("error", reject);
+  });
+}
+
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  if (!RUTAS_REGISTRO.has(req.path)) return next();
+
+  try {
+    const esGet = req.method === "GET" || req.method === "HEAD";
+    const respuesta = await fetch(`${SISTEMA_URL}${req.originalUrl}`, {
+      method: req.method,
+      headers: {
+        "content-type": (req.headers["content-type"] as string) || "application/json",
+        // El sistema limita registros por IP. Sin esto vería siempre la de este
+        // servidor y bloquearía al sexto padre que se registre.
+        "x-forwarded-for":
+          (req.headers["x-forwarded-for"] as string) || req.socket.remoteAddress || "",
+      },
+      body: esGet ? undefined : await leerCuerpo(req),
+      redirect: "manual",
+    });
+
+    const tipo = respuesta.headers.get("content-type");
+    if (tipo) res.type(tipo);
+    res.status(respuesta.status).send(Buffer.from(await respuesta.arrayBuffer()));
+  } catch (error) {
+    log(`proxy de /registro falló: ${(error as Error).message}`);
+    res
+      .status(502)
+      .send("El registro no está disponible en este momento. Intenta de nuevo en unos minutos.");
+  }
+});
+
 app.use(
   express.json({
     verify: (req, _res, buf) => {
