@@ -46,7 +46,15 @@
       "taxID": "J-50669921-4",
       "sameAs": ["https://instagram.com/todovendingca", "https://tiktok.com/@todo.vending", "https://wa.me/584146164177"],
       "areaServed": { "@type": "Country", "name": "Venezuela" },
-      "description": "Empresa venezolana de servicio y operación de máquinas expendedoras (vending) para clínicas, oficinas e industrias."
+      "description": "Empresa venezolana de servicio y operación de máquinas expendedoras (vending) para clínicas, oficinas e industrias.",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "telephone": "+58-414-616-4177",
+        "email": "todovendingca@gmail.com",
+        "areaServed": "VE",
+        "availableLanguage": "es"
+      }
     },
     {
       "@type": "Brand",
@@ -69,7 +77,7 @@
         "@type": "Offer",
         "availability": "https://schema.org/InStock",
         "areaServed": { "@type": "Country", "name": "Venezuela" },
-        "description": "Instalación de estación Café Oriente para empresas, clínicas y oficinas en Venezuela, sin inversión en personal ni logística."
+        "description": "Instalación gratuita de la estación Café Oriente para empresas, clínicas y oficinas del estado Anzoátegui: la instalación, la reposición y el mantenimiento corren por TodoVending. Próximamente en el resto de Venezuela."
       }
     },
     {
@@ -150,7 +158,12 @@
         {
           "@type": "Question",
           "name": "¿Cómo instalo una máquina de Café Oriente en mi empresa?",
-          "acceptedAnswer": { "@type": "Answer", "text": "TodoVending, C.A. instala la estación sin costo de personal ni logística para tu empresa: nosotros abastecemos, limpiamos y damos mantenimiento. Es ideal para clínicas, hospitales, oficinas e industrias en Venezuela. Solicita una visita técnica en www.todovendingca.com." }
+          "acceptedAnswer": { "@type": "Answer", "text": "La instalación es gratuita. TodoVending, C.A. instala la estación sin costo para tu empresa y se encarga de la reposición, la limpieza y el mantenimiento; tu empresa solo aporta el espacio. Escríbenos por WhatsApp al +58 414-616-4177 o a todovendingca@gmail.com y coordinamos una visita técnica sin compromiso." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿En qué zonas instalan Café Oriente?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Instalamos en todo el estado Anzoátegui (Lechería, Barcelona, Puerto La Cruz y el resto del estado), y pronto en el resto de Venezuela. La Clínica Anzoátegui ya cuenta con su estación Café Oriente." }
         },
         {
           "@type": "Question",
@@ -749,6 +762,21 @@ h1 em{font-style:italic;color:var(--dorado)}
 }
 .cta-card h3{font-family:var(--font-display);font-size:1.6rem;font-weight:600;margin-bottom:.6rem}
 .cta-card p{font-size:.9rem;color:rgba(255,246,234,.7);font-weight:300;margin-bottom:1.6rem}
+.cta-acciones{display:flex;flex-direction:column;align-items:center;gap:.7rem}
+.cta-acciones .btn{width:100%;max-width:320px;justify-content:center}
+.cta-acciones .btn svg{width:20px;height:20px;fill:currentColor;flex:0 0 20px}
+.cta-card p.cta-directo{
+  margin:1.1rem 0 0;font-size:.85rem;
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.3rem 1.2rem;
+}
+.cta-directo a{color:var(--dorado);text-decoration:none;font-weight:500;white-space:nowrap}
+.cta-directo a:hover,.cta-directo a:focus-visible{text-decoration:underline}
+.cta-card p.cta-confianza{
+  margin:1.3rem 0 0;padding-top:1.1rem;
+  border-top:1px dashed rgba(242,183,73,.3);
+  font-size:.84rem;line-height:1.55;color:rgba(255,246,234,.78);
+}
+.cta-confianza strong{display:block;color:var(--crema);font-weight:600;margin-bottom:.15rem}
 
 /* ---------- Footer ---------- */
 footer{background:var(--espresso);color:rgba(255,246,234,.65);padding:3rem 0 2rem;font-size:.82rem}
@@ -1094,8 +1122,9 @@ footer a:hover{text-decoration:underline}
     <div>
       <span class="eyebrow reveal" style="color:var(--dorado)">Para tu empresa</span>
       <h2 class="reveal">Un café premium trabajando por ti, 24/7</h2>
-      <p class="lead reveal" style="color:rgba(255,246,234,.75)">Clínicas, hospitales, oficinas, industrias y espacios de alta rotación: instala una estación Café Oriente sin inversión en personal ni logística. TodoVending se encarga de todo.</p>
+      <p class="lead reveal" style="color:rgba(255,246,234,.75)">Clínicas, hospitales, oficinas, industrias y espacios de alta rotación: instalamos tu estación Café Oriente <strong style="color:var(--crema);font-weight:600">sin costo</strong>. La instalación, la reposición y el mantenimiento corren por TodoVending; tu empresa solo pone el espacio.</p>
       <ul class="beneficios">
+        <li class="reveal"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Instalación gratuita.</strong> Sin pago inicial y sin cuotas: la estación la instala TodoVending.</span></li>
         <li class="reveal"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Cero operación para ti.</strong> Nosotros instalamos, abastecemos, limpiamos y damos mantenimiento a la estación.</span></li>
         <li class="reveal"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Disponible siempre.</strong> Tu equipo y tus visitantes tienen café premium a cualquier hora, incluso en turnos nocturnos.</span></li>
         <li class="reveal"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span><strong>Imagen que suma.</strong> Una estación moderna y pulcra que eleva la experiencia de tu espacio.</span></li>
@@ -1105,7 +1134,21 @@ footer a:hover{text-decoration:underline}
     <div class="cta-card reveal">
       <h3>Instala Café Oriente en tu espacio</h3>
       <p>Cuéntanos dónde quieres tu estación y coordinamos una visita técnica sin compromiso.</p>
-      <a class="btn btn-primary" href="https://todovendingca.com/#contacto">Solicitar una estación</a>
+      <div class="cta-acciones">
+        <a class="btn btn-primary" href="https://wa.me/584146164177?text=Hola%2C%20quiero%20instalar%20una%20estaci%C3%B3n%20Caf%C3%A9%20Oriente%20en%20mi%20empresa" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>
+          Escríbenos por WhatsApp
+        </a>
+        <a class="btn btn-ghost" href="/?origen=cafe-oriente#contacto">Prefiero el formulario</a>
+      </div>
+      <p class="cta-directo">
+        <a href="tel:+584146164177">+58 414-616-4177</a>
+        <a href="mailto:todovendingca@gmail.com">todovendingca@gmail.com</a>
+      </p>
+      <p class="cta-confianza">
+        <strong>Ya en servicio en la Clínica Anzoátegui.</strong>
+        Instalamos en todo el estado Anzoátegui y pronto en el resto de Venezuela.
+      </p>
     </div>
   </div>
 </section>
@@ -1134,7 +1177,11 @@ footer a:hover{text-decoration:underline}
       </details>
       <details class="faq-item reveal">
         <summary>¿Cómo instalo una máquina en mi empresa?</summary>
-        <p>TodoVending, C.A. instala la estación sin inversión en personal ni logística para tu empresa: nosotros abastecemos, limpiamos y damos mantenimiento. Es ideal para clínicas, hospitales, oficinas e industrias en Venezuela. Solicita una visita técnica sin compromiso en <a href="https://www.todovendingca.com">www.todovendingca.com</a>.</p>
+        <p>La instalación es gratuita. TodoVending, C.A. instala la estación sin costo para tu empresa y se encarga de la reposición, la limpieza y el mantenimiento; tu empresa solo aporta el espacio. Escríbenos por <a href="https://wa.me/584146164177?text=Hola%2C%20quiero%20instalar%20una%20estaci%C3%B3n%20Caf%C3%A9%20Oriente%20en%20mi%20empresa" target="_blank" rel="noopener">WhatsApp al +58 414-616-4177</a> o a <a href="mailto:todovendingca@gmail.com">todovendingca@gmail.com</a> y coordinamos una visita técnica sin compromiso.</p>
+      </details>
+      <details class="faq-item reveal">
+        <summary>¿En qué zonas instalan?</summary>
+        <p>Instalamos en todo el estado Anzoátegui (Lechería, Barcelona, Puerto La Cruz y el resto del estado), y pronto en el resto de Venezuela. La Clínica Anzoátegui ya cuenta con su estación Café Oriente.</p>
       </details>
       <details class="faq-item reveal">
         <summary>¿Está disponible todo el día?</summary>
