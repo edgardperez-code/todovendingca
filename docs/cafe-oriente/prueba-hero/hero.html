@@ -1,0 +1,169 @@
+<!-- ================= HERO ANIMADO (PRUEBA) ================= -->
+<header class="mocha" id="mocha">
+  <div class="mocha-fijo">
+    <img class="mocha-fondo" src="assets/fondo-v1.webp" width="80" height="142" fetchpriority="high" alt="" aria-hidden="true">
+    <div class="mocha-grano" aria-hidden="true"></div>
+
+    <div class="mocha-lienzo">
+
+      <div class="mocha-copy">
+        <article class="mocha-paso on" data-mp="0">
+          <span class="hero-kicker">Café Oriente · Marca registrada de TodoVending, C.A.</span>
+          <h1>El respiro que tu <em>jornada</em> necesita</h1>
+          <p class="hero-sub">Café premium en grano, molido al instante y servido por una estación 100% automática. Disponible las 24 horas, todos los días, sin efectivo y sin esperas.</p>
+          <div class="hero-ctas">
+            <a class="btn btn-primary" href="#menu">Descubre el menú</a>
+            <a class="btn btn-ghost" href="#empresas">Lleva Café Oriente a tu empresa</a>
+          </div>
+        </article>
+
+        <!-- Los textos de los pasos 1 a 4 los pone el JS segun el interruptor "Textos" -->
+        <article class="mocha-paso" data-mp="1"></article>
+        <article class="mocha-paso" data-mp="2"></article>
+        <article class="mocha-paso" data-mp="3"></article>
+        <article class="mocha-paso" data-mp="4"></article>
+
+        <article class="mocha-paso" data-mp="5">
+          <span class="mocha-num">Tu mocachino</span>
+          <h2>Listo. Tu <em>respiro</em>.</h2>
+          <p class="mocha-txt">Espuma firme, café de grano y el sello Café Oriente encendido en el vaso. Igual a las 7 de la mañana que a las 3 de la madrugada.</p>
+        </article>
+      </div>
+
+      <div class="mocha-taza">
+        <video id="mocha-video"
+               poster="assets/poster-v1.webp"
+               width="720" height="1280"
+               muted playsinline preload="auto"
+               disablepictureinpicture
+               aria-label="Un mocachino Café Oriente se arma en el aire: un hilo de chocolate atraviesa el espresso y la leche, la espuma corona el vaso y se enciende el logo"></video>
+      </div>
+
+      <div class="mocha-riel" id="mocha-riel" role="group" aria-label="Ingredientes del mocachino">
+        <button type="button" data-ir="1"><span class="punto"></span>Espresso</button>
+        <button type="button" data-ir="2"><span class="punto"></span>Chocolate</button>
+        <button type="button" data-ir="3"><span class="punto"></span>Leche</button>
+        <button type="button" data-ir="4"><span class="punto"></span>Espuma</button>
+      </div>
+    </div>
+
+    <div class="mocha-cierre" id="mocha-cierre">
+      <div class="mocha-cierre-txt">
+        <span class="hero-kicker">Para empresas y clínicas</span>
+        <h2>Este respiro, en tu <em>empresa</em>.</h2>
+        <p class="mocha-txt">La misma estación Bianchi LEI 400 que acabas de ver, instalada sin costo en tu oficina o clínica. Cada bebida en menos de 40 segundos, las 24 horas, sin que nadie tenga que atenderla.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="https://wa.me/584146164177?text=Hola%2C%20quiero%20pedir%20una%20estaci%C3%B3n%20Caf%C3%A9%20Oriente%20para%20mi%20empresa" target="_blank" rel="noopener">
+            <svg class="btn-wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>
+            Pedir mi estación
+          </a>
+          <a class="btn btn-ghost" href="#menu">Ver las 10 bebidas</a>
+        </div>
+      </div>
+      <div class="mocha-cifras">
+        <div><b>24/7</b><span>Siempre disponible</span></div>
+        <div><b>&lt; 40 seg</b><span>De grano a taza</span></div>
+        <div><b>100%</b><span>Automática</span></div>
+        <div><b>0 efectivo</b><span>Pagos digitales</span></div>
+      </div>
+    </div>
+
+    <div class="mocha-pista" id="mocha-pista" aria-hidden="true">
+      <span class="mocha-raton"></span>
+      <span class="mocha-dedo"></span>
+      <span class="pt-corto">Desliza</span><span class="pt-largo">Desliza y mira cómo se arma</span>
+    </div>
+
+    <div class="mocha-barra" id="mocha-barra">
+      <div class="mocha-progreso" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <a class="mocha-saltar" id="mocha-saltar" href="#proceso">Saltar animación</a>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PANEL DE PRUEBA ================= -->
+<button type="button" class="pp-abrir" id="pp-abrir" aria-expanded="false" aria-controls="pp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+  Ajustes
+</button>
+<div class="pp" id="pp" role="dialog" aria-label="Ajustes de la prueba" hidden>
+  <div class="pp-cab">
+    <div>
+      <b>Página de prueba</b>
+      <span>No es la publicada. Elige, cierra y desliza.</span>
+    </div>
+    <button type="button" class="pp-x" id="pp-cerrar">Cerrar</button>
+  </div>
+  <div class="pp-cuerpo">
+    <div class="pp-rapido">
+      <button type="button" data-preset="hoy">Todo como hoy</button>
+      <button type="button" data-preset="nuevo">Todo lo nuevo</button>
+    </div>
+
+    <div class="pp-grupo" data-op="ritmo">
+      <span class="pp-tit">Reparto del scroll</span>
+      <div class="pp-ops">
+        <button type="button" data-v="lineal">Como hoy</button>
+        <button type="button" data-v="suave">Curva suave</button>
+        <button type="button" data-v="completa">Curva completa</button>
+      </div>
+      <p class="pp-ayuda">La curva da más scroll al armado del vaso y menos al tramo quieto. Mismos 24 fps y 450vh.</p>
+    </div>
+
+    <div class="pp-grupo" data-op="textos">
+      <span class="pp-tit">Textos de los ingredientes</span>
+      <div class="pp-ops">
+        <button type="button" data-v="hoy">Como hoy</button>
+        <button type="button" data-v="choco">Al ritmo del video · «Cae el chocolate»</button>
+        <button type="button" data-v="chorro">Al ritmo del video · «Un solo chorro»</button>
+      </div>
+    </div>
+
+    <div class="pp-grupo" data-op="final">
+      <span class="pp-tit">Vaso terminado antes del cierre</span>
+      <div class="pp-ops">
+        <button type="button" data-v="no">No (hoy)</button>
+        <button type="button" data-v="si">Sí · «Listo. Tu respiro.»</button>
+      </div>
+    </div>
+
+    <div class="pp-grupo" data-op="encuadre">
+      <span class="pp-tit">Teléfono · encuadre</span>
+      <div class="pp-ops">
+        <button type="button" data-v="no">Fijo (hoy)</button>
+        <button type="button" data-v="si">Sube con la bebida</button>
+      </div>
+      <p class="pp-ayuda">Se mueve solo con tu dedo: si paras, la imagen para.</p>
+    </div>
+
+    <div class="pp-grupo" data-op="ayudas">
+      <span class="pp-tit">Teléfono · ayudas</span>
+      <div class="pp-ops">
+        <button type="button" data-v="no">Sin ayudas (hoy)</button>
+        <button type="button" data-v="si">Rayitas, pista y «Saltar animación»</button>
+      </div>
+    </div>
+
+    <div class="pp-grupo" data-op="velo">
+      <span class="pp-tit">Computadora · cierre</span>
+      <div class="pp-ops">
+        <button type="button" data-v="con">Con velo (hoy)</button>
+        <button type="button" data-v="sin">Sin velo, vaso al centro</button>
+      </div>
+    </div>
+
+    <div class="pp-grupo" data-op="video">
+      <span class="pp-tit">Video</span>
+      <div class="pp-ops">
+        <button type="button" data-v="v2">Actual · 3,6 MB</button>
+        <button type="button" data-v="v3">Liviano · 3,0 MB</button>
+      </div>
+      <p class="pp-ayuda">Mira la espuma de cerca. Si no ves diferencia, el liviano ahorra 0,6 MB por visita.</p>
+    </div>
+
+    <div class="pp-pie">
+      <span class="pp-lectura" id="pp-lectura">Scroll 0 % · video 0,00 s</span>
+      <button type="button" id="pp-arriba">Volver al inicio</button>
+    </div>
+  </div>
+</div>

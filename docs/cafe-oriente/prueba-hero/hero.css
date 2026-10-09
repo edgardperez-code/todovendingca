@@ -1,0 +1,146 @@
+
+/* ================================================================
+   PRUEBA DEL HERO — solo en esta copia. Lo publicado no cambia.
+   ================================================================ */
+body{background:var(--espresso)}
+
+/* --- cierre nuevo, composicion (a): el panel de hoy, que cabe en pantallas bajas --- */
+.mocha-cierre-txt{display:contents}
+.mocha-cierre .hero-kicker{order:1}
+.mocha-cierre h2{order:2}
+.mocha-cierre .mocha-txt{order:3}
+.mocha-cierre .mocha-cifras{order:4}
+.mocha-cierre .hero-ctas{order:5}
+.mocha-cierre-txt > *{text-shadow:0 2px 18px rgba(26,13,4,.85)}
+.mocha-cierre .btn{text-shadow:none}
+.btn-wa-ico{width:18px;height:18px;fill:currentColor;flex-shrink:0}
+
+/* --- cierre (b) en computadora: sin velo, texto a la izquierda, vaso al centro --- */
+@media(min-width:901px){
+  .mocha.sinvelo .mocha-cierre{
+    left:0;right:0;margin-inline:auto;width:min(1280px,94vw);
+    display:grid;grid-template-columns:1fr minmax(300px,440px) 1fr;gap:2rem;align-items:center;
+    padding:3.9rem 0 0;text-align:left;background:none;backdrop-filter:none;
+  }
+  .mocha.sinvelo .mocha-cierre-txt{display:block;grid-column:1;grid-row:1}
+  .mocha.sinvelo .mocha-cierre h2{margin-top:.6rem}
+  .mocha.sinvelo .mocha-cierre .mocha-txt{max-width:34ch;margin-bottom:1.8rem}
+  .mocha.sinvelo .mocha-cierre .hero-ctas{justify-content:flex-start}
+  .mocha.sinvelo .mocha-cierre .mocha-cifras{grid-column:3;grid-row:1;justify-self:end;grid-template-columns:1fr;width:auto;margin:0}
+  .mocha.sinvelo.cerrado .mocha-riel{opacity:0;pointer-events:none}
+  .mocha-riel{transition:opacity .4s ease}
+}
+
+/* --- paso final "Listo. Tu respiro." --- */
+.mocha-copy::before{transition:opacity .6s ease}
+
+/* --- pista, rayitas y "Saltar animacion" --- */
+.pt-largo,.mocha-dedo{display:none}
+.mocha-barra{display:none}
+.mocha-progreso{flex:1;display:flex;gap:6px}
+.mocha-progreso i{flex:1;height:3px;border-radius:3px;background:rgba(255,246,234,.22);position:relative;overflow:hidden}
+.mocha-progreso i::after{
+  content:"";position:absolute;inset:0;background:var(--dorado);
+  transform-origin:left;transform:scaleX(var(--f,0));
+}
+.mocha-saltar{
+  font-size:.74rem;font-weight:500;color:rgba(255,246,234,.85);white-space:nowrap;
+  text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(242,183,73,.6);
+  padding:.7rem 0 .7rem .3rem;
+}
+.mocha-saltar:focus-visible{outline:2px solid var(--dorado);outline-offset:2px;border-radius:4px}
+.mocha.ayudas .mocha-pista{opacity:0}
+.mocha.ayudas .mocha-pista.ve{opacity:1}
+@keyframes mocha-dedo{0%,100%{transform:translateY(4px) rotate(45deg);opacity:.4}50%{transform:translateY(-3px) rotate(45deg);opacity:1}}
+
+@media(max-width:900px){
+  /* la pista: una linea debajo de los botones, solo si no has deslizado en 1,2 s */
+  .mocha.ayudas .mocha-pista{
+    flex-direction:row;gap:.65rem;bottom:1.15rem;
+    font-size:.64rem;letter-spacing:.16em;white-space:nowrap;
+  }
+  .mocha.ayudas .mocha-raton,.mocha.ayudas .pt-corto{display:none}
+  .mocha.ayudas .pt-largo{display:inline}
+  .mocha.ayudas .mocha-dedo{
+    display:block;width:9px;height:9px;margin-top:4px;
+    border-left:2px solid var(--dorado);border-top:2px solid var(--dorado);
+    animation:mocha-dedo 1.6s ease-in-out infinite;
+  }
+  .mocha.ayudas .mocha-barra{
+    display:flex;align-items:center;gap:.9rem;
+    position:absolute;z-index:6;left:1.35rem;right:1.35rem;bottom:.55rem;
+    opacity:0;pointer-events:none;transition:opacity .3s ease;
+  }
+  .mocha.ayudas .mocha-barra.ve{opacity:1;pointer-events:auto}
+
+  /* encuadre: el JS mueve el video; aqui solo se prepara la capa */
+  .mocha.encuadre .mocha-taza video{will-change:transform}
+
+  /* vaso listo: el parrafo se va y la sombra se aclara para ver el logo */
+  .mocha-paso[data-mp="5"] .mocha-txt{display:none}
+  .mocha-paso[data-mp="5"] > *{text-shadow:0 2px 16px rgba(26,13,4,.95)}
+  .mocha.fase5 .mocha-copy::before{opacity:.45}
+
+  /* cierre (a): las 4 cifras en una fila y etiquetas legibles */
+  .mocha-cierre{padding:4.3rem 1.2rem 1.3rem}
+  .mocha-cierre h2{font-size:clamp(1.9rem,8.6vw,2.5rem);margin:.6rem 0 .8rem}
+  .mocha-cierre .mocha-cifras{grid-template-columns:repeat(4,1fr);gap:.35rem;padding:.8rem .6rem;margin-bottom:1.3rem}
+  .mocha-cierre .mocha-cifras b{font-size:.98rem;white-space:nowrap}
+  .mocha-cierre .mocha-cifras span{display:block;font-size:.6rem;letter-spacing:.05em;line-height:1.3;margin-top:.15rem}
+  .mocha-cierre .hero-ctas{gap:.7rem}
+}
+@media(max-width:900px) and (max-height:760px){
+  .mocha-cierre .mocha-txt{display:none}
+  .mocha-cierre .mocha-cifras{margin-top:.4rem}
+}
+
+/* --- panel de prueba --- */
+.pp-abrir{
+  position:fixed;z-index:60;right:12px;top:calc(env(safe-area-inset-top,0px) + 4.6rem);
+  display:inline-flex;align-items:center;gap:.45rem;padding:.55rem .9rem;border-radius:999px;
+  border:1px solid rgba(242,183,73,.5);background:rgba(36,18,8,.78);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  color:var(--crema);font:600 .74rem/1 var(--font-body);letter-spacing:.04em;cursor:pointer;
+}
+.pp-abrir svg{width:16px;height:16px;fill:none;stroke:var(--dorado);stroke-width:2;stroke-linecap:round}
+.pp-abrir svg circle{fill:var(--espresso)}
+.pp-abrir:focus-visible,.pp button:focus-visible{outline:2px solid var(--dorado);outline-offset:2px}
+.pp{
+  position:fixed;z-index:70;left:0;right:0;bottom:0;max-height:80vh;max-height:80svh;
+  display:flex;flex-direction:column;
+  background:#1d0e05;color:var(--crema);font-family:var(--font-body);
+  border-top:1px solid rgba(242,183,73,.4);border-radius:18px 18px 0 0;
+  box-shadow:0 -24px 60px rgba(0,0,0,.55);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media(min-width:901px){
+  .pp{left:auto;right:16px;bottom:16px;width:410px;max-height:calc(100vh - 7rem);border:1px solid rgba(242,183,73,.4);border-radius:18px}
+}
+.pp-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;padding:1rem 1.1rem .85rem;border-bottom:1px solid rgba(242,183,73,.18)}
+.pp-cab b{display:block;font-family:var(--font-display);font-size:1.15rem;font-weight:600;color:var(--crema)}
+.pp-cab span{display:block;font-size:.76rem;color:rgba(255,246,234,.66);margin-top:.15rem}
+.pp-x{
+  flex-shrink:0;padding:.5rem .9rem;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(255,246,234,.25);background:none;color:var(--crema);font:500 .76rem var(--font-body);
+}
+.pp-cuerpo{overflow-y:auto;overscroll-behavior:contain;padding:1rem 1.1rem 1.1rem;display:flex;flex-direction:column;gap:1.15rem}
+.pp-rapido{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.pp-rapido button{
+  min-height:42px;padding:.5rem .8rem;border-radius:10px;cursor:pointer;
+  border:1px dashed rgba(242,183,73,.55);background:none;color:var(--dorado);font:600 .78rem var(--font-body);
+}
+.pp-tit{display:block;font-size:.66rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--dorado);margin-bottom:.5rem}
+.pp-ops{display:flex;flex-wrap:wrap;gap:.4rem}
+.pp-ops button{
+  flex:1 1 auto;min-height:42px;padding:.5rem .8rem;border-radius:10px;cursor:pointer;text-align:left;
+  border:1px solid rgba(255,246,234,.18);background:rgba(255,246,234,.04);
+  color:rgba(255,246,234,.82);font:500 .78rem/1.3 var(--font-body);
+}
+.pp-ops button[aria-pressed="true"]{background:var(--dorado);border-color:var(--dorado);color:var(--tinta);font-weight:600}
+.pp-ayuda{font-size:.72rem;line-height:1.5;color:rgba(255,246,234,.56);margin-top:.45rem}
+.pp-pie{display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;padding-top:.85rem;border-top:1px solid rgba(242,183,73,.15)}
+.pp-lectura{font-size:.72rem;font-variant-numeric:tabular-nums;color:rgba(255,246,234,.66)}
+.pp-pie button{
+  padding:.55rem .9rem;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(255,246,234,.25);background:none;color:var(--crema);font:500 .76rem var(--font-body);
+}

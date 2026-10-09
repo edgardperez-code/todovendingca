@@ -53,7 +53,24 @@ misma carpeta.
    confianza (Clínica Anzoátegui + zona), FAQ visible y FAQPage alineados (7 y 7, con la
    pregunta nueva "¿En qué zonas instalan?"), `contactPoint` de ventas en Organization,
    y `llms.txt` ampliado. Verificado en 1440x900 y 375x812 sin desbordes ni errores.
-2. **Siguiente tarea: la página de prueba del hero** (ver `MEJORAS-ANIMACION-HERO.md`,
+2. **Página de prueba del hero: HECHA, esperando la elección del dueño.**
+   Enlace privado (artifact): https://claude.ai/artifact/7Y7Yr6to4EWLq3GEP7Nh89
+   Fuente en `docs/cafe-oriente/prueba-hero/` (`hero.html`, `hero.css`, `hero.js` sustituyen
+   el hero de una copia de `index.html`; `python3 build.py salida.html` la arma, y hay que
+   poner al lado `assets/` con los videos e imágenes). Panel "Ajustes" con: reparto del scroll
+   (hoy / curva suave = media entre la curva completa y una recta que acaba en 0,90 / curva
+   completa), textos (hoy / anclados con "Cae el chocolate" / con "Un solo chorro"), paso final
+   "Listo. Tu respiro.", encuadre móvil continuo (sube hasta -22 % entre 2,6 y 5,6 s, baja a
+   -13 % con el vaso listo), ayudas móviles (pista, 4 rayitas, "Saltar animación" con salto
+   instantáneo), cierre nuevo "Este respiro, en tu empresa." con/sin velo en escritorio, y
+   video actual / liviano (`mocachino-v3.mp4`, CRF 30, 3,03 MB, 190 cuadros, todos clave).
+   En la prueba el video se descarga entero y se sirve como blob (el alojamiento del artifact
+   puede no aceptar rangos y Safari los exige); en la página real no hace falta.
+   Verificada en Chromium a 1440x900, 375x812 y 360x640 (con un VP9 de sustituto, porque el
+   Chromium de pruebas no trae H.264): sin errores ni desbordes. Falta verla en un teléfono real.
+   Cuando el dueño elija, se pasa su combinación a `client/public/cafe-oriente/index.html`.
+
+   Detalle original de la tarea: (ver `MEJORAS-ANIMACION-HERO.md`,
    sección "Por dónde empezaría", y el código de partida en `IMPLEMENTACIONES-PROPUESTAS.txt`).
    Una copia de la página con un panel de interruptores:
    - Reparto del scroll: como hoy (lineal) / curva suave / curva completa. La curva por puntos
