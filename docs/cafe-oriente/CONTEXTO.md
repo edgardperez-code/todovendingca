@@ -53,7 +53,14 @@ misma carpeta.
    confianza (Clínica Anzoátegui + zona), FAQ visible y FAQPage alineados (7 y 7, con la
    pregunta nueva "¿En qué zonas instalan?"), `contactPoint` de ventas en Organization,
    y `llms.txt` ampliado. Verificado en 1440x900 y 375x812 sin desbordes ni errores.
-2. **Página de prueba del hero: HECHA, esperando la elección del dueño.**
+2. **Hero nuevo aplicado a `index.html` en esta rama, sin publicar.** El dueño eligió
+   "Todo lo nuevo" con "Cae el chocolate"; no eligió video, así que se quedó el actual
+   (`mocachino-v2.mp4`, sin cambiar de archivo). Combinación: curva suave, textos anclados
+   (`MOMENTOS = [0, 0.95, 2.45, 3.5, 4.85, 6.9]`), paso "Listo. Tu respiro." (cierre a 0,95),
+   encuadre móvil continuo, pista + rayitas + "Saltar animación", cierre "Este respiro, en tu
+   empresa." con velo. Verificado en 1440x900, 375x812 y 360x640.
+
+   **Página de prueba del hero (usada para elegir):**
    Enlace privado (artifact): https://claude.ai/artifact/7Y7Yr6to4EWLq3GEP7Nh89
    Fuente en `docs/cafe-oriente/prueba-hero/` (`hero.html`, `hero.css`, `hero.js` sustituyen
    el hero de una copia de `index.html`; `python3 build.py salida.html` la arma, y hay que
