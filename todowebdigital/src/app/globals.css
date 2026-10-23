@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/* =====================================================================
+   Tokens de diseño: TodoWeb Digital
+   Paleta: tinta profunda (navy) + eléctrico (azul → cian) + acento lima.
+   ===================================================================== */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-ink-950: #050a18;
+  --color-ink-900: #0a1226;
+  --color-ink-800: #111b35;
+  --color-ink-700: #1b2745;
+  --color-ink-600: #2a3a60;
+  --color-ink-500: #45577f;
+  --color-ink-400: #7384a6;
+  --color-ink-300: #a3b0c9;
+  --color-ink-200: #d2d9e8;
+  --color-ink-100: #e9edf5;
+  --color-ink-50: #f5f7fb;
+
+  --color-electric-700: #1d4ed8;
+  --color-electric-600: #2563eb;
+  --color-electric-500: #3b82f6;
+  --color-electric-400: #60a5fa;
+  --color-electric-300: #93c5fd;
+
+  --color-cyan-500: #06b6d4;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-300: #67e8f9;
+
+  --color-lime-400: #a3e635;
+  --color-lime-300: #bef264;
+
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+
+  --shadow-glow: 0 0 0 1px rgba(96, 165, 250, 0.25), 0 20px 60px -20px rgba(37, 99, 235, 0.55);
+  --shadow-card: 0 1px 2px rgba(5, 10, 24, 0.06), 0 12px 40px -16px rgba(5, 10, 24, 0.18);
+
+  --animate-float: float 8s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-marquee: marquee 40s linear infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(1.5deg); }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+}
+
+:root {
+  --bg: var(--color-ink-50);
+  --fg: var(--color-ink-900);
+  --muted: var(--color-ink-500);
+  --card: #ffffff;
+  --border: var(--color-ink-200);
+  color-scheme: light;
+}
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, video { max-width: 100%; height: auto; }
+::selection { background: rgba(59, 130, 246, 0.25); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Utilidades de marca */
+@utility font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+@utility text-gradient {
+  background: linear-gradient(92deg, #60a5fa 0%, #22d3ee 55%, #a3e635 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(96, 165, 250, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(96, 165, 250, 0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+@utility bg-glow {
+  background:
+    radial-gradient(60% 50% at 20% 10%, rgba(37, 99, 235, 0.35), transparent 60%),
+    radial-gradient(50% 40% at 85% 20%, rgba(6, 182, 212, 0.28), transparent 60%),
+    radial-gradient(40% 40% at 60% 90%, rgba(163, 230, 53, 0.12), transparent 60%);
+}
+@utility container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+@utility card {
+  @apply rounded-2xl border border-ink-200 bg-white shadow-[var(--shadow-card)];
+}
+@utility card-dark {
+  @apply rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primary {
+  @apply btn bg-electric-600 text-white shadow-[0_10px_30px_-10px_rgba(37,99,235,0.7)] hover:bg-electric-500 hover:-translate-y-0.5 active:translate-y-0;
+}
+@utility btn-secondary {
+  @apply btn border border-ink-200 bg-white text-ink-900 hover:border-ink-300 hover:bg-ink-50;
+}
+@utility btn-ghost-light {
+  @apply btn border border-white/15 bg-white/5 text-white hover:bg-white/10;
+}
+@utility btn-whatsapp {
+  @apply btn bg-[#25D366] text-ink-950 hover:bg-[#1ebe5b] hover:-translate-y-0.5;
+}
+@utility eyebrow {
+  @apply inline-flex items-center gap-2 rounded-full border border-electric-500/30 bg-electric-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-electric-600;
+}
+@utility eyebrow-light {
+  @apply inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-cyan-300;
+}
+@utility input {
+  @apply w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm text-ink-900 placeholder:text-ink-400 focus:border-electric-500 focus:outline-none focus:ring-2 focus:ring-electric-500/20;
+}
+@utility label { @apply mb-1.5 block text-sm font-medium text-ink-700; }
+
+/* Contenido de artículos (Markdown) */
+.article { @apply text-[1.05rem] leading-8 text-ink-800; }
+.article > * + * { margin-top: 1.25em; }
+.article h2 { @apply font-display mt-12 text-2xl font-bold text-ink-900 sm:text-3xl; scroll-margin-top: 6rem; }
+.article h3 { @apply font-display mt-8 text-xl font-bold text-ink-900 sm:text-2xl; scroll-margin-top: 6rem; }
+.article h4 { @apply mt-6 text-lg font-semibold text-ink-900; }
+.article p { @apply text-ink-700; }
+.article a { @apply font-medium text-electric-600 underline decoration-electric-300 underline-offset-4 hover:decoration-electric-600; }
+.article strong { @apply font-semibold text-ink-900; }
+.article ul { @apply list-disc space-y-2 pl-6; }
+.article ol { @apply list-decimal space-y-2 pl-6; }
+.article li::marker { color: var(--color-electric-500); }
+.article blockquote { @apply rounded-2xl border-l-4 border-electric-500 bg-electric-500/5 px-6 py-4 text-ink-800 italic; }
+.article code { @apply rounded-md bg-ink-100 px-1.5 py-0.5 font-mono text-[0.9em] text-ink-900; }
+.article pre { @apply overflow-x-auto rounded-2xl bg-ink-900 p-5 text-sm text-ink-100; }
+.article pre code { @apply bg-transparent p-0 text-inherit; }
+.article img { @apply rounded-2xl; }
+.article hr { @apply my-10 border-ink-200; }
+.article table { @apply w-full border-collapse overflow-hidden rounded-xl text-sm; display: block; overflow-x: auto; }
+.article thead { @apply bg-ink-100 text-left text-ink-900; }
+.article th, .article td { @apply border border-ink-200 px-3 py-2 align-top; }
