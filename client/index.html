@@ -2,47 +2,40 @@
 <html lang="es" prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="128x128" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
     <meta name="author" content="Todo Vending CA" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
     <meta name="geo.region" content="VE-B" />
     <meta name="geo.placename" content="Lechería, Anzoátegui, Venezuela" />
     <meta name="geo.position" content="10.1784238;-64.691242" />
     <meta name="ICBM" content="10.1784238, -64.691242" />
-    <meta name="language" content="es" />
-    <meta name="theme-color" content="#f97316" />
-    <meta name="contact" content="todovendingca@gmail.com" />
-    <meta name="reply-to" content="todovendingca@gmail.com" />
-    <meta name="rating" content="general" />
-    <meta name="distribution" content="global" />
-    <meta name="category" content="Máquinas Expendedoras, Vending, Snacks, Bebidas, Café" />
+    <meta name="theme-color" content="#182038" />
+    <meta name="color-scheme" content="light dark" />
 
     <!--app-head-->
 
-    <!-- Developer Badge Styles -->
-    <style>
-      .tvd-badge { display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:999px; text-decoration:none; font-family:system-ui,sans-serif; font-size:12px; line-height:1; transition:all .25s ease; cursor:pointer; }
-      .tvd-badge--dark { border:1px solid #334155; background:rgba(30,41,59,.6); color:#94a3b8; backdrop-filter:blur(8px); }
-      .tvd-badge--dark:hover { border-color:rgba(59,130,246,.5); background:rgba(30,41,59,.9); color:#cbd5e1; box-shadow:0 4px 20px rgba(30,58,138,.2); }
-      .tvd-badge--dark .tvd-badge__brand { color:#60a5fa; font-weight:600; }
-      .tvd-badge--dark:hover .tvd-badge__brand { color:#93c5fd; }
-      .tvd-badge__icon-wrap { display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#3b82f6,#22d3ee); flex-shrink:0; }
-      .tvd-badge__text { white-space:nowrap; }
-    </style>
+    <!-- Fuentes propias: solo se precarga la del titular (LCP) -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/bricolage-grotesque-latin-wght-v1.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/figtree-latin-wght-v1.woff2" crossorigin />
 
-    <!-- Preload Hero Image for faster LCP -->
-    <link rel="preload" as="image" href="/assets/maquina_vending_hero.webp" type="image/webp" fetchpriority="high" />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Tema: se aplica antes de pintar para evitar el parpadeo claro/oscuro -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("vending-theme");
+          var dark = t === "dark" || (t !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"><!--app-html--></div>

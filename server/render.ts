@@ -8,6 +8,8 @@ export type SEOData = {
   path: string;
   ogImage?: string;
   jsonLd?: object[];
+  noindex?: boolean;
+  preloadImage?: { href: string; imagesrcset?: string; imagesizes?: string };
 };
 
 export type RenderModule = {
@@ -15,6 +17,7 @@ export type RenderModule = {
 };
 
 const SITE_URL = "https://www.todovendingca.com";
+const DEFAULT_OG = `${SITE_URL}/og-image-v2.jpg`;
 
 function escapeHtml(s: string) {
   const map: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;" };
@@ -27,13 +30,22 @@ function escapeAttr(s: string) {
 
 function renderHeadTags(seo: SEOData): string {
   const canonical = `${SITE_URL}${seo.path}`;
-  const ogImage = seo.ogImage || `${SITE_URL}/og-image.jpg`;
+  const ogImage = seo.ogImage || DEFAULT_OG;
+  const robots = seo.noindex ? `<meta name="robots" content="noindex, follow" />` : "";
+  const preload = seo.preloadImage
+    ? `<link rel="preload" as="image" href="${escapeAttr(seo.preloadImage.href)}"${
+        seo.preloadImage.imagesrcset ? ` imagesrcset="${escapeAttr(seo.preloadImage.imagesrcset)}"` : ""
+      }${seo.preloadImage.imagesizes ? ` imagesizes="${escapeAttr(seo.preloadImage.imagesizes)}"` : ""} fetchpriority="high" />`
+    : "";
   const jsonLdBlocks = (seo.jsonLd || [])
-    .map((block) => `<script type="application/ld+json" data-seo-jsonld="1">${JSON.stringify(block)}</script>`)
+    // "</script" dentro de un texto rompería la página; se escapa por seguridad.
+    .map((block) => `<script type="application/ld+json" data-seo-jsonld="1">${JSON.stringify(block).replace(/</g, "\\u003c")}</script>`)
     .join("\n    ");
   return `<title>${escapeHtml(seo.title)}</title>
     <meta name="description" content="${escapeAttr(seo.description)}" />
     <link rel="canonical" href="${canonical}" />
+    ${robots}
+    ${preload}
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${canonical}" />
     <meta property="og:title" content="${escapeAttr(seo.title)}" />
@@ -41,10 +53,11 @@ function renderHeadTags(seo: SEOData): string {
     <meta property="og:image" content="${ogImage}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content="Todo Vending CA, máquinas expendedoras en Venezuela" />
     <meta property="og:locale" content="es_VE" />
     <meta property="og:site_name" content="Todo Vending CA" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="${canonical}" />
     <meta name="twitter:title" content="${escapeAttr(seo.title)}" />
     <meta name="twitter:description" content="${escapeAttr(seo.description)}" />
     <meta name="twitter:image" content="${ogImage}" />

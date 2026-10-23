@@ -8,6 +8,8 @@ interface ContactEmailData {
   phone?: string;
   company?: string;
   message: string;
+  /** Página desde la que llegó el pedido (?origen=cafe-oriente, clinicas, ...) */
+  origen?: string;
 }
 
 interface EncuestaEmailData {
@@ -137,6 +139,12 @@ export async function sendContactNotification(data: ContactEmailData): Promise<b
               <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${data.company}</td>
             </tr>
             ` : ''}
+            ${data.origen ? `
+            <tr>
+              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Llegó desde:</td>
+              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${data.origen}</td>
+            </tr>
+            ` : ''}
           </table>
           
           <div style="margin-top: 20px;">
@@ -160,7 +168,7 @@ export async function sendContactNotification(data: ContactEmailData): Promise<b
     const result = await client.emails.send({
       from: 'Todo Vending CA <onboarding@resend.dev>',
       to: 'todovendingca@gmail.com',
-      subject: `Nuevo contacto de ${data.name} - Todo Vending CA`,
+      subject: `Nuevo contacto de ${data.name}${data.origen ? ` (${data.origen})` : ''} - Todo Vending CA`,
       html: emailHtml,
       replyTo: data.email
     });

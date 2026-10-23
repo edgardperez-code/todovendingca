@@ -1,171 +1,135 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { MapPin, Zap, ShieldCheck } from "lucide-react";
-import { motion } from "framer-motion";
-import { SubpageHero } from "@/components/subpage-hero";
-import { SubpageFAQ } from "@/components/subpage-faq";
-import { SubpageCTA } from "@/components/subpage-cta";
-import { useSEO } from "@/lib/seo";
-import { SITE_URL, organizationSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { PageShell } from "@/components/layout/page-shell";
+import { SubpageHero } from "@/components/blocks/subpage-hero";
+import { KeyFacts } from "@/components/blocks/key-facts";
+import { SectionHeading } from "@/components/blocks/section-heading";
+import { ClientsStrip } from "@/components/blocks/clients-strip";
+import { StepsBlock } from "@/components/blocks/steps-block";
+import { FAQBlock } from "@/components/blocks/faq-block";
+import { CTABand } from "@/components/blocks/cta-band";
+import { faqsFor } from "@/content/faqs";
+import { BUSINESS, CLIENTS } from "@shared/site";
+import { useSEO, seoFor } from "@/lib/seo";
+import { organizationSchema, localBusinessSchema, breadcrumbSchema, serviceSchema, faqSchema, webPageSchema, ID } from "@/lib/schema";
+import { HERO_IMAGE, HERO_SRCSET } from "@/components/blocks/hero-home";
 
-const faqs = [
-  {
-    question: "Cuanto cuesta poner una maquina expendedora en mi negocio en Lecheria?",
-    answer:
-      "Nada. Todo Vending CA instala, abastece y da mantenimiento a la maquina sin ningun costo para el local. El modelo de negocio se sostiene con la venta de los productos, no con un cobro al establecimiento anfitrion.",
-  },
-  {
-    question: "Que necesito para instalar una maquina de vending en Lecheria?",
-    answer:
-      "Solo un espacio de aproximadamente 1,5 m x 1 m con acceso a una toma electrica. El equipo de Todo Vending CA evalua el lugar y recomienda el tipo de maquina mas adecuado segun el flujo de personas.",
-  },
-  {
-    question: "En que zonas de Lecheria y Anzoategui instalan maquinas?",
-    answer:
-      "Actualmente Todo Vending CA tiene maquinas operando en Lecheria, con clientes en clinicas, centros empresariales, colegios y gimnasios, y presta servicio en toda la region: Lecheria, Puerto La Cruz y Barcelona.",
-  },
-];
-
-const clientes = [
-  { nombre: "Clinica Anzoategui", tipo: "Snacks y bebidas 24 horas" },
-  { nombre: "Centro Empresarial Colon", tipo: "Oficinas" },
-  { nombre: "Centro Empresarial Oleus", tipo: "Oficinas" },
-  { nombre: "Colegio El Manglar", tipo: "Educacion" },
-  { nombre: "Clinica Zambrano", tipo: "Salud" },
-  { nombre: "Lion Gym", tipo: "Vending deportivo" },
+const PATH = "/maquinas-expendedoras-lecheria";
+const faqs = faqsFor("lecheria");
+const crumbs = [
+  { name: "Inicio", path: "/" },
+  { name: "Máquinas expendedoras en Lechería", path: PATH },
 ];
 
 const ventajas = [
-  { icon: MapPin, title: "Vending local", desc: "Con sede en el Centro Comercial Venezuela, operamos directamente en la zona: reposicion rapida y respuesta tecnica inmediata." },
-  { icon: Zap, title: "Sin intermediarios", desc: "Trato directo con nuestro equipo, sin distribuidores externos. Esa cercania mantiene las maquinas siempre abastecidas." },
-  { icon: ShieldCheck, title: "Para cada espacio", desc: "Oficinas, clinicas, colegios, gimnasios y comercios. Elegimos la maquina segun el publico de cada lugar." },
+  { icon: MapPin, title: "Sede en Lechería", text: "Estamos en el Centro Comercial Venezuela. Reposición rápida y respuesta técnica en la misma zona." },
+  { icon: Zap, title: "Sin intermediarios", text: "Trato directo con nuestro equipo. Esa cercanía mantiene las máquinas siempre abastecidas." },
+  { icon: ShieldCheck, title: "Para cada espacio", text: "Oficinas, clínicas, colegios, gimnasios y comercios. Elegimos la máquina según el público de cada lugar." },
 ];
 
 export default function MaquinasLecheria() {
-  useSEO({
-    title: "Máquinas Expendedoras en Lechería | Todo Vending CA",
-    description:
-      "Instalación gratuita de máquinas expendedoras en Lechería, Anzoátegui. Snacks, bebidas y café en grano con mantenimiento 24/7 y reposición incluida, sin costo para tu negocio.",
-    path: "/maquinas-expendedoras-lecheria",
-    jsonLd: [
+  useSEO(
+    seoFor(PATH, [
       organizationSchema,
-      breadcrumbSchema([
-        { name: "Inicio", path: "/" },
-        { name: "Máquinas Expendedoras en Lechería", path: "/maquinas-expendedoras-lecheria" },
-      ]),
-      {
-        "@context": "https://schema.org",
-        "@type": "Service",
-        name: "Máquinas Expendedoras en Lechería",
-        serviceType: "Instalación de Máquinas Expendedoras",
-        provider: { "@id": `${SITE_URL}/#organization` },
-        areaServed: { "@type": "City", name: "Lechería" },
+      localBusinessSchema,
+      breadcrumbSchema(crumbs),
+      webPageSchema(PATH, { mainEntity: { "@id": ID.localBusiness } }),
+      serviceSchema({
+        path: PATH,
+        name: "Máquinas expendedoras en Lechería",
+        serviceType: "Instalación de máquinas expendedoras",
         description:
-          "Instalación, reposición y mantenimiento de máquinas expendedoras de snacks, bebidas y café en Lechería, Anzoátegui, sin costo para el negocio anfitrión.",
-      },
+          "Instalación gratuita, reposición y mantenimiento de máquinas expendedoras de snacks, bebidas y café en grano en Lechería, Puerto La Cruz y Barcelona, Anzoátegui.",
+        audience: "Negocios, oficinas, clínicas, colegios y gimnasios de Lechería",
+        area: [{ "@type": "City", name: "Lechería" }, { "@type": "City", name: "Puerto La Cruz" }, { "@type": "City", name: "Barcelona" }],
+      }),
       faqSchema(faqs),
-    ],
-  });
+    ], { preloadImage: { href: HERO_IMAGE, imagesrcset: HERO_SRCSET, imagesizes: "(min-width: 1024px) 380px, 80vw" } }),
+  );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>
-        <SubpageHero
-          eyebrow="Lecheria, Anzoategui"
-          titlePlain="Maquinas Expendedoras en"
-          titleAccent="Lecheria"
-          lead="Todo Vending CA instala maquinas expendedoras de snacks, bebidas y cafe en grano en oficinas, clinicas, colegios y gimnasios de Lecheria, con instalacion gratuita y mantenimiento 24/7, sin ningun costo para el negocio."
-          ctaText="Solicitar maquina en Lecheria"
-        />
+    <PageShell waKey="lecheria" currentPath={PATH}>
+      <SubpageHero
+        eyebrow="Lechería, Anzoátegui"
+        title={
+          <>
+            Máquinas expendedoras en Lechería, <span className="mark-accent">con equipo local</span>
+          </>
+        }
+        lead="Todo Vending CA es una empresa de Lechería que instala máquinas de snacks, bebidas y café en grano en oficinas, clínicas, colegios y gimnasios de Lechería, Puerto La Cruz y Barcelona, con instalación gratuita y mantenimiento incluido."
+        waKey="lecheria"
+        waLabel="Solicitar máquina en Lechería"
+        breadcrumb={crumbs}
+        image={{ src: HERO_IMAGE, srcSet: HERO_SRCSET, alt: "Máquinas expendedoras de Todo Vending CA en Lechería, Anzoátegui", width: 720, height: 935 }}
+      />
 
-        <section className="py-20 md:py-28">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-16"
-            >
-              <Badge className="mb-4" variant="secondary">Vending local</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="text-foreground">Vending local, sin</span>{" "}
-                <span className="text-primary">intermediarios</span>
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Instalamos en oficinas, clinicas, colegios, gimnasios y comercios de alto trafico en toda la region oriental.
+      <KeyFacts
+        summary={`Todo Vending CA está en ${BUSINESS.address.streetAddress}, Lechería, estado Anzoátegui. Atiende Lechería, Puerto La Cruz y Barcelona con ${CLIENTS.length} ubicaciones activas en clínicas, centros empresariales, un colegio y gimnasios. Horario de atención: ${BUSINESS.hours}.`}
+        facts={[
+          { value: `${CLIENTS.length}`, label: "Ubicaciones en Lechería" },
+          { value: "3", label: "Ciudades atendidas" },
+          { value: "$0", label: "Costo de instalación" },
+          { value: "L–V", label: "8:00 a 17:00" },
+          { value: "Sáb", label: "8:00 a 12:00" },
+        ]}
+      />
+
+      <section className="py-20 md:py-28" aria-labelledby="ventajas-titulo">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Vending local"
+            id="ventajas-titulo"
+            title={
+              <>
+                Cerca de tu negocio, <span className="mark-accent">no al otro lado del país</span>
+              </>
+            }
+            lead="Una máquina abastecida depende de quién la atiende. Nuestro equipo está a minutos de cada ubicación."
+          />
+          <ul className="mt-12 grid gap-5 md:grid-cols-3">
+            {ventajas.map((v) => (
+              <li key={v.title} className="reveal card-soft p-6">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-navy text-white">
+                  <v.icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-5 text-lg font-semibold">{v.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{v.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="bg-muted/50 py-20 md:py-28" aria-labelledby="clientes-lech-titulo">
+        <div className="container">
+          <SectionHeading eyebrow="Ya en servicio" id="clientes-lech-titulo" title="Clientes actuales en Lechería" lead="Nombres reales de los lugares donde hoy hay una máquina de Todo Vending CA." />
+          <div className="mt-10">
+            <ClientsStrip />
+          </div>
+          <div className="reveal mt-10 card-soft flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold">Nuestra sede</p>
+              <p className="text-sm text-muted-foreground">
+                {BUSINESS.address.streetAddress}, {BUSINESS.address.addressLocality}, {BUSINESS.address.addressRegion}, Venezuela
               </p>
-            </motion.div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {ventajas.map((v, i) => (
-                <motion.div
-                  key={v.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="h-full hover-elevate group">
-                    <CardContent className="pt-6">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                        <v.icon className="w-6 h-6 text-primary" />
-                      </div>
-                      <h3 className="font-semibold text-lg text-foreground mb-2">{v.title}</h3>
-                      <p className="text-muted-foreground text-sm">{v.desc}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
             </div>
+            <a href={BUSINESS.mapUrl} target="_blank" rel="noopener noreferrer" className="btn-navy h-11 px-5 text-sm">
+              <MapPin className="h-4 w-4" />
+              Ver en Google Maps
+            </a>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="py-20 md:py-28 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <Badge className="mb-4" variant="secondary">Prueba social</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="text-foreground">Clientes actuales en</span>{" "}
-                <span className="text-primary">la zona</span>
-              </h2>
-            </motion.div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-              {clientes.map((c, i) => (
-                <motion.div
-                  key={c.nombre}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="h-full hover-elevate">
-                    <CardContent className="pt-6">
-                      <h3 className="font-semibold text-foreground mb-1">{c.nombre}</h3>
-                      <p className="text-sm text-muted-foreground">{c.tipo}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+      <StepsBlock id="como-funciona-lecheria" />
 
-        <SubpageFAQ items={faqs} />
+      <FAQBlock items={faqs} title="Preguntas sobre vending en Lechería" waKey="lecheria" />
 
-        <SubpageCTA
-          title="Tienes un espacio en Lecheria?"
-          text="Evaluamos tu local sin compromiso y te decimos que tipo de maquina se adapta mejor."
-          ctaText="Solicitar Informacion"
-        />
-      </main>
-      <Footer />
-    </div>
+      <CTABand
+        title="¿Tienes un espacio en Lechería, Puerto La Cruz o Barcelona?"
+        text="Lo evaluamos sin compromiso y te decimos qué máquina se adapta mejor."
+        waKey="lecheria"
+        waLabel="Solicitar máquina"
+      />
+    </PageShell>
   );
 }

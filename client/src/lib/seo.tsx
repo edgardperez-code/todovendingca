@@ -1,17 +1,20 @@
 import { useEffect } from "react";
-import { SITE_URL } from "./schema";
+import { SITE_URL, routeByPath } from "@shared/site";
 
 export type SEOData = {
   title: string;
   description: string;
-  path: string; // ej: "/" o "/cafe-oriente"
+  path: string; // ej: "/" o "/vending-para-empresas"
   ogImage?: string;
   jsonLd?: object[];
+  /** noindex para páginas que no deben aparecer en buscadores */
+  noindex?: boolean;
+  /** Imagen del hero a precargar (LCP) */
+  preloadImage?: { href: string; imagesrcset?: string; imagesizes?: string };
 };
 
-// Capturado durante el renderToString en el servidor (síncrono, sin condición de
-// carrera entre requests porque cada request se procesa hasta el final antes de
-// que el siguiente `render()` pueda pisar esta variable — ver server/render.ts).
+// Capturado durante renderToString en el servidor. Es seguro porque cada
+// request se renderiza completa antes de que empiece la siguiente.
 export let ssrSEO: SEOData | null = null;
 export function resetSSRSeo() {
   ssrSEO = null;
@@ -19,10 +22,20 @@ export function resetSSRSeo() {
 
 const JSONLD_ATTR = "data-seo-jsonld";
 
+/** Título y descripción salen del registro de rutas (shared/site.ts). */
+export function seoFor(path: string, jsonLd: object[] = [], extra: Partial<SEOData> = {}): SEOData {
+  const r = routeByPath(path);
+  return {
+    title: r?.title ?? "Todo Vending CA",
+    description: r?.description ?? "",
+    path,
+    jsonLd,
+    ...extra,
+  };
+}
+
 export function useSEO(data: SEOData) {
   if (typeof window === "undefined") {
-    // Server-side: renderToString ejecuta los componentes en orden síncrono,
-    // así que esto queda listo justo cuando renderToString retorna.
     ssrSEO = data;
   }
 
@@ -80,40 +93,4 @@ function setJsonLd(blocks: object[]) {
     script.textContent = JSON.stringify(block);
     document.head.appendChild(script);
   });
-}
-
-// Usado solo en el servidor para construir el <head> de la respuesta HTML.
-export function renderHeadTags(data: SEOData): string {
-  const canonical = `${SITE_URL}${data.path}`;
-  const jsonLdBlocks = (data.jsonLd || [])
-    .map(
-      (block) =>
-        `<script type="application/ld+json" ${JSONLD_ATTR}="1">${JSON.stringify(block)}</script>`,
-    )
-    .join("\n    ");
-  return `<title>${escapeHtml(data.title)}</title>
-    <meta name="description" content="${escapeAttr(data.description)}" />
-    <link rel="canonical" href="${canonical}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="${canonical}" />
-    <meta property="og:title" content="${escapeAttr(data.title)}" />
-    <meta property="og:description" content="${escapeAttr(data.description)}" />
-    <meta property="og:image" content="${data.ogImage || `${SITE_URL}/og-image.jpg`}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:locale" content="es_VE" />
-    <meta property="og:site_name" content="Todo Vending CA" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="${canonical}" />
-    <meta name="twitter:title" content="${escapeAttr(data.title)}" />
-    <meta name="twitter:description" content="${escapeAttr(data.description)}" />
-    <meta name="twitter:image" content="${data.ogImage || `${SITE_URL}/og-image.jpg`}" />
-    ${jsonLdBlocks}`;
-}
-
-function escapeHtml(s: string) {
-  return s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]!);
-}
-function escapeAttr(s: string) {
-  return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 }

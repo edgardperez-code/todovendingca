@@ -2,66 +2,67 @@
 
 ## Overview
 
-A landing page and contact form for Todo Vending CA, a vending machine services company based in Lecheria, Anzoategui, Venezuela. The application showcases vending machine services including snacks, beverages, and coffee machines with features like free installation, maintenance, and restocking. The site is primarily in Spanish and serves as a marketing and lead generation platform.
+Sitio web y formulario de contacto de Todo Vending CA, empresa de máquinas expendedoras con
+sede en Lechería, Anzoátegui, Venezuela. Presenta los servicios (snacks, bebidas, café en grano
+de la marca propia Café Oriente, vending deportivo), la instalación gratuita, las ubicaciones
+actuales y capta pedidos por WhatsApp y formulario. Todo en español.
 
-## User Preferences
+## Preferencias del dueño
 
-Preferred communication style: Simple, everyday language.
+Lenguaje claro y cotidiano. Nada se publica (push a `main`) sin su aprobación.
 
-## System Architecture
+## Arquitectura
 
-### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Routing**: Wouter (lightweight React router)
-- **Styling**: Tailwind CSS with shadcn/ui component library (New York style variant)
-- **State Management**: TanStack React Query for server state
-- **Animations**: Framer Motion for UI animations
-- **Theme**: Custom light/dark theme support with CSS variables
-- **Build Tool**: Vite with React plugin
+### Frontend
+- React 18 + TypeScript, Vite, Wouter (router), TanStack Query, Tailwind + shadcn/ui.
+- **SSR real**: `client/src/entry-server.tsx` renderiza cada ruta en el servidor;
+  `client/src/entry-client.tsx` hidrata. El `<head>` (título, descripción, canonical, OG,
+  JSON-LD) lo produce `server/render.ts` a partir de `useSEO()` en cada página.
+- **Diseño**: tokens en `client/src/index.css` (paleta del logo real: azul marino, naranja,
+  rojo, ámbar, celeste), fuentes propias en `client/public/fonts/` (Bricolage Grotesque para
+  títulos, Figtree para texto; paquetes `@fontsource-variable`), animaciones de aparición
+  CSS-only con `animation-timeline: view()` (sin JavaScript, el contenido siempre está en el HTML).
+- **Layout**: `client/src/components/layout/` (header, footer, barra fija de WhatsApp,
+  `PageShell`). Bloques reutilizables en `client/src/components/blocks/`.
+- **Contenido**: `client/src/content/faqs.ts` (todas las preguntas, por tema) y
+  `client/src/content/site-content.ts` (servicios, pasos, segmentos, beneficios).
 
-### Backend Architecture
-- **Framework**: Express 5 (ESM modules)
-- **Runtime**: Node.js with tsx for TypeScript execution
-- **API Pattern**: RESTful endpoints under `/api` prefix
-- **Server**: HTTP server with Vite dev middleware in development, static file serving in production
+### Fuente única de verdad
+- `shared/site.ts`: datos del negocio (`BUSINESS`), clientes reales (`CLIENTS`), mensajes de
+  WhatsApp por página (`WA_MESSAGES`) y el registro de rutas (`ROUTES`: path, título,
+  descripción, resumen, lastmod, prioridad). De aquí salen el menú, el footer, el sitemap, el
+  robots y el llms.txt.
+- `client/src/lib/schema.ts`: bloques schema.org (Organization, LocalBusiness, WebSite, Brand
+  Café Oriente, Service por página, FAQPage, BreadcrumbList, HowTo, ItemList de clientes).
 
-### Data Storage
-- **ORM**: Drizzle ORM with PostgreSQL dialect
-- **Schema Location**: `shared/schema.ts` for shared type definitions
-- **Current Storage**: In-memory storage (MemStorage class) for development
-- **Database Ready**: Schema configured for PostgreSQL with Drizzle Kit migrations
-- **Tables**: Users and ContactMessages defined in schema
+### Páginas
+- React (SSR): `/`, `/vending-para-empresas`, `/vending-para-clinicas`, `/vending-gimnasios`,
+  `/maquinas-expendedoras-lecheria`, `/preguntas-frecuentes`, 404 en español.
+- Estáticas servidas por Express (fuera de React): `/cafe-oriente`
+  (`client/public/cafe-oriente/index.html`, diseño propio con hero animado por scroll) y
+  `/vasos` (encuesta interna, noindex).
+- `/registro` y `/api/registro-epay` se sirven por proxy desde `sistema.todovendingca.com`.
 
-### Key Design Patterns
-- **Monorepo Structure**: Client (`client/`), server (`server/`), and shared (`shared/`) directories
-- **Path Aliases**: `@/` for client source, `@shared/` for shared modules
-- **Schema Validation**: Zod schemas with drizzle-zod for form validation
-- **Component Library**: shadcn/ui components in `client/src/components/ui/`
+### Backend
+- Express 5 (ESM), `server/routes.ts`. Rutas: formulario (`POST /api/contact`, envía correo
+  con Resend e incluye el campo `origen`), listado de mensajes (`GET /api/contact`, protegido
+  con `x-admin-key` = `ADMIN_KEY`), encuesta de vasos, `sitemap.xml`, `robots.txt` y
+  `llms.txt` generados desde `shared/site.ts` (`server/seo-files.ts`).
+- Redirecciones 301: `todovendingca.com` → `www`, `/cafeoriente` → `/cafe-oriente`,
+  `/cafe-oriente/` → `/cafe-oriente`, `/vasos/` → `/vasos`.
+- Almacenamiento: Drizzle + Postgres si hay `DATABASE_URL`; si no, memoria (se pierde al
+  reiniciar).
 
-### Build System
-- **Development**: Vite dev server with HMR proxied through Express
-- **Production**: esbuild bundles server, Vite builds client to `dist/public`
-- **Database Migrations**: `npm run db:push` using Drizzle Kit
+### Build
+- `npm run build`: Vite (cliente) → `dist/public`, Vite SSR → `dist/server/entry-server.cjs`,
+  esbuild (servidor) → `dist/index.cjs`. `npm run check` = `tsc`.
+- `server/static.ts`: `/assets/*` con caché inmutable de 1 año (archivos con hash o con
+  sufijo `-vN`); el resto, 1 día.
 
-## External Dependencies
+## Variables de entorno
+- `RESEND_API_KEY` (correos del formulario y la encuesta), `ADMIN_KEY` (endpoints internos),
+  `DATABASE_URL` (opcional), `SISTEMA_URL` (proxy de registro), `PORT`.
 
-### Database
-- **PostgreSQL**: Required via `DATABASE_URL` environment variable
-- **Drizzle Kit**: For schema migrations and database management
-
-### UI Libraries
-- **Radix UI**: Headless UI primitives for accessible components
-- **Lucide React**: Icon library
-- **React Icons**: Additional icons (WhatsApp, Instagram)
-- **Embla Carousel**: For carousel functionality
-- **Vaul**: Drawer component
-
-### Form Handling
-- **React Hook Form**: Form state management
-- **Zod**: Schema validation
-- **@hookform/resolvers**: Zod integration for react-hook-form
-
-### Replit-Specific
-- **@replit/vite-plugin-runtime-error-modal**: Error overlay in development
-- **@replit/vite-plugin-cartographer**: Development tooling
-- **@replit/vite-plugin-dev-banner**: Development banner
+## Documentación
+- `docs/propuesta-2026/PROPUESTA.md`: propuesta de rediseño y auditoría SEO/GEO/AIO.
+- `docs/cafe-oriente/CONTEXTO.md`: decisiones del dueño y trampas técnicas de Café Oriente.

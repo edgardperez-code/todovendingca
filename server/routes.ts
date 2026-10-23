@@ -1,216 +1,124 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
+import type { Express, Request, Response } from "express";
+import { type Server } from "http";
 import { storage } from "./storage";
 import { insertContactMessageSchema, insertEncuestaVasosSchema } from "@shared/schema";
 import { z } from "zod";
 import { sendContactNotification, sendEncuestaNotification } from "./email";
+import { buildSitemap, buildRobots, buildLlmsTxt } from "./seo-files";
 import path from "path";
 
-// Sitemap XML content
-// Nota: los buscadores ignoran fragmentos (#seccion), por eso solo se listan URLs reales.
-const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <!-- Pagina principal -->
-  <url>
-    <loc>https://www.todovendingca.com/</loc>
-    <lastmod>2026-07-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://www.todovendingca.com/og-image.jpg</image:loc>
-      <image:title>Todo Vending CA — Maquinas Expendedoras en Venezuela</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.todovendingca.com/assets/maquina_vending_hero.webp</image:loc>
-      <image:title>Maquina expendedora Todo Vending CA en Lecheria, Anzoategui</image:title>
-    </image:image>
-  </url>
-  <!-- Pagina: Cafe Oriente (marca de cafe, SSR) -->
-  <url>
-    <loc>https://www.todovendingca.com/cafe-oriente</loc>
-    <lastmod>2026-07-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <!-- Pagina: Maquinas Expendedoras en Lecheria -->
-  <url>
-    <loc>https://www.todovendingca.com/maquinas-expendedoras-lecheria</loc>
-    <lastmod>2026-07-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <!-- Pagina: Vending para Empresas -->
-  <url>
-    <loc>https://www.todovendingca.com/vending-para-empresas</loc>
-    <lastmod>2026-07-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <!-- Pagina: Vending para Gimnasios -->
-  <url>
-    <loc>https://www.todovendingca.com/vending-gimnasios</loc>
-    <lastmod>2026-07-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <!-- /vasos NO se lista: es una encuesta interna (noindex), no una pagina comercial. -->
-</urlset>`;
+// El formulario puede decir desde qué página llegó la persona (?origen=...).
+// Se envía en el correo; no se guarda en la base de datos (no hay columna).
+const contactPayloadSchema = insertContactMessageSchema.extend({
+  origen: z.string().max(40).optional(),
+});
 
-// Robots.txt content — abierto a buscadores y crawlers de IA (SEO + GEO/AIO)
-const robotsTxt = `User-agent: *
-Allow: /
-Disallow: /api/
+function requireAdminKey(req: Request, res: Response): boolean {
+  const claveEsperada = process.env.ADMIN_KEY;
+  if (!claveEsperada) {
+    console.error("ADMIN_KEY no configurada: se rechaza el acceso");
+    res.status(503).json({ ok: false, error: "Servicio no configurado" });
+    return false;
+  }
+  const claveRecibida = req.headers["x-admin-key"];
+  if (typeof claveRecibida !== "string" || claveRecibida !== claveEsperada) {
+    res.status(401).json({ ok: false, error: "No autorizado" });
+    return false;
+  }
+  return true;
+}
 
-User-agent: GPTBot
-Allow: /
+export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
+  const isDev = process.env.NODE_ENV !== "production";
+  const staticFile = (...segments: string[]) =>
+    isDev
+      ? path.resolve(process.cwd(), "client", "public", ...segments)
+      : path.resolve(__dirname, "public", ...segments);
 
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Perplexity-User
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Claude-User
-Allow: /
-
-User-agent: Claude-SearchBot
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: CCBot
-Allow: /
-
-User-agent: Meta-ExternalAgent
-Allow: /
-
-User-agent: Applebot
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-User-agent: Amazonbot
-Allow: /
-
-# Resumen del negocio para modelos de IA
-# https://www.todovendingca.com/llms.txt
-
-Sitemap: https://www.todovendingca.com/sitemap.xml`;
-
-export async function registerRoutes(
-  httpServer: Server,
-  app: Express
-): Promise<Server> {
-  // Serve /cafe-oriente static HTML page (diseno original, mismo archivo,
-  // solo con URLs internas actualizadas a /cafe-oriente). Debe registrarse
-  // antes del catch-all SSR para que gane la ruta.
-  const cafeOrienteHandler = (req: any, res: any) => {
-    const isDev = process.env.NODE_ENV !== "production";
-    const filePath = isDev
-      ? path.resolve(process.cwd(), "client", "public", "cafe-oriente", "index.html")
-      : path.resolve(__dirname, "public", "cafe-oriente", "index.html");
-    res.sendFile(filePath);
+  // /cafe-oriente: página estática con diseño propio, fuera de React. Debe
+  // registrarse antes del catch-all SSR para que gane la ruta.
+  // Una sola URL canónica (sin barra final): la variante con barra redirige.
+  // Express 5 trata /ruta y /ruta/ como la misma ruta, por eso se mira la URL.
+  const sinBarraFinal = (req: Request, res: Response, canonica: string) => {
+    if (req.originalUrl.split("?")[0].endsWith("/")) {
+      res.redirect(301, canonica);
+      return true;
+    }
+    return false;
   };
-  app.get("/cafe-oriente", cafeOrienteHandler);
-  app.get("/cafe-oriente/", cafeOrienteHandler);
+  app.get("/cafe-oriente", (req, res) => {
+    if (sinBarraFinal(req, res, "/cafe-oriente")) return;
+    res.sendFile(staticFile("cafe-oriente", "index.html"));
+  });
+  // URL antigua sin guion.
+  app.get(["/cafeoriente", "/cafeoriente/"], (_req, res) => res.redirect(301, "/cafe-oriente"));
 
-  // /cafeoriente (URL antigua, sin guion) -> 301 a /cafe-oriente. Consolida
-  // el canonical en una sola URL y evita contenido duplicado.
-  app.get(["/cafeoriente", "/cafeoriente/"], (_req, res) => {
-    res.redirect(301, "/cafe-oriente");
+  // /vasos: encuesta interna (noindex).
+  app.get("/vasos", (req, res) => {
+    if (sinBarraFinal(req, res, "/vasos")) return;
+    res.sendFile(staticFile("vasos", "index.html"));
   });
 
-  // Serve /vasos static HTML page
-  const vasosHandler = (req: any, res: any) => {
-    const isDev = process.env.NODE_ENV !== "production";
-    const filePath = isDev
-      ? path.resolve(process.cwd(), "client", "public", "vasos", "index.html")
-      : path.resolve(__dirname, "public", "vasos", "index.html");
-    res.sendFile(filePath);
-  };
-  app.get("/vasos", vasosHandler);
-  app.get("/vasos/", vasosHandler);
-
-  // Serve sitemap.xml directly
-  app.get("/sitemap.xml", (req, res) => {
-    res.setHeader("Content-Type", "application/xml");
+  // Archivos SEO generados desde shared/site.ts (una sola fuente de verdad).
+  app.get("/sitemap.xml", (_req, res) => {
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.send(buildSitemap());
+  });
+  app.get("/robots.txt", (_req, res) => {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.setHeader("Cache-Control", "public, max-age=86400");
-    res.send(sitemapXml);
+    res.send(buildRobots());
+  });
+  app.get("/llms.txt", (_req, res) => {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.send(buildLlmsTxt());
   });
 
-  // Serve robots.txt directly
-  app.get("/robots.txt", (req, res) => {
-    res.setHeader("Content-Type", "text/plain");
-    res.setHeader("Cache-Control", "public, max-age=86400");
-    res.send(robotsTxt);
-  });
-  // Contact form submission
+  // Formulario de contacto
   app.post("/api/contact", async (req, res) => {
     try {
-      const validatedData = insertContactMessageSchema.parse(req.body);
+      const { origen, ...validatedData } = contactPayloadSchema.parse(req.body);
       const message = await storage.createContactMessage(validatedData);
-      
-      // Send email notification to todovendingca@gmail.com
+
       const emailSent = await sendContactNotification({
         name: validatedData.name,
         email: validatedData.email,
         phone: validatedData.phone || undefined,
         company: validatedData.company || undefined,
-        message: validatedData.message
+        message: validatedData.message,
+        origen,
       });
-      
       if (!emailSent) {
         console.warn("Email notification failed but message was saved");
       }
-      
+
       res.status(201).json({ success: true, message });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json({ 
-          success: false, 
-          error: "Datos invalidos", 
-          details: error.errors 
-        });
+        res.status(400).json({ success: false, error: "Datos inválidos", details: error.errors });
       } else {
         console.error("Error creating contact message:", error);
-        res.status(500).json({ 
-          success: false, 
-          error: "Error interno del servidor" 
-        });
+        res.status(500).json({ success: false, error: "Error interno del servidor" });
       }
     }
   });
 
-  // Get all contact messages (for admin purposes)
+  // Lista de mensajes recibidos: uso interno, protegida con ADMIN_KEY.
+  // Antes estaba abierta y exponía nombres, correos y teléfonos de clientes.
   app.get("/api/contact", async (req, res) => {
+    if (!requireAdminKey(req, res)) return;
     try {
       const messages = await storage.getContactMessages();
       res.json(messages);
     } catch (error) {
       console.error("Error fetching contact messages:", error);
-      res.status(500).json({
-        success: false,
-        error: "Error interno del servidor"
-      });
+      res.status(500).json({ success: false, error: "Error interno del servidor" });
     }
   });
 
-  // === ENCUESTA DE VASOS (Café Oriente feedback) ===
+  // === ENCUESTA DE VASOS (Café Oriente) ===
 
   app.post("/api/encuesta-vasos", async (req, res) => {
     let validatedData;
@@ -218,19 +126,14 @@ export async function registerRoutes(
       validatedData = insertEncuestaVasosSchema.parse(req.body);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({
-          ok: false,
-          error: "Datos invalidos",
-          details: error.errors,
-        });
+        return res.status(400).json({ ok: false, error: "Datos inválidos", details: error.errors });
       }
       throw error;
     }
 
     // Se intenta guardar, pero un fallo de la base de datos NO debe hacer que
-    // se pierda la respuesta: el correo de aviso se envia igual y queda como
-    // copia. Al visitante nunca se le devuelve un error si su respuesta pudo
-    // conservarse por alguna via.
+    // se pierda la respuesta: el correo de aviso se envía igual y queda como
+    // copia.
     let encuesta = null;
     let guardadaEnBd = false;
     try {
@@ -256,67 +159,34 @@ export async function registerRoutes(
   });
 
   app.get("/api/encuesta-vasos/resumen", async (req, res) => {
-    // Si ADMIN_KEY no esta configurada, la comparacion "undefined !== undefined"
-    // daba falso y dejaba el endpoint ABIERTO a cualquiera sin cabecera. Hay que
-    // exigir que la clave exista en el entorno antes de comparar nada.
-    const claveEsperada = process.env.ADMIN_KEY;
-    if (!claveEsperada) {
-      console.error("ADMIN_KEY no configurada: se rechaza el acceso al resumen");
-      return res.status(503).json({ ok: false, error: "Servicio no configurado" });
-    }
-    const claveRecibida = req.headers["x-admin-key"];
-    if (typeof claveRecibida !== "string" || claveRecibida !== claveEsperada) {
-      return res.status(401).json({ ok: false, error: "No autorizado" });
-    }
+    if (!requireAdminKey(req, res)) return;
 
     try {
       const encuestas = await storage.getEncuestasVasos();
       const total = encuestas.length;
 
-      // Promedio general
-      const promedioGeneral = total > 0
-        ? Number((encuestas.reduce((s, e) => s + Number(e.calificacion), 0) / total).toFixed(2))
-        : 0;
+      const promedioGeneral =
+        total > 0 ? Number((encuestas.reduce((s, e) => s + Number(e.calificacion), 0) / total).toFixed(2)) : 0;
 
-      // Desglose por bebida
       const porBebida: Record<string, { cantidad: number; promedio: number }> = {};
       for (const e of encuestas) {
-        if (!porBebida[e.bebida]) {
-          porBebida[e.bebida] = { cantidad: 0, promedio: 0 };
-        }
+        if (!porBebida[e.bebida]) porBebida[e.bebida] = { cantidad: 0, promedio: 0 };
         porBebida[e.bebida].cantidad += 1;
         porBebida[e.bebida].promedio += Number(e.calificacion);
       }
       for (const key of Object.keys(porBebida)) {
-        porBebida[key].promedio = Number(
-          (porBebida[key].promedio / porBebida[key].cantidad).toFixed(2)
-        );
+        porBebida[key].promedio = Number((porBebida[key].promedio / porBebida[key].cantidad).toFixed(2));
       }
 
-      // Últimas 20 con comentario
       const ultimasConComentario = encuestas
         .filter((e) => e.comentario && e.comentario.trim().length > 0)
         .slice(0, 20)
-        .map((e) => ({
-          bebida: e.bebida,
-          calificacion: Number(e.calificacion),
-          comentario: e.comentario,
-          fecha: e.fecha,
-        }));
+        .map((e) => ({ bebida: e.bebida, calificacion: Number(e.calificacion), comentario: e.comentario, fecha: e.fecha }));
 
-      res.json({
-        ok: true,
-        total,
-        promedioGeneral,
-        porBebida,
-        ultimasConComentario,
-      });
+      res.json({ ok: true, total, promedioGeneral, porBebida, ultimasConComentario });
     } catch (error) {
       console.error("Error generando resumen de encuestas:", error);
-      res.status(500).json({
-        ok: false,
-        error: "Error interno del servidor",
-      });
+      res.status(500).json({ ok: false, error: "Error interno del servidor" });
     }
   });
 

@@ -1,170 +1,127 @@
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Dumbbell, Zap, Droplets } from "lucide-react";
-import { motion } from "framer-motion";
-import { SubpageHero } from "@/components/subpage-hero";
-import { SubpageFAQ } from "@/components/subpage-faq";
-import { SubpageCTA } from "@/components/subpage-cta";
-import { useSEO } from "@/lib/seo";
-import { SITE_URL, organizationSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { Zap, Dumbbell, Droplets } from "lucide-react";
+import { PageShell } from "@/components/layout/page-shell";
+import { SubpageHero } from "@/components/blocks/subpage-hero";
+import { KeyFacts } from "@/components/blocks/key-facts";
+import { SectionHeading } from "@/components/blocks/section-heading";
+import { StepsBlock } from "@/components/blocks/steps-block";
+import { FAQBlock } from "@/components/blocks/faq-block";
+import { CTABand } from "@/components/blocks/cta-band";
+import { faqsFor } from "@/content/faqs";
+import { CLIENTS } from "@shared/site";
+import { useSEO, seoFor } from "@/lib/seo";
+import { organizationSchema, breadcrumbSchema, serviceSchema, faqSchema, webPageSchema } from "@/lib/schema";
+import { HERO_IMAGE, HERO_SRCSET } from "@/components/blocks/hero-home";
 
-const faqs = [
-  {
-    question: "Que productos tienen las maquinas expendedoras para gimnasios?",
-    answer:
-      "Bebidas energeticas, barras de proteinas, agua, suplementos deportivos y snacks saludables, pensados para antes y despues del entrenamiento.",
-  },
-  {
-    question: "Tiene costo instalar una maquina de vending deportivo en mi gimnasio?",
-    answer:
-      "No. La instalacion es gratuita, al igual que la reposicion y el mantenimiento. Todo Vending CA se encarga de todo el proceso.",
-  },
-  {
-    question: "En que gimnasios de Lecheria ya tienen maquinas?",
-    answer:
-      "Actualmente Todo Vending CA tiene vending deportivo en Lion Gym y en la Cancha 3x3 del Parque Caribe, en Playa Cangrejo, Lecheria.",
-  },
+const PATH = "/vending-gimnasios";
+const faqs = faqsFor("gimnasios");
+const crumbs = [
+  { name: "Inicio", path: "/" },
+  { name: "Vending para gimnasios", path: PATH },
 ];
+const gyms = CLIENTS.filter((c) => c.type === "Gimnasio" || c.type === "Deportes");
 
 const productos = [
-  { icon: Zap, title: "Bebidas energeticas", desc: "Energia rapida antes y durante el entrenamiento, siempre frias." },
-  { icon: Dumbbell, title: "Barras de proteinas", desc: "Recuperacion muscular al alcance, sin salir del gimnasio." },
-  { icon: Droplets, title: "Hidratacion y snacks", desc: "Agua, bebidas refrescantes y snacks saludables a precios accesibles." },
-];
-
-const ubicaciones = [
-  { nombre: "Lion Gym", tipo: "Lecheria — bebidas energeticas, barras de proteinas y mas." },
-  { nombre: "Cancha 3x3 Parque Caribe", tipo: "Playa Cangrejo, Lecheria — snacks, proteinas y bebidas energeticas." },
+  { icon: Zap, title: "Bebidas energéticas", text: "Energía rápida antes y durante el entrenamiento, siempre frías." },
+  { icon: Dumbbell, title: "Barras de proteínas", text: "Recuperación muscular al alcance, sin salir del gimnasio." },
+  { icon: Droplets, title: "Hidratación y snacks", text: "Agua, bebidas refrescantes y snacks saludables a precios accesibles." },
 ];
 
 export default function VendingGimnasios() {
-  useSEO({
-    title: "Vending para Gimnasios | Bebidas Energéticas y Proteínas | Todo Vending CA",
-    description:
-      "Máquinas expendedoras para gimnasios en Anzoátegui: bebidas energéticas, barras de proteínas y snacks deportivos, con instalación gratuita y reposición incluida.",
-    path: "/vending-gimnasios",
-    jsonLd: [
+  useSEO(
+    seoFor(PATH, [
       organizationSchema,
-      breadcrumbSchema([
-        { name: "Inicio", path: "/" },
-        { name: "Vending para Gimnasios", path: "/vending-gimnasios" },
-      ]),
-      {
-        "@context": "https://schema.org",
-        "@type": "Service",
-        name: "Vending para Gimnasios",
-        serviceType: "Máquina Expendedora para Gimnasio",
-        provider: { "@id": `${SITE_URL}/#organization` },
-        areaServed: { "@type": "State", name: "Anzoátegui" },
-        audience: { "@type": "Audience", audienceType: "Gimnasios, Centros Deportivos, Deportistas" },
+      breadcrumbSchema(crumbs),
+      webPageSchema(PATH),
+      serviceSchema({
+        path: PATH,
+        name: "Vending deportivo para gimnasios",
+        serviceType: "Máquinas expendedoras para gimnasios",
         description:
-          "Máquinas expendedoras especializadas para gimnasios y centros deportivos: bebidas energéticas, barras de proteínas y suplementos, con instalación gratuita.",
-      },
+          "Máquinas expendedoras para gimnasios y centros deportivos en Anzoátegui con bebidas energéticas, barras de proteínas, agua y snacks saludables. Instalación gratuita y reposición incluida.",
+        audience: "Gimnasios, centros deportivos, deportistas",
+      }),
       faqSchema(faqs),
-    ],
-  });
+    ], { preloadImage: { href: HERO_IMAGE, imagesrcset: HERO_SRCSET, imagesizes: "(min-width: 1024px) 380px, 80vw" } }),
+  );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>
-        <SubpageHero
-          eyebrow="Vending deportivo"
-          titlePlain="Vending para Gimnasios en"
-          titleAccent="Anzoategui"
-          lead="Maquinas expendedoras especializadas para gimnasios y centros deportivos, con bebidas energeticas, barras de proteinas y snacks saludables, instalacion gratuita y reposicion constante."
-          ctaText="Solicitar vending para mi gimnasio"
-        />
+    <PageShell waKey="gimnasios" currentPath={PATH}>
+      <SubpageHero
+        eyebrow="Vending deportivo"
+        title={
+          <>
+            Vending para gimnasios: energéticas, proteínas e hidratación <span className="mark-accent">sin salir del gym</span>
+          </>
+        }
+        lead="Todo Vending CA instala máquinas expendedoras especializadas en gimnasios y centros deportivos de Anzoátegui: bebidas energéticas, barras de proteínas, agua y snacks saludables, con instalación gratuita y reposición según el consumo real."
+        waKey="gimnasios"
+        waLabel="Pedir vending para mi gimnasio"
+        breadcrumb={crumbs}
+        image={{ src: HERO_IMAGE, srcSet: HERO_SRCSET, alt: "Máquina expendedora de bebidas y snacks para gimnasios", width: 720, height: 935 }}
+      />
 
-        <section className="py-20 md:py-28">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="max-w-3xl mx-auto text-center mb-16"
-            >
-              <Badge className="mb-4" variant="secondary">Hidratacion y energia</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="text-foreground">Sin salir del</span>{" "}
-                <span className="text-primary">gimnasio</span>
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                Despues de entrenar, los atletas buscan hidratacion y proteina rapida. Nuestras maquinas de
-                vending deportivo se surten con productos pensados para ese momento, con reposicion frecuente
-                segun el consumo real del gimnasio, y sin costo ni gestion para el negocio.
-              </p>
-            </motion.div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {productos.map((p, i) => (
-                <motion.div
-                  key={p.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="h-full hover-elevate group">
-                    <CardContent className="pt-6">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                        <p.icon className="w-6 h-6 text-primary" />
-                      </div>
-                      <h3 className="font-semibold text-lg text-foreground mb-2">{p.title}</h3>
-                      <p className="text-muted-foreground text-sm">{p.desc}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+      <KeyFacts
+        summary="El vending deportivo de Todo Vending CA ya funciona en Lion Gym y en la Cancha 3x3 del Parque Caribe, en Playa Cangrejo, Lechería. Las máquinas se surten con productos para antes y después del entrenamiento y no tienen costo ni gestión para el gimnasio."
+        facts={[
+          { value: "$0", label: "Para el gimnasio" },
+          { value: `${gyms.length}`, label: "Espacios deportivos activos" },
+          { value: "24/7", label: "Disponibilidad" },
+          { value: "Frías", label: "Energéticas y agua" },
+          { value: "Pago Móvil", label: "Y tarjetas" },
+        ]}
+      />
 
-        <section className="py-20 md:py-28 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <Badge className="mb-4" variant="secondary">Prueba social</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="text-foreground">Actualmente</span>{" "}
-                <span className="text-primary">en</span>
-              </h2>
-            </motion.div>
-            <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
-              {ubicaciones.map((u, i) => (
-                <motion.div
-                  key={u.nombre}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="h-full hover-elevate">
-                    <CardContent className="pt-6">
-                      <h3 className="font-semibold text-foreground mb-1">{u.nombre}</h3>
-                      <p className="text-sm text-muted-foreground">{u.tipo}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+      <section className="py-20 md:py-28" aria-labelledby="productos-titulo">
+        <div className="container">
+          <SectionHeading
+            eyebrow="Qué llevan"
+            id="productos-titulo"
+            title={
+              <>
+                Lo que el cuerpo pide <span className="mark-accent">después de entrenar</span>
+              </>
+            }
+            lead="Reposición frecuente según lo que de verdad se consume en tu gimnasio, sin que tengas que ocuparte de nada."
+          />
+          <ul className="mt-12 grid gap-5 md:grid-cols-3">
+            {productos.map((p) => (
+              <li key={p.title} className="reveal card-soft p-6">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-navy text-white">
+                  <p.icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-5 text-lg font-semibold">{p.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-        <SubpageFAQ items={faqs} />
+      <section className="bg-muted/50 py-20 md:py-28" aria-labelledby="gyms-titulo">
+        <div className="container">
+          <SectionHeading eyebrow="Ya en servicio" id="gyms-titulo" title="Gimnasios y canchas con vending de Todo Vending CA" />
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2">
+            {gyms.map((c) => (
+              <li key={c.name} className="reveal card-soft p-6">
+                <p className="text-xs font-medium uppercase tracking-wider text-brand-orange">{c.type}</p>
+                <h3 className="mt-1 text-lg font-semibold">{c.name}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{c.note}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-        <SubpageCTA
-          title="Tienes un gimnasio o centro deportivo?"
-          text="Instalamos vending deportivo sin costo y sin compromisos."
-          ctaText="Solicitar Informacion"
-        />
-      </main>
-      <Footer />
-    </div>
+      <StepsBlock id="como-funciona-gimnasios" />
+
+      <FAQBlock items={faqs} title="Preguntas de gimnasios" waKey="gimnasios" />
+
+      <CTABand
+        title="¿Tienes un gimnasio o centro deportivo?"
+        text="Instalamos vending deportivo sin costo y sin compromisos. Escríbenos y coordinamos la visita."
+        waKey="gimnasios"
+        waLabel="Pedir vending para mi gimnasio"
+      />
+    </PageShell>
   );
 }
