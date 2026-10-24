@@ -449,7 +449,7 @@ nav{
 .nav-links{display:flex;gap:1.4rem;align-items:center;list-style:none}
 .nav-links a{
   text-decoration:none;font-size:.82rem;font-weight:500;color:rgba(255,246,234,.88);
-  transition:color .2s;
+  transition:color .2s;white-space:nowrap;
 }
 .nav-links a:hover,.nav-links a:focus-visible{color:var(--dorado)}
 .nav-cta{
@@ -463,8 +463,16 @@ nav{
 .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
 .nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
 .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-@media(max-width:860px){
+/* La barra completa mide ~1060px: por debajo de 1180 ya no cabe y los enlaces
+   partian en dos lineas. Se aprieta y se oculta el enlace al sitio (sigue en
+   el pie de pagina); por debajo de 960 pasa al menu hamburguesa. */
+@media(max-width:1180px){
+  .nav-links{gap:1rem}
+  .nav-li-sitio{display:none}
+}
+@media(max-width:960px){
   .nav-toggle{display:block}
+  .nav-li-sitio{display:block}
   .nav-links{
     position:fixed;top:60px;left:0;right:0;
     flex-direction:column;gap:0;
@@ -472,7 +480,9 @@ nav{
     border-bottom:1px solid rgba(242,183,73,.25);
     max-height:0;overflow:hidden;transition:max-height .35s ease;
   }
-  .nav-links.open{max-height:480px}
+  /* tope por el alto de pantalla: en un telefono grande en horizontal (~915x412)
+     el panel no cabe y el boton "Pedir mi estacion" quedaba fuera */
+  .nav-links.open{max-height:min(480px,calc(100vh - 60px));overflow-y:auto}
   .nav-links li{width:100%;text-align:center}
   .nav-links a{display:block;padding:.9rem;font-size:1rem}
   .nav-links .nav-cta{margin:.8rem auto .6rem;display:inline-block;padding:.7rem 1.6rem}
@@ -991,13 +1001,6 @@ h1 em{font-style:italic;color:var(--dorado)}
   transition:transform .4s ease;
 }
 .maquina-visual:hover .maquina-foto{transform:translateY(-6px) scale(1.015)}
-.maquina-sello{
-  position:absolute;left:1.4rem;bottom:1.4rem;z-index:2;
-  background:rgba(36,18,8,.7);border:1px solid rgba(242,183,73,.35);backdrop-filter:blur(6px);
-  color:var(--crema);border-radius:999px;padding:.5rem .95rem;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
-  display:inline-flex;align-items:center;gap:.5rem;
-}
-.maquina-sello::before{content:"";width:8px;height:8px;border-radius:50%;background:#7ddb6f;box-shadow:0 0 10px #7ddb6f}
 .specs{display:grid;gap:0;border:1px solid var(--linea);border-radius:var(--radius);overflow:hidden;background:#fff;margin-top:1.6rem}
 .spec{display:grid;grid-template-columns:190px 1fr;gap:1rem;padding:1rem 1.4rem;border-bottom:1px solid #f1e6d1}
 .spec:last-child{border-bottom:none}
@@ -1193,7 +1196,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
       <li><a href="#empresas">Empresas</a></li>
       <li><a href="#faq">Preguntas</a></li>
       <li><a class="nav-cta" href="https://wa.me/584146164177?text=Hola%2C%20quiero%20pedir%20una%20estaci%C3%B3n%20Caf%C3%A9%20Oriente%20para%20mi%20empresa" target="_blank" rel="noopener" data-lugar="nav">Pedir mi estación</a></li>
-      <li><a class="nav-sitio" href="/">Todo Vending CA ↗</a></li>
+      <li class="nav-li-sitio"><a class="nav-sitio" href="/">Todo Vending CA ↗</a></li>
     </ul>
   </div>
 </nav>
@@ -1257,7 +1260,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
                src="/cafe-oriente/assets/mocachino-v2.mp4"
                poster="/cafe-oriente/assets/poster-v1.webp"
                width="720" height="1280"
-               muted playsinline preload="metadata"
+               muted playsinline preload="auto"
                disablepictureinpicture
                aria-label="Un mocachino Café Oriente se arma en el aire: un hilo de chocolate atraviesa el espresso y la leche, la espuma corona el vaso y se enciende el logo"></video>
         <noscript>
@@ -1417,7 +1420,6 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
     <div class="maquina-grid">
       <div class="maquina-visual reveal">
         <img class="maquina-foto" src="/cafe-oriente/assets/maquina-v1.webp" width="713" height="1431" loading="lazy" decoding="async" alt="Estación de café Bianchi LEI 400 personalizada con la marca Café Oriente">
-        <span class="maquina-sello">En servicio · Clínica Anzoátegui</span>
       </div>
       <div class="reveal">
         <dl class="specs">
@@ -1427,6 +1429,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
           <div class="spec"><dt>Sistema de café</dt><dd>Espresso con molino de grano integrado</dd></div>
           <div class="spec"><dt>Operación</dt><dd>100% automática y autónoma, 24/7</dd></div>
           <div class="spec"><dt>Medios de pago</dt><dd>100% digitales, sin efectivo</dd></div>
+          <div class="spec"><dt>Ya en servicio</dt><dd>Clínica Anzoátegui, Lechería</dd></div>
         </dl>
         <div class="chip-lista">
           <span class="chip">Molienda por bebida</span>
@@ -1890,23 +1893,9 @@ document.addEventListener('click', function(e){
   video.addEventListener('durationchange', iniciar);
   if (video.readyState >= 1) iniciar();   // pudo cargar antes de engancharse
 
-  // La descarga completa del video (3,6 MB) espera al primer gesto: quien solo
-  // mira y se va, o salta directo al contacto, no la paga. El poster tapa el
-  // hueco mientras llega el video.
-  var cargado = false;
-  function cargarVideo(){
-    if (cargado || roto) return;
-    cargado = true;
-    if (video.preload !== 'auto'){
-      video.preload = 'auto';
-      try { video.load(); } catch(e){}
-    }
-  }
-  function armarCarga(){
-    ['touchstart','wheel','scroll','keydown','pointerdown'].forEach(function(ev){
-      window.addEventListener(ev, cargarVideo, {passive:true, once:true});
-    });
-  }
+  // El video se descarga desde que abre la pagina (preload="auto"), como en el
+  // hero aprobado: esperar al primer gesto lo dejaba congelado al empezar a
+  // bajar en datos moviles lentos.
 
   // iOS: desbloquea el seek con un play/pause silencioso
   function desbloquear(){
@@ -2049,7 +2038,8 @@ document.addEventListener('click', function(e){
 
   // Si el video no se puede reproducir (formato no soportado, archivo roto),
   // se muestra el vaso terminado en vez de un recuadro negro. Los textos
-  // siguen cambiando con el scroll sobre esa imagen.
+  // siguen cambiando con el scroll sobre esa imagen. Un corte de red a mitad
+  // de descarga no cuenta: el tramo ya bajado sigue funcionando con el scroll.
   function mostrarFinal(){
     if (roto) return;
     roto = true;
@@ -2059,7 +2049,9 @@ document.addEventListener('click', function(e){
     img.alt = 'Mocachino Café Oriente terminado, con espuma de leche y cacao espolvoreado.';
     if (video.parentNode) video.parentNode.replaceChild(img, video);
   }
-  video.addEventListener('error', mostrarFinal);
+  video.addEventListener('error', function(){
+    if (video.readyState < 2) mostrarFinal();   // sin ningun cuadro que mostrar
+  });
 
   if (reduce){
     // Sin animacion no hace falta el video: se cancela su descarga.
@@ -2075,7 +2067,6 @@ document.addEventListener('click', function(e){
     pasos.forEach(function(el){ el.classList.add('on'); });
     cierre.classList.add('on');
   } else {
-    armarCarga();
     window.addEventListener('scroll', aplicar, {passive:true});
     window.addEventListener('resize', alRedimensionar);
     window.addEventListener('orientationchange', alRedimensionar);

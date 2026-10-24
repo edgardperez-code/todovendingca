@@ -27,8 +27,8 @@ const razones = [
   },
   {
     icon: ShieldCheck,
-    title: "Higiene y cero efectivo",
-    text: "Pagos con Pago Móvil y tarjetas, productos sellados y limpieza a cargo de Todo Vending CA. Nadie del personal de la clínica maneja dinero ni inventario.",
+    title: "Higiene, sin manejar dinero",
+    text: "Pagos con Pago Móvil, tarjetas o efectivo, productos sellados y limpieza a cargo de Todo Vending CA. Nadie del personal de la clínica maneja dinero ni inventario.",
   },
   {
     icon: Coffee,
@@ -68,11 +68,11 @@ export default function VendingClinicas() {
         waKey="clinicas"
         waLabel="Pedir una máquina para mi clínica"
         breadcrumb={crumbs}
-        image={{ src: "/cafe-oriente/assets/maquina-v1.webp", alt: "Estación de café Café Oriente instalada en una clínica", width: 713, height: 1431 }}
+        image={{ src: "/cafe-oriente/assets/maquina-v1.webp", alt: "Estación de café Bianchi LEI 400 personalizada con la marca Café Oriente", width: 713, height: 1431 }}
       />
 
       <KeyFacts
-        summary="Todo Vending CA ya opera máquinas expendedoras en la Clínica Anzoátegui y la Clínica Zambrano, en Lechería. La Clínica Anzoátegui cuenta además con una estación de café en grano Café Oriente. Las máquinas funcionan las 24 horas, aceptan pagos digitales y no tienen costo para la institución."
+        summary="Todo Vending CA ya opera máquinas expendedoras en la Clínica Anzoátegui y la Clínica Zambrano, en Lechería. La Clínica Anzoátegui cuenta además con una estación de café en grano Café Oriente. Las máquinas funcionan las 24 horas, aceptan Pago Móvil, tarjetas y efectivo, y no tienen costo para la institución."
         facts={[
           { value: "24/7", label: "En servicio" },
           { value: "$0", label: "Para la clínica" },

@@ -2,8 +2,10 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 
 export function ThemeToggle({ testId = "button-theme-toggle" }: { testId?: string }) {
-  const { theme, setTheme } = useTheme();
-  const next = theme === "dark" ? "light" : "dark";
+  const { resolvedTheme, setTheme } = useTheme();
+  // Se decide por el tema visible: con "system" y el teléfono en oscuro, el
+  // primer toque tiene que pasar a claro, no "a oscuro" (que no cambiaba nada).
+  const next = resolvedTheme === "dark" ? "light" : "dark";
   return (
     <button
       type="button"

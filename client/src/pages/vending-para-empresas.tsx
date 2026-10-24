@@ -23,7 +23,7 @@ const incluye = [
   { title: "Snacks y bebidas frías", text: "Marcas conocidas, opciones saludables y agua, siempre abastecidas." },
   { title: "Café en grano (Café Oriente)", text: "Capuchino, mocachino, café con leche y más, en menos de 40 segundos, sin efectivo." },
   { title: "Selección a medida", text: "Ajustamos los productos a lo que tu equipo consume de verdad." },
-  { title: "Pagos sin caja chica", text: "Pago Móvil y tarjetas: nadie en tu empresa maneja dinero." },
+  { title: "Pagos sin caja chica", text: "Pago Móvil, tarjetas o efectivo: nadie en tu empresa maneja dinero ni lleva caja." },
   { title: "Monitoreo remoto", text: "Sabemos cuándo reponer antes de que alguien se quede sin su café." },
   { title: "Atención local", text: "Equipo con sede en Lechería; reposición y servicio técnico cercanos." },
 ];

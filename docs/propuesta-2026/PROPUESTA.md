@@ -53,8 +53,8 @@ WhatsApp por página) y `ROUTES` (path, título ≤ 66 chars, descripción ≤ 1
 lastmod, prioridad). De aquí salen header, footer, 404, sitemap, robots y llms.txt.
 
 ### Páginas React (SSR)
-- `/` (home): hero, `KeyFacts` (resumen `speakable`), servicios, cómo funciona, Café Oriente con foto
-  real, segmentos + clientes, beneficios, FAQ (7), contacto con `?origen=`.
+- `/` (home): hero, `KeyFacts` (resumen `speakable`), servicios, cómo funciona, Café Oriente con la
+  imagen de la estación (render), segmentos + clientes, beneficios, FAQ (7), contacto con `?origen=`.
 - `/vending-para-empresas`, `/vending-gimnasios`, `/maquinas-expendedoras-lecheria`: rehechas con la
   misma estructura (`SubpageHero` con breadcrumb, `KeyFacts`, contenido propio, clientes, FAQ, `CTABand`).
 - `/vending-para-clinicas` (nueva), `/preguntas-frecuentes` (nueva, 17 preguntas con `FAQPage`).
@@ -66,8 +66,8 @@ lastmod, prioridad). De aquí salen header, footer, 404, sitemap, robots y llms.
   `speakable`.
 
 ### Café Oriente (`client/public/cafe-oriente/index.html`)
-- Hero `.mocha` intacto (curva, MOMENTOS, 450vh, 24 fps, textos, video). Solo: `preload="metadata"` +
-  descarga completa al primer gesto; sin descarga con "reducir movimiento"; `error` → `final-v1.webp`.
+- Hero `.mocha` intacto (curva, MOMENTOS, 450vh, 24 fps, textos, video, `preload="auto"`). Solo: se cancela
+  la descarga con "reducir movimiento"; `error` sin ningún cuadro mostrado → `final-v1.webp`.
 - Rediseño del resto: `#resumen`, `#proceso`, `#menu` (tarjetas con ficha compartida, `aria-expanded`,
   Escape), `#maquina`, `#pagos`, `#empresas` (instalación gratuita, 3 pasos, CTA con WhatsApp/formulario/
   tel/mail, clientes), `#faq` (10 = FAQPage 10), footer con NAP y enlaces internos, barra fija de
@@ -94,6 +94,9 @@ lastmod, prioridad). De aquí salen header, footer, 404, sitemap, robots y llms.
 | Café Oriente | main | 84 | 94 | 96 | 100 | 3,2 s | 3.745 KB |
 | Café Oriente | propuesta | 94 | 98 | 100 | 100 | 2,9 s | 336 KB |
 | Clínicas (nueva) | propuesta | 74 | 99 | 100 | 100 | 4,8 s | 729 KB |
+
+El peso de Café Oriente (336 KB) se midió con la descarga del video diferida al primer gesto, que se
+revirtió (ver sección 8): con `preload="auto"` vuelve a incluir los ~3,6 MB del video, como en main.
 
 JS del cliente: 592 KB → 413 KB (126 KB gzip). CSS: 83 KB → 43 KB (8 KB gzip). Las cifras locales
 no son comparables con producción (Railway comprime en el borde y la red es real); sirven para
@@ -127,3 +130,22 @@ npm ci && npm run check && npm run build
 PORT=5101 NODE_ENV=production ADMIN_KEY=clave node dist/index.cjs
 curl -s http://127.0.0.1:5101/sitemap.xml
 ```
+
+## 8. Correcciones tras la revisión (24/10/2026)
+
+- Café Oriente: el video vuelve a `preload="auto"` (el hero aprobado); esperar al primer gesto lo
+  dejaba congelado en datos lentos. El respaldo `final-v1.webp` solo entra si el video no mostró
+  ningún cuadro.
+- Café Oriente: la barra superior ya no parte los enlaces en dos líneas entre 861 y 1180 px; se
+  aprieta, oculta "Todo Vending CA ↗" (sigue en el pie) y pasa a hamburguesa por debajo de 960 px.
+- Pagos: como en main, las máquinas aceptan Pago Móvil, tarjetas y efectivo; solo Café Oriente es
+  100 % sin efectivo. Se quitó "cero efectivo" de Clínicas y "según el modelo" del resto.
+- La imagen de la estación es un render: se quitó el sello "En servicio · Clínica Anzoátegui"
+  encima de ella y el alt "instalada en una clínica"; el dato pasa a la ficha técnica.
+- robots.txt: las mismas reglas para "*" y para los bots con grupo propio; `/vasos` ya no se
+  bloquea (tiene noindex y Google necesita leerlo).
+- Botón de tema: decide por el tema visible (con "system" en un teléfono oscuro el primer toque no
+  hacía nada) y no aplica "system" antes de leer la preferencia guardada.
+- Teléfono: la barra fija de WhatsApp tapaba el final del pie (y el botón de tema); el hueco
+  `pb-24` pasa de `<main>` al `<footer>`. El menú hamburguesa de Café Oriente se limita al alto de
+  la pantalla con scroll propio (teléfonos grandes en horizontal).

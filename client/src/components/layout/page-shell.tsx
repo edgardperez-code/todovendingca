@@ -18,7 +18,7 @@ export function PageShell({
   return (
     <div className="flex min-h-screen flex-col bg-background" data-testid={testId}>
       <SiteHeader waKey={waKey} currentPath={currentPath} />
-      <main className="flex-1 pb-24 lg:pb-0">{children}</main>
+      <main className="flex-1">{children}</main>
       <SiteFooter />
       <StickyCTA waKey={waKey} />
     </div>

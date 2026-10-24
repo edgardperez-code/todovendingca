@@ -9,7 +9,9 @@ const pages = ROUTES.filter((r) => !r.hidden && r.path !== "/");
 
 export function SiteFooter() {
   return (
-    <footer className="surface-navy mt-auto" data-testid="footer">
+    // pb-24 bajo lg: hueco para la barra fija de WhatsApp (StickyCTA), que si no
+    // tapa el final del pie, el botón de tema incluido.
+    <footer className="surface-navy mt-auto pb-24 lg:pb-0" data-testid="footer">
       <div className="container py-14 md:py-20">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-5">

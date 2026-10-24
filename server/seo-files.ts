@@ -61,18 +61,23 @@ const AI_BOTS = [
   "MistralAI-User",
 ];
 
+// Un rastreador con grupo propio ignora el grupo "*" (RFC 9309), así que las
+// mismas reglas van en los dos grupos. /vasos no se bloquea: tiene noindex, y
+// si se bloqueara Google no podría leerlo y podría indexar la URL desnuda.
+const RULES = `Allow: /
+Disallow: /api/
+Disallow: /registro`;
+
 export function buildRobots(): string {
-  const bots = AI_BOTS.map((b) => `User-agent: ${b}\nAllow: /`).join("\n\n");
+  const bots = AI_BOTS.map((b) => `User-agent: ${b}`).join("\n");
   return `# Todo Vending CA — ${SITE_URL}
 # Sitio abierto a buscadores y a rastreadores de motores de IA (SEO + GEO/AIO)
 
 User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /registro
-Disallow: /vasos
+${RULES}
 
 ${bots}
+${RULES}
 
 # Resumen del negocio para modelos de IA: ${SITE_URL}/llms.txt
 
@@ -107,7 +112,7 @@ export function buildLlmsTxt(): string {
 - **Café Oriente (café en grano):** estación automática Bianchi LEI 400 con molino integrado; muele el grano en el momento del pedido y sirve 10 bebidas en menos de 40 segundos, 100 % sin efectivo.
 - **Vending deportivo:** bebidas energéticas, barras de proteínas e hidratación para gimnasios.
 - **Instalación gratuita, reposición y mantenimiento incluidos:** el negocio anfitrión no compra, no alquila ni paga cuotas.
-- **Pagos:** Pago Móvil, tarjetas de débito y crédito y, según el modelo, efectivo.
+- **Pagos:** Pago Móvil, tarjetas de débito y crédito y efectivo (la estación Café Oriente es 100 % sin efectivo).
 
 ## Cómo funciona (para un negocio)
 
