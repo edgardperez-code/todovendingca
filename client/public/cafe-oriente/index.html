@@ -35,9 +35,10 @@
 <meta name="twitter:title" content="Café Oriente: café en grano recién molido, 24/7">
 <meta name="twitter:description" content="Estación automática Bianchi LEI 400 con molino de grano integrado. 10 bebidas en menos de 40 segundos, sin efectivo. Instalación gratuita para empresas y clínicas en Anzoátegui.">
 <meta name="twitter:image" content="https://www.todovendingca.com/cafe-oriente/og-image-v2.jpg">
-<!-- Fuentes propias (sin Google Fonts): se precargan las dos del titular -->
+<!-- Fuentes propias (sin Google Fonts): se precargan las tres (titular, itálica del titular y texto) para que el hero pinte sin saltos -->
 <link rel="preload" as="font" type="font/woff2" href="/cafe-oriente/assets/fraunces-latin-opsz-v1.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/cafe-oriente/assets/fraunces-latin-opsz-italic-v1.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/cafe-oriente/assets/sora-latin-wght-v1.woff2" crossorigin>
 <link rel="preload" as="image" href="/cafe-oriente/assets/poster-v1.webp" fetchpriority="high">
 <script type="application/ld+json">
 {
@@ -381,6 +382,7 @@
   --marron:#3D2314;
   --naranja:#E06A3B;
   --naranja-texto:#B5481A;
+  --naranja-boton:#BF4F1F; /* blanco sobre este naranja = 4,8:1 (AA en texto normal) */
   --dorado:#F2B749;
   --dorado-tenue:rgba(242,183,73,.28);
   --crema:#FFF6EA;
@@ -406,6 +408,7 @@ a{color:inherit}
 button{font:inherit;color:inherit}
 ::selection{background:var(--dorado);color:var(--marron)}
 :focus-visible{outline:2px solid var(--dorado);outline-offset:3px}
+.clara :focus-visible,#resumen :focus-visible,.ficha-pedido :focus-visible{outline-color:var(--marron)}
 .visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* ---------- utilidades de lámina ---------- */
@@ -415,7 +418,7 @@ button{font:inherit;color:inherit}
 .lamina.oscura{background:var(--espresso);color:var(--crema)}
 .lamina.oscura::before{background-image:var(--grano);opacity:.12;mix-blend-mode:soft-light}
 .lamina.clara{background:var(--crema);color:var(--tinta)}
-.lam-cab{display:flex;align-items:center;gap:1rem;font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--naranja-texto);font-weight:600}
+.lam-cab{display:flex;align-items:center;gap:1rem;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--naranja-texto);font-weight:600}
 .lam-cab b{font-family:var(--font-display);font-style:italic;font-weight:600;text-transform:none;letter-spacing:.04em;font-size:1rem;color:var(--marron);white-space:nowrap}
 .lam-cab::after{content:"";flex:1;height:1px;background:var(--regla)}
 .oscura .lam-cab{color:var(--dorado)}
@@ -429,15 +432,15 @@ button{font:inherit;color:inherit}
 .oscura .lead{color:rgba(255,246,234,.78)}
 .lead strong{color:var(--marron);font-weight:600}
 .oscura .lead strong{color:var(--crema)}
-.pie-lam{margin-top:2.4rem;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:#7a6756}
+.pie-lam{margin-top:2.4rem;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#7a6756}
 .oscura .pie-lam{color:rgba(242,183,73,.8)}
 .pie-lam b{font-family:var(--font-display);font-style:italic;font-weight:600;text-transform:none;letter-spacing:.04em;font-size:.88rem;color:var(--marron)}
 .oscura .pie-lam b{color:var(--dorado)}
 
 /* ---------- botones ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;min-height:44px;padding:.8rem 1.6rem;border-radius:999px;text-decoration:none;font-weight:600;font-size:.9rem;transition:transform .2s,background .2s,border-color .2s,color .2s;cursor:pointer;border:0;background:none}
-.btn-primary{background:var(--naranja);color:#fff;box-shadow:0 10px 30px rgba(224,106,59,.28)}
-.btn-primary:hover{background:#c85527;transform:translateY(-2px)}
+.btn-primary{background:var(--naranja-boton);color:#fff;box-shadow:0 10px 30px rgba(191,79,31,.3)}
+.btn-primary:hover{background:var(--naranja-texto);transform:translateY(-2px)}
 .btn-ghost{border:1px solid rgba(255,246,234,.4);color:var(--crema)}
 .btn-ghost:hover{border-color:var(--dorado);color:var(--dorado);transform:translateY(-2px)}
 .btn-dark{border:1px solid rgba(43,23,9,.35);color:var(--marron)}
@@ -454,13 +457,13 @@ nav.barra{position:fixed;inset:0 0 auto 0;z-index:50;background:rgba(26,13,4,.72
 .brand{display:flex;align-items:center;gap:.7rem;text-decoration:none;color:var(--crema)}
 .brand svg{width:34px;height:34px}
 .brand-name{font-family:var(--font-display);font-weight:600;font-size:1.1rem;letter-spacing:.02em;line-height:1.1}
-.brand-name small{display:block;font-family:var(--font-body);font-weight:400;font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dorado)}
+.brand-name small{display:block;font-family:var(--font-body);font-weight:400;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado)}
 .nav-links{display:flex;gap:1.4rem;align-items:center;list-style:none}
 .nav-links a{text-decoration:none;font-size:.82rem;font-weight:500;color:rgba(255,246,234,.88);transition:color .2s;white-space:nowrap}
 .nav-links a:hover,.nav-links a:focus-visible{color:var(--dorado)}
-.nav-cta{background:var(--naranja);color:#fff!important;padding:.55rem 1.1rem;border-radius:999px;font-weight:600!important;transition:background .2s,transform .2s}
-.nav-cta:hover{background:#c85527;transform:translateY(-1px)}
-.nav-sitio{font-size:.72rem!important;color:rgba(255,246,234,.72)!important;border-left:1px solid rgba(242,183,73,.3);padding-left:1.2rem}
+.nav-cta{background:var(--naranja-boton);color:#fff!important;padding:.55rem 1.1rem;border-radius:999px;font-weight:600!important;transition:background .2s,transform .2s}
+.nav-cta:hover{background:var(--naranja-texto);transform:translateY(-1px)}
+.nav-sitio{font-size:.76rem!important;color:rgba(255,246,234,.72)!important;border-left:1px solid rgba(242,183,73,.3);padding-left:1.2rem}
 .nav-toggle{display:none;background:none;border:1px solid rgba(242,183,73,.4);border-radius:10px;padding:.55rem .7rem;cursor:pointer;min-width:44px;min-height:44px}
 .nav-toggle span{display:block;width:20px;height:2px;background:var(--dorado);margin:4px 0;border-radius:2px;transition:transform .25s,opacity .25s}
 .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
@@ -539,13 +542,13 @@ nav.barra{position:fixed;inset:0 0 auto 0;z-index:50;background:rgba(26,13,4,.72
 /* --- columna izquierda: título / corte --- */
 .lam-titulo,.lam-corte{
   position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
-  opacity:0;transform:translateY(22px);pointer-events:none;
-  transition:opacity .5s ease,transform .55s cubic-bezier(.2,.8,.2,1);
+  opacity:0;transform:translateY(22px);pointer-events:none;visibility:hidden;
+  transition:opacity .5s ease,transform .55s cubic-bezier(.2,.8,.2,1),visibility 0s .5s;
 }
-.lam-titulo.on,.lam-corte.on{opacity:1;transform:none;pointer-events:auto}
-.kicker{display:block;font-size:.66rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--dorado);margin-bottom:1.2rem;line-height:1.5}
+.lam-titulo.on,.lam-corte.on{opacity:1;transform:none;pointer-events:auto;visibility:visible;transition:opacity .5s ease,transform .55s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.kicker{display:block;font-size:.72rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--dorado);margin-bottom:1.2rem;line-height:1.5}
 .kicker::before{content:"";display:inline-block;width:28px;height:1px;background:var(--dorado);vertical-align:middle;margin-right:.7rem}
-@media(max-width:900px){.solo-esc{display:none}}
+@media(max-width:1180px){.solo-esc{display:none}}
 h1{font-family:var(--font-display);font-weight:500;font-variation-settings:"opsz" 144;font-size:clamp(2rem,3.5vw,3.3rem);line-height:1.02;letter-spacing:-.015em;max-width:14ch}
 h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .lam-formula{margin-top:.9rem;font-family:var(--font-display);font-style:italic;font-size:clamp(.98rem,1.25vw,1.15rem);color:rgba(255,246,234,.82);letter-spacing:.01em;line-height:1.4}
@@ -556,15 +559,15 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .lam-def{max-width:40ch;margin:0 0 1.6rem;font-size:.8rem;line-height:1.5;color:#d9c7b0;border-left:1px solid var(--dorado);padding-left:.8rem}
 .lam-def b{color:var(--dorado);font-weight:600}
 .hero-ctas{display:flex;gap:.8rem;flex-wrap:wrap}
-.lam-indice{margin-top:1.8rem;display:flex;gap:.9rem;align-items:center;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:#bda78e}
+.lam-indice{margin-top:1.8rem;display:flex;flex-wrap:wrap;gap:.4rem .9rem;align-items:center;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:#bda78e}
 .lam-indice i{font-style:normal;font-family:var(--font-display);color:var(--dorado);font-weight:600;letter-spacing:.05em}
 
 /* --- fig. 2: corte transversal del vaso --- */
 .lam-corte{align-items:flex-start}
-.corte-cap{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:#d9a53f;margin-bottom:.4rem}
+.corte-cap{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:#d9a53f;margin-bottom:.4rem}
 .corte-cap b{font-family:var(--font-display);font-style:italic;font-weight:600;text-transform:none;letter-spacing:.04em;font-size:.82rem;color:var(--dorado);margin-right:.5rem}
 .corte-svg{width:min(100%,340px);height:auto;display:block;overflow:visible}
-.corte-svg .cap-pct,.corte-svg .cap-nom{font-family:var(--font-body);font-size:10.5px;fill:#b9a68f;letter-spacing:.08em;transition:fill .4s,font-weight .2s}
+.corte-svg .cap-pct,.corte-svg .cap-nom{font-family:var(--font-body);font-size:12px;fill:#b9a68f;letter-spacing:.08em;transition:fill .4s,font-weight .2s}
 .corte-svg .cap-nom{font-family:var(--font-display);font-style:italic;font-size:13.5px;letter-spacing:0;fill:#b9a68f}
 .corte-svg .cap-tick{stroke:rgba(242,183,73,.35);stroke-width:1;transition:stroke .4s}
 .corte-svg g.on .cap-pct{fill:var(--dorado)}
@@ -579,6 +582,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .corte-sello{display:inline-flex;align-items:center;gap:.5rem;margin:.35rem 0 0;padding:.3rem .8rem;border:1px solid var(--dorado);border-radius:999px;font-family:var(--font-display);font-style:italic;font-size:.9rem;color:var(--dorado);opacity:0;transform:scale(.9) rotate(-3deg);transition:opacity .35s,transform .45s cubic-bezier(.3,1.4,.4,1)}
 .corte-sello.on{opacity:1;transform:none}
 .corte-nota{margin-top:.8rem;font-size:.78rem;line-height:1.5;color:#cbb9a2;font-weight:300;max-width:36ch}
+.corte-activa{display:none}   /* solo en teléfono: dato de la capa activa bajo el mini-corte */
 .corte-nota b{color:var(--dorado);font-weight:600}
 
 /* --- el espécimen --- */
@@ -588,8 +592,8 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
           mask-image:radial-gradient(ellipse 78% 76% at 50% 50%, #000 54%, rgba(0,0,0,0) 100%);
 }
 .lam-taza video,.lam-taza img.lam-img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:50% 0;will-change:transform}
-/* destello anamórfico: se enciende con el sello del vaso (solo cambia opacidad) */
-.lam-destello{position:absolute;left:-10%;right:-10%;top:68%;height:3px;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(255,232,170,.95) 35%,#fff 50%,rgba(255,232,170,.95) 65%,transparent);box-shadow:0 0 28px 10px rgba(242,183,73,.45)}
+/* destello: una luz suave sobre el sello del vaso cuando se enciende (solo cambia opacidad) */
+.lam-destello{position:absolute;left:12%;right:12%;top:74%;height:160px;margin-top:-80px;pointer-events:none;opacity:0;border-radius:50%;background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(255,236,190,.75),rgba(242,183,73,.32) 45%,transparent 72%);filter:blur(14px);mix-blend-mode:screen}
 /* portada: MOCA / CHINO como paths SVG (sin medir fuentes) que se disuelven en el espécimen */
 .lam-portada{position:absolute;z-index:5;grid-column:2/4;grid-row:1;align-self:center;justify-self:stretch;width:100%;height:calc(var(--col-video) * 16 / 9);max-height:100%;pointer-events:none;opacity:0}
 .lam-portada svg{width:100%;height:100%;overflow:visible}
@@ -602,12 +606,11 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .lam-lineas circle.pt{fill:var(--dorado)}
 .lam-lineas circle.aro{fill:none;stroke:var(--dorado);stroke-width:1;opacity:.55}
 
-/* --- columna derecha: rótulos (orden anatómico, numerados por orden de aparición) --- */
+/* --- columna derecha: rótulos 01→05 en orden de aparición --- */
 .lam-rotulos{position:relative;z-index:6;height:calc(var(--col-video) * 16 / 9);max-height:100%;display:flex;flex-direction:column;padding:0;max-width:390px;opacity:0;transition:opacity .5s ease}
 .lam-rotulos.ve{opacity:1}
-.rot-leyenda{order:9;margin-top:auto;padding:.45rem 0 0 1.15rem;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:#bda78e;white-space:nowrap}
 .rot{position:relative;flex:1 1 0;min-height:0;padding:.3rem 0 0 1.15rem;border-left:1px solid rgba(242,183,73,.16);opacity:.52;transition:opacity .45s ease}
-.rot.on{opacity:1;z-index:2}
+.rot.on{opacity:1;z-index:2;flex:0 0 auto}
 .rot.hecho{opacity:.8}
 .rot-punto{position:absolute;left:-4.5px;top:.9rem;width:8px;height:8px;border-radius:50%;border:1px solid var(--dorado);background:var(--fondo);transition:background .3s}
 .rot.on .rot-punto,.rot.hecho .rot-punto{background:var(--dorado)}
@@ -619,32 +622,35 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .rot-nombre em{font-style:italic;color:var(--dorado)}
 .rot-cuerpo{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
 .rot.on .rot-cuerpo{opacity:1;transform:none}
-.rot-txt{font-size:.8rem;line-height:1.45;color:#d6c6b1;font-weight:300;max-width:34ch;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.rot-dato{display:inline-flex;align-items:center;gap:.5rem;margin-top:.4rem;padding:.22rem .65rem;border-radius:999px;border:1px solid rgba(242,183,73,.3);background:rgba(26,13,4,.85);font-size:.68rem;font-weight:500;color:#eadcc8}
-.rot-dato b{color:var(--dorado);font-weight:600}
+/* cada rótulo lleva dos versiones del texto: la larga (escritorio) y la corta
+   (teléfono y portátiles bajos). Nunca se recorta con puntos suspensivos. */
+.rot-txt{font-size:.8rem;line-height:1.45;color:#d6c6b1;font-weight:300;max-width:34ch}
+.rot-txt .corto{display:none}
+@media(max-width:900px),(min-width:901px) and (max-height:760px){.rot-txt .largo{display:none}.rot-txt .corto{display:inline}}
+.rot-dato{display:inline-block;margin-top:.4rem;padding:.22rem .65rem;border-radius:999px;border:1px solid rgba(242,183,73,.3);background:rgba(26,13,4,.85);font-size:.74rem;line-height:1.35;font-weight:500;color:#eadcc8}
+.rot-dato b{color:var(--dorado);font-weight:600;white-space:nowrap}
 @media(min-width:901px) and (max-height:860px){
   .rot-nombre{font-size:clamp(1.1rem,1.5vw,1.3rem);margin-bottom:.2rem}
   .rot-txt{font-size:.74rem;line-height:1.4}
   .rot-dato{display:none}
 }
 @media(min-width:901px) and (max-height:740px){
-  .rot-txt{-webkit-line-clamp:2}
   .rot-ir{min-height:24px}
   .lam-indice{display:none}
   .hero-sub{margin-top:.8rem}
 }
 /* el beat "Listo" y el cierre retiran columnas, líneas y marginalia */
-.lam-copy,.lam-rotulos,.lam-lineas,.lam-marg{transition:opacity .5s ease}
+.lam-copy,.lam-rotulos,.lam-lineas,.lam-marg{transition:opacity .5s ease,visibility 0s}
 .lam.listo .lam-copy,.lam.listo .lam-rotulos,.lam.listo .lam-lineas,.lam.listo .lam-portada,
-.lam.cerrado .lam-copy,.lam.cerrado .lam-rotulos,.lam.cerrado .lam-lineas,.lam.cerrado .lam-marg,.lam.cerrado .lam-portada{opacity:0!important;pointer-events:none}
+.lam.cerrado .lam-copy,.lam.cerrado .lam-rotulos,.lam.cerrado .lam-lineas,.lam.cerrado .lam-marg,.lam.cerrado .lam-portada{opacity:0!important;pointer-events:none;visibility:hidden;transition:opacity .5s ease,visibility 0s .5s}
 .lam.listo .lam-marg.bi{opacity:1}
 
 /* --- beat "Listo": el vaso respira sin anotaciones --- */
-.lam-listo{position:absolute;left:50%;bottom:4.4rem;transform:translate(-50%,10px);z-index:7;text-align:center;opacity:0;pointer-events:none;transition:opacity .5s ease,transform .5s ease;padding:0 1rem}
+.lam-listo{position:absolute;left:50%;bottom:4.4rem;transform:translate(-50%,10px);z-index:7;width:max-content;max-width:calc(100% - 2rem);text-align:center;opacity:0;pointer-events:none;transition:opacity .5s ease,transform .5s ease;padding:0 1rem}
 .lam-listo.on{opacity:1;transform:translate(-50%,0)}
 .lam-listo p{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:clamp(1.3rem,2.4vw,1.9rem);color:var(--crema);text-shadow:0 2px 18px rgba(26,13,4,.9);line-height:1.2}
 .lam-listo p b{color:var(--dorado);font-weight:500}
-.lam-sello{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:.7rem;padding:.3rem .85rem;border:1px solid var(--dorado);border-radius:999px;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado);background:rgba(26,13,4,.7);transform:scale(.9) rotate(-4deg);transition:transform .5s cubic-bezier(.3,1.5,.4,1)}
+.lam-sello{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:.7rem;padding:.3rem .85rem;border:1px solid var(--dorado);border-radius:999px;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado);background:rgba(26,13,4,.7);transform:scale(.9) rotate(-4deg);transition:transform .5s cubic-bezier(.3,1.5,.4,1)}
 .lam-sello svg{width:16px;height:16px}
 .lam-listo.on .lam-sello{transform:none}
 
@@ -657,14 +663,14 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .pt-largo,.dedo{display:none}
 
 /* --- barra: marcas de progreso (botones) + saltar; en escritorio solo "Saltar" --- */
-.lam-barra{position:absolute;z-index:7;left:50%;bottom:1.1rem;transform:translate(-50%,50%);display:flex;align-items:center;gap:.9rem;opacity:0;pointer-events:none;transition:opacity .3s;background:var(--fondo);padding:0 .8rem}
-.lam-barra.ve{opacity:1;pointer-events:auto}
+.lam-barra{position:absolute;z-index:7;left:50%;bottom:1.1rem;transform:translate(-50%,50%);display:flex;align-items:center;gap:.9rem;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .3s,visibility 0s .3s;background:var(--fondo);padding:0 .8rem}
+.lam-barra.ve,.lam-barra:focus-within{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .3s,visibility 0s}
 .lam-progreso{display:none;flex:1;gap:5px}
 .lam-progreso button{flex:1;min-height:44px;background:none;border:0;padding:0;cursor:pointer;position:relative}
 .lam-progreso button i{display:block;height:3px;background:rgba(255,246,234,.26);position:relative;overflow:hidden;border-radius:2px}
 .lam-progreso button i::after{content:"";position:absolute;inset:0;background:var(--dorado);transform-origin:left;transform:scaleX(var(--f,0))}
 .lam-progreso button[aria-current="step"] i{box-shadow:0 0 0 1px rgba(242,183,73,.5)}
-.lam-saltar{display:inline-flex;align-items:center;min-height:44px;font-size:.72rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#eadcc8;white-space:nowrap;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(242,183,73,.6);padding:0 .3rem}
+.lam-saltar{display:inline-flex;align-items:center;min-height:44px;font-size:.76rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#eadcc8;white-space:nowrap;text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(242,183,73,.6);padding:0 .3rem}
 .lam-saltar:hover{color:var(--dorado)}
 
 /* --- cierre: notas al pie de la lámina --- */
@@ -672,9 +678,9 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
   position:absolute;inset:0;z-index:8;display:grid;place-items:center;
   padding:5rem 1.5rem 2.2rem;
   background:radial-gradient(ellipse 52% 44% at 50% 50%, rgba(26,13,4,.5) 0%, rgba(26,13,4,.86) 55%, rgba(26,13,4,.96) 100%);
-  opacity:0;pointer-events:none;transition:opacity .6s ease;
+  opacity:0;pointer-events:none;visibility:hidden;transition:opacity .6s ease,visibility 0s .6s;
 }
-.lam-cierre.on{opacity:1;pointer-events:auto}
+.lam-cierre.on{opacity:1;pointer-events:auto;visibility:visible;transition:opacity .6s ease,visibility 0s}
 .cierre-hoja{width:min(1040px,100%);display:grid;grid-template-columns:150px 1fr;gap:2.5rem;align-items:center}
 .cierre-vaso{text-align:center}
 .cierre-vaso figcaption{margin-top:.6rem;font-family:var(--font-display);font-style:italic;font-size:.9rem;color:var(--dorado)}
@@ -689,7 +695,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .lam-medidas div{padding:.8rem .6rem;position:relative}
 .lam-medidas div + div::before{content:"";position:absolute;left:0;top:18%;bottom:18%;width:1px;background:var(--dorado-tenue)}
 .lam-medidas b{display:block;font-family:var(--font-display);font-weight:500;font-variation-settings:"opsz" 144;font-size:clamp(1.4rem,2.4vw,2rem);line-height:1;color:var(--dorado);letter-spacing:-.02em;white-space:nowrap}
-.lam-medidas span{display:block;margin-top:.4rem;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#d2c1ab}
+.lam-medidas span{display:block;margin-top:.4rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#d2c1ab}
 .cierre-txt .hero-ctas{margin-bottom:1rem}
 .cierre-nota{font-size:.82rem;line-height:1.5;color:#dccbb5;max-width:60ch;border-top:1px solid var(--dorado-tenue);padding-top:.8rem}
 .cierre-nota strong{color:var(--crema);font-weight:600}
@@ -697,9 +703,11 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .cierre-credito i{font-style:normal;color:var(--dorado);margin:0 .35rem}
 
 /* ---------- teléfono: el vaso nunca se tapa ----------
-   Fase 0: video enmarcado al 66 % (anclado arriba) sobre el titular y los
-   botones; de 0,25 a 1,2 s crece a pantalla completa; luego el encuadre sube
-   con la bebida. El panel inferior es compacto y vive en el tercio inferior. */
+   El encuadre se calcula en JS a partir de la geometría medida: el vaso (filas
+   160/300–1240 del cuadro) queda siempre entre la barra superior y el panel de
+   texto; al apagarse el titular (0,95 s) el cuadro crece hasta el panel de
+   rótulos y en «Listo» hace zoom hasta cubrir el fondo. Los cantos del cuadro
+   se funden con el papel mediante una máscara (lados y base). */
 @media(max-width:900px){
   :root{--col-video:100vw}
   .lam-marco{inset:4.5rem .7rem .6rem}
@@ -711,10 +719,17 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
   .lam-lienzo{width:100%;padding:0;display:block}
   .lam-portada{display:none}
   .lam-taza{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;-webkit-mask-image:none;mask-image:none}
-  .lam-destello{top:58%;left:0;right:0}
+  .lam-taza video,.lam-taza img.lam-img{
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 90%,transparent 100%),linear-gradient(180deg,#000 97%,transparent 100%);
+    -webkit-mask-composite:source-in;
+    mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 90%,transparent 100%),linear-gradient(180deg,#000 97%,transparent 100%);
+    mask-composite:intersect;
+  }
+  .lam-destello{top:61%;left:18%;right:18%;height:130px;margin-top:-65px}
   /* panel inferior: un solo contenedor con el título (fase 0) o el rótulo activo + mini-corte */
-  .lam-panel{display:grid;position:absolute;left:0;right:0;bottom:0;z-index:6;grid-template-columns:1fr 84px;column-gap:.8rem;align-items:end;padding:2.6rem 1rem 3.6rem}
-  .lam-panel::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 0%,rgba(26,13,4,.35) 18%,rgba(26,13,4,.86) 42%,rgba(26,13,4,.97) 70%,#1a0d04);transition:opacity .5s}
+  .lam-panel{display:grid;position:absolute;left:0;right:0;bottom:0;z-index:6;grid-template-columns:1fr 92px;column-gap:.8rem;align-items:end;padding:1.4rem 1rem 3.6rem}
+  /* el degradado empieza 12vh por encima del panel: cubre la base del cuadro, que termina justo ahí */
+  .lam-panel::before{content:"";position:absolute;left:0;right:0;bottom:0;top:-12vh;z-index:-1;background:linear-gradient(180deg,transparent 0,rgba(26,13,4,.22) 12vh,rgba(26,13,4,.88) calc(12vh + 80px),rgba(26,13,4,.97) calc(12vh + 150px),#1a0d04 100%);transition:opacity .5s}
   .lam.fase5 .lam-panel::before{opacity:.6}
   .lam.listo .lam-panel,.lam.cerrado .lam-panel{opacity:0;pointer-events:none}
   .lam-copy{display:contents}
@@ -727,19 +742,20 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
   .lam-formula{margin-top:.4rem;font-size:.92rem}
   .hero-sub{display:none}
   .lam-def{margin:.55rem 0 .8rem;font-size:.78rem;line-height:1.45;max-width:100%}
-  .lam-titulo .hero-ctas{gap:.5rem;flex-wrap:nowrap}
-  .lam-titulo .btn{padding:.6rem .9rem;font-size:.8rem;flex:1 1 0;min-width:0;white-space:nowrap}
+  .lam-titulo .hero-ctas{gap:.5rem;flex-wrap:wrap}
+  .lam-titulo .btn{padding:.6rem .8rem;font-size:.86rem;flex:1 1 auto;min-width:0;white-space:nowrap}
   .lam-indice{display:none}
   .lam-corte{grid-column:2;display:none;align-items:flex-end}
   .lam-corte.on{display:flex}
   .corte-cap,.corte-nota,.corte-formula,.corte-sello{display:none}
-  .corte-svg{width:84px}
-  .corte-svg .cap-pct{font-size:24px;font-weight:600}
-  .corte-svg .cap-nom,.corte-svg .cap-tick{display:none}
+  .corte-svg{width:92px}
+  .corte-svg .cap-pct,.corte-svg .cap-nom,.corte-svg .cap-tick{display:none}
+  /* en vez de cinco porcentajes de 6 px: el dato de la capa activa, legible */
+  .corte-activa{display:block;text-align:center;margin-top:.25rem;font-size:.75rem;letter-spacing:.03em;line-height:1.2;color:#d6c6b1}
+  .corte-activa b{display:block;font-family:var(--font-display);font-weight:600;font-size:1.05rem;color:var(--dorado)}
   /* rótulos: en teléfono es la tarjeta del paso activo en el panel; la anterior asoma detrás */
   .lam-rotulos{grid-column:1;position:relative;height:auto;max-height:none;max-width:none;display:block;opacity:1;padding:0}
   .lam-rotulos.ve{opacity:1}
-  .rot-leyenda{display:none}
   .rot{display:none;position:relative;height:auto;padding:.7rem .85rem .75rem;border:1px solid rgba(242,183,73,.32);border-radius:14px;background:rgba(26,13,4,.86);opacity:1}
   .rot.on{display:block}
   .rot.prev{display:block;position:absolute;inset:0;transform:translateY(-11px) rotate(-1.6deg);z-index:-1;border-color:rgba(242,183,73,.2);background:rgba(36,18,8,.9)}
@@ -749,8 +765,8 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
   .rot.on .rot-ir{font-size:.78rem}
   .rot-nombre{font-size:clamp(1.3rem,6vw,1.6rem);margin:.1rem 0 .3rem;cursor:default}
   .rot-cuerpo{opacity:1;transform:none}
-  .rot-txt{font-size:.8rem;line-height:1.4;max-width:100%;-webkit-line-clamp:2}
-  .rot-dato{font-size:.75rem;margin-top:.35rem}
+  .rot-txt{font-size:.8rem;line-height:1.4;max-width:100%}
+  .rot-dato{font-size:.75rem;margin-top:.35rem;padding:.2rem .55rem}
   .lam.fase5 .rot-txt,.lam.fase5 .rot-dato{display:none}
   /* marcas numeradas sobre el espécimen (decorativas, dibujadas por JS) */
   .lam-marca{position:absolute;z-index:5;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:1px solid var(--dorado);background:rgba(26,13,4,.75);color:var(--dorado);font-family:var(--font-display);font-weight:600;font-size:8px;line-height:14px;text-align:center;pointer-events:none;transition:opacity .3s,width .3s,height .3s,margin .3s,font-size .3s;font-style:normal}
@@ -768,7 +784,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
   .lam-saltar{font-size:.78rem;letter-spacing:.04em;text-transform:none}
   /* beat listo */
   .lam-listo{bottom:5.2rem}
-  .lam-listo p{font-size:clamp(1.25rem,5.6vw,1.6rem)}
+  .lam-listo p{font-size:clamp(1.2rem,5.4vw,1.45rem)}
   /* cierre */
   .lam-cierre{padding:4.2rem 1rem 1.2rem;align-items:center}
   .cierre-txt .kicker{font-size:.75rem;letter-spacing:.12em;margin-bottom:.5rem}
@@ -787,13 +803,12 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
   .cierre-nota strong{display:block}
   .cierre-credito{font-size:.56rem;letter-spacing:.12em}
 }
+@media(max-width:900px) and (max-height:860px){
+  .lam-def{display:none}
+}
 @media(max-width:900px) and (max-height:700px){
   .lam.fase4 .rot-txt,.lam.fase4 .rot-dato{display:none}
   .cierre-nota{display:none}
-  .lam-def{display:none}
-}
-@media(max-width:360px){
-  .lam-titulo .btn{font-size:.74rem;padding:.6rem .7rem}
 }
 
 /* ---------- sin animación: la lámina queda estática y se lee entera ---------- */
@@ -802,33 +817,35 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
   html{scroll-behavior:auto}
   .lam{height:auto}
   .lam-fijo{position:relative;height:auto;padding:5.6rem 0 3rem}
-  .lam-luz,.lam-marco,.lam-lineas,.lam-pista,.lam-barra,.lam-marg,.lam-portada,.lam-listo,.lam-destello,.lam-marca,.cierre-vaso{display:none}
+  .lam-luz,.lam-marco,.lam-lineas,.lam-pista,.lam-barra,.lam-marg,.lam-portada,.lam-listo,.lam-destello,.lam-marca{display:none}
   .lam-marg.ti{display:block;position:relative;inset:auto;transform:none;width:min(1100px,calc(100% - 2.5rem));margin:0 auto 1.2rem;padding:0 0 .6rem;border-bottom:1px solid var(--dorado-tenue)}
   .lam-lienzo{width:min(1100px,calc(100% - 2.5rem));height:auto;grid-template-columns:1fr;row-gap:3rem;padding:0;display:grid}
   .lam-panel{display:contents}
   .lam-copy,.lam-taza,.lam-rotulos{grid-column:auto;grid-row:auto}
   .lam-copy{height:auto;max-height:none;position:relative;inset:auto;display:grid;grid-template-columns:1fr;gap:2.5rem;padding:0;align-items:center;opacity:1!important}
-  .lam-titulo,.lam-corte{position:relative;inset:auto;opacity:1;transform:none;pointer-events:auto;display:flex;grid-column:auto}
-  .hero-sub,.corte-cap,.corte-nota,.corte-formula{display:block}
+  .lam-titulo,.lam-corte{position:relative;inset:auto;opacity:1;transform:none;pointer-events:auto;visibility:visible;display:flex;grid-column:auto}
+  .hero-sub,.corte-cap,.corte-nota,.corte-formula,.lam-def{display:block}
+  .corte-activa{display:none}
   .corte-sello{display:inline-flex;opacity:1;transform:none}
   .corte-svg{width:min(100%,340px)}
-  .corte-svg .cap-pct{font-size:10.5px}
-  .corte-svg .cap-nom,.corte-svg .cap-tick{display:block}
+  .corte-svg .cap-pct,.corte-svg .cap-nom,.corte-svg .cap-tick{display:block}
   .corte-svg g.anot .cap-pct{fill:var(--dorado)}
   .corte-svg g.anot .cap-nom{fill:var(--crema)}
   .corte-formula span,.lam-formula span{color:var(--dorado)}
   .lam-taza{position:relative;inset:auto;aspect-ratio:9/16;max-width:380px;margin-inline:auto;height:auto;-webkit-mask-image:none;mask-image:none}
-  .lam-taza video,.lam-taza img.lam-img{transform:none!important}
-  .lam-rotulos{position:relative;inset:auto;height:auto;max-height:none;max-width:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem 1.5rem;padding:0;opacity:1!important}
+  .lam-taza video,.lam-taza img.lam-img{transform:none!important;-webkit-mask-image:none;mask-image:none}
+  .lam-rotulos{position:relative;inset:auto;height:auto;max-height:none;max-width:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:2rem 1.5rem;padding:0;opacity:1!important;visibility:visible!important}
   .rot{display:block;position:relative;inset:auto;height:auto;opacity:1;background:none;border-radius:0;border:0;border-left:1px solid rgba(242,183,73,.3);padding:0 0 0 1rem;transform:none}
   .rot.prev > *{visibility:visible}
   .rot-punto{display:block;background:var(--dorado)}
   .rot-ir{color:var(--dorado);-webkit-text-stroke:0;font-size:.8rem;pointer-events:none}
   .rot-nombre{font-size:1.35rem;margin:.1rem 0 .4rem}
   .rot-cuerpo{opacity:1;transform:none}
-  .rot-txt{display:block;-webkit-line-clamp:unset;overflow:visible}
-  .rot-dato{display:inline-flex}
-  .lam-cierre{position:relative;inset:auto;opacity:1;pointer-events:auto;background:none;padding:3rem 1.25rem 0}
+  .rot-txt{display:block}
+  .rot-txt .largo{display:inline}.rot-txt .corto{display:none}
+  .rot-dato{display:inline-block}
+  .lam-cierre{position:relative;inset:auto;opacity:1;pointer-events:auto;visibility:visible;background:none;padding:3rem 1.25rem 0}
+  .cierre-vaso{display:block}
 }
 @media (prefers-reduced-motion:reduce) and (min-width:901px){
   .lam-copy{grid-template-columns:1.1fr 1fr;gap:3rem}
@@ -847,7 +864,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .tira-lista{list-style:none;display:grid;grid-template-columns:repeat(5,1fr);gap:.8rem;width:min(820px,calc(100% - 2.5rem));margin-inline:auto;padding-bottom:1.3rem}
 .tira figure{margin:0}
 .tira img{width:100%;aspect-ratio:9/16;object-fit:cover;border:1px solid rgba(242,183,73,.35);background:#120803}
-.tira figcaption{margin-top:.45rem;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:#e4c17a;display:flex;flex-direction:column;gap:.1rem}
+.tira figcaption{margin-top:.45rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#e4c17a;display:flex;flex-direction:column;gap:.1rem}
 .tira figcaption b{font-family:var(--font-display);font-style:italic;font-weight:600;text-transform:none;letter-spacing:.03em;font-size:.78rem;color:var(--dorado)}
 @media(max-width:700px){
   .tira-lista{grid-template-columns:repeat(5,1fr);gap:.4rem}
@@ -870,7 +887,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .medidas b{display:block;font-family:var(--font-display);font-weight:800;font-variation-settings:"opsz" 144;font-size:clamp(2.8rem,5.2vw,5.4rem);line-height:.95;color:var(--marron);letter-spacing:-.03em;white-space:nowrap}
 .medidas b i{font-style:normal;font-weight:500;color:var(--naranja-texto);font-size:.72em;letter-spacing:0;margin-right:.08em;vertical-align:.12em}
 .medidas small{display:block;margin-top:.25rem;font-family:var(--font-display);font-style:italic;font-size:1rem;color:var(--naranja-texto)}
-.medidas span{display:block;margin-top:.5rem;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-2);font-weight:500}
+.medidas span{display:block;margin-top:.5rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-2);font-weight:500}
 @media(max-width:900px){.medidas{grid-template-columns:repeat(3,1fr)}.medidas div:nth-child(4)::before{display:none}.medidas div:nth-child(n+4){border-top:1px solid var(--regla)}}
 @media(max-width:560px){.medidas{grid-template-columns:repeat(2,1fr)}.medidas div{padding:1rem .6rem}.medidas div:nth-child(4)::before{display:block}.medidas div:nth-child(3)::before,.medidas div:nth-child(5)::before{display:none}.medidas div:nth-child(n+3){border-top:1px solid var(--regla)}.medidas b{font-size:2.6rem}}
 .speakable{margin-top:2rem;max-width:72ch;font-size:1.02rem;line-height:1.7;color:var(--tinta);border-left:2px solid var(--dorado);padding-left:1.1rem}
@@ -882,7 +899,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .triptico{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.6rem;position:relative}
 .fig{position:relative;padding:1.4rem 1.2rem 1.3rem;border:1px solid var(--regla)}
 .fig::before{content:"";position:absolute;inset:6px;border:1px solid rgba(61,35,20,.1);pointer-events:none}
-.fig-cab{display:flex;justify-content:space-between;align-items:baseline;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--naranja-texto);font-weight:600}
+.fig-cab{display:flex;justify-content:space-between;align-items:baseline;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--naranja-texto);font-weight:600}
 .fig-cab b{font-family:var(--font-display);font-style:italic;font-weight:600;text-transform:none;letter-spacing:.03em;font-size:.9rem;color:var(--marron)}
 .fig svg{width:100%;height:auto;display:block;margin:.8rem auto .6rem;max-width:260px;overflow:visible}
 .fig svg *{fill:none;stroke:var(--marron);stroke-width:1.15;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
@@ -920,7 +937,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .bebida[aria-expanded="true"]{background:rgba(242,183,73,.12);border-color:var(--dorado);transform:translateY(-3px)}
 .bebida-top{display:flex;justify-content:space-between;align-items:center;gap:.3rem;flex-wrap:wrap}
 .bebida-num{font-family:var(--font-display);font-weight:600;font-size:.82rem;letter-spacing:.16em;color:var(--dorado)}
-.bebida-tag{font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(242,183,73,.4);color:#f0cf8a;border-radius:999px;padding:.2rem .5rem;white-space:nowrap}
+.bebida-tag{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(242,183,73,.4);color:#f0cf8a;border-radius:999px;padding:.2rem .5rem;white-space:nowrap}
 .bebida-tag.sello{border-style:dashed;color:#f0cf8a}
 .bebida-vaso{width:74px;height:98px;margin:.3rem auto .2rem}
 .bebida-vaso svg{width:100%;height:100%;overflow:visible}
@@ -928,7 +945,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .bebida-desc{font-size:.74rem;line-height:1.4;color:#d9c7b0;font-weight:300;padding-right:1.5rem}
 .bebida-mas{position:absolute;right:.75rem;bottom:.75rem;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(242,183,73,.45);color:var(--dorado);font-size:1rem;line-height:1;transition:transform .25s,background .2s}
 .bebida[aria-expanded="true"] .bebida-mas{transform:rotate(45deg);background:rgba(242,183,73,.25)}
-.bebida-ref{position:absolute;left:.75rem;bottom:.8rem;font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dorado);max-width:calc(100% - 3rem)}
+.bebida-ref{position:absolute;left:.75rem;bottom:.8rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dorado);max-width:calc(100% - 3rem)}
 .bebida.con-ref .bebida-nombre,.bebida.con-ref .bebida-desc{margin-bottom:.9rem}
 @media(max-width:640px){
   .bebida{min-height:0;padding:.75rem .75rem .7rem}
@@ -947,11 +964,11 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .ficha-cerrar:hover{background:rgba(242,183,73,.2)}
 .ficha-vaso{text-align:center}
 .ficha-vaso svg{width:130px;height:170px;overflow:visible;margin-inline:auto;display:block}
-.ficha-vaso small{display:block;margin-top:.5rem;font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:#c9b59b}
-.ficha-cab{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado);margin-bottom:.3rem}
+.ficha-vaso small{display:block;margin-top:.5rem;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#c9b59b}
+.ficha-cab{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dorado);margin-bottom:.3rem}
 .ficha h3{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:1.7rem;color:var(--crema);margin-bottom:.35rem;padding-right:2.6rem}
 .ficha-desc{font-size:.92rem;color:#dccbb5;font-weight:300;max-width:52ch}
-.ficha-rotulo{display:block;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado);margin:1rem 0 .55rem}
+.ficha-rotulo{display:block;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dorado);margin:1rem 0 .55rem}
 .ingredientes{display:flex;flex-wrap:wrap;gap:.45rem}
 .ing{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .8rem;border:1px solid rgba(242,183,73,.25);font-size:.78rem;color:#f1e6d6;font-weight:300}
 .ing i{width:10px;height:10px;border:1px solid rgba(242,183,73,.5);flex:0 0 10px}
@@ -973,19 +990,20 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 /* ================================================================
    LÁMINA V · LA ESTACIÓN: lámina fotográfica + tabla de cotas
    ================================================================ */
-.estacion{display:grid;grid-template-columns:.9fr 1.1fr;gap:3rem;align-items:center;margin-top:2.6rem}
+.estacion{display:grid;grid-template-columns:.9fr 1.1fr;gap:3rem;align-items:start;margin-top:2.6rem}
+.estacion .cotas{margin-top:.2rem}
 @media(max-width:900px){.estacion{grid-template-columns:1fr;gap:2rem}}
 .foto-lam{position:relative;padding:1rem;border:1px solid var(--regla);background:#fff;max-width:420px;margin-inline:auto}
 .foto-lam::before{content:"";position:absolute;inset:6px;border:1px solid rgba(61,35,20,.12);pointer-events:none}
 .foto-lam img{width:100%;height:auto;background:radial-gradient(circle at 50% 20%,#4b2a15,#241208 70%)}
-.foto-lam figcaption{margin-top:.8rem;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-2);display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.foto-lam figcaption{margin-top:.8rem;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-2);display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
 .foto-lam figcaption b{font-family:var(--font-display);font-style:italic;font-weight:600;text-transform:none;letter-spacing:.03em;font-size:.85rem;color:var(--marron)}
 .cotas{list-style:none;position:relative;padding-left:2.2rem;margin-top:1.6rem}
 .cotas::before{content:"";position:absolute;left:.5rem;top:0;bottom:0;width:1px;background:var(--marron)}
 .cotas > div{position:relative;padding:.85rem 0 .85rem .4rem;border-bottom:1px solid var(--regla);display:grid;grid-template-columns:150px 1fr;gap:.5rem 1rem;align-items:baseline}
 .cotas > div::before{content:"";position:absolute;left:-1.7rem;top:50%;width:1.4rem;height:1px;background:var(--marron)}
 .cotas > div::after{content:"";position:absolute;left:calc(-1.7rem - 3px);top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--marron)}
-.cotas dt{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--naranja-texto);font-weight:600}
+.cotas dt{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--naranja-texto);font-weight:600}
 .cotas dt i{font-style:normal;font-family:var(--font-display);font-weight:600;letter-spacing:.1em;color:var(--marron);margin-right:.5rem}
 .cotas dd{font-family:var(--font-display);font-weight:500;font-size:1.05rem;color:var(--marron);line-height:1.3}
 .cotas dd small{display:block;font-family:var(--font-body);font-weight:300;font-size:.82rem;color:var(--tinta-2)}
@@ -1047,7 +1065,7 @@ h1 em{font-style:italic;color:var(--dorado);font-weight:400}
 .cta-confianza strong{display:block;color:var(--marron);font-weight:600;margin-bottom:.15rem}
 @media(max-width:880px){.ficha-pedido{position:static}}
 .confian{margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--regla);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-2);line-height:2.1}
-.confian b{color:var(--naranja-texto);font-weight:600;display:block;margin-bottom:.3rem;letter-spacing:.22em;font-size:.66rem}
+.confian b{color:var(--naranja-texto);font-weight:600;display:block;margin-bottom:.3rem;letter-spacing:.18em;font-size:.72rem}
 .confian span{white-space:nowrap}
 .confian span::after{content:"◆";margin:0 .7rem;color:var(--dorado);font-size:.5rem;vertical-align:middle}
 .confian span:last-child::after{content:none}
@@ -1084,15 +1102,15 @@ footer .brand-name{color:var(--crema);font-size:1.3rem}
 .footer-nap{margin-top:.9rem;display:grid;gap:.4rem;line-height:1.5;font-size:.8rem}
 .footer-nap a{color:var(--dorado);text-decoration:none}
 .footer-nap a:hover{text-decoration:underline}
-.footer-nap .vs{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#bda78e;border-top:1px solid rgba(242,183,73,.18);padding-top:.5rem;margin-top:.3rem}
-footer h3{font-family:var(--font-body);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dorado);margin-bottom:.9rem;font-weight:600;display:flex;align-items:center;gap:.8rem}
+.footer-nap .vs{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#bda78e;border-top:1px solid rgba(242,183,73,.18);padding-top:.5rem;margin-top:.3rem}
+footer h3{font-family:var(--font-body);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dorado);margin-bottom:.9rem;font-weight:600;display:flex;align-items:center;gap:.8rem}
 footer h3::after{content:"";flex:1;height:1px;background:rgba(242,183,73,.2)}
 footer ul{list-style:none;display:grid;gap:.45rem}
 footer a{color:#eadcc8;text-decoration:none}
 footer ul a{display:inline-flex;align-items:center;min-height:44px}
 footer ul{gap:0}
 footer a:hover{color:var(--dorado);text-decoration:underline}
-.legal{position:relative;font-size:.74rem;text-align:center;color:#cdbca8;line-height:1.6}
+.legal{position:relative;font-size:.78rem;text-align:center;color:#cdbca8;line-height:1.6}
 .colofon-marg{position:relative;text-align:center;margin-top:1rem;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:#bda78e}
 .colofon-marg b{font-family:var(--font-display);font-style:italic;font-weight:600;text-transform:none;letter-spacing:.04em;font-size:.82rem;color:var(--dorado)}
 
@@ -1117,7 +1135,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
   .inventario li{font-size:.78rem}
   .medidas span{font-size:.75rem;letter-spacing:.08em}
   .nav-sitio{font-size:.95rem!important}
-  .brand-name small{font-size:.64rem;letter-spacing:.2em}
+  .brand-name small{font-size:.72rem;letter-spacing:.16em}
   .lam-pista{font-size:.75rem;letter-spacing:.1em}
   .tira figcaption{font-size:.75rem}
   .legal{font-size:.78rem}
@@ -1141,21 +1159,23 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
 <noscript><style>
 /* sin JS: la lámina se vuelve estática y se lee completa (póster, corte lleno, rótulos, cierre) */
 .lam{height:auto}.lam-fijo{position:relative;height:auto;padding:5.6rem 0 3rem}
-.lam-luz,.lam-marco,.lam-lineas,.lam-pista,.lam-barra,.lam-marg,.lam-portada,.lam-listo,.lam-destello,.lam-taza video,.cierre-vaso,.lam-panel::before{display:none}
+.lam-luz,.lam-marco,.lam-lineas,.lam-pista,.lam-barra,.lam-marg,.lam-portada,.lam-listo,.lam-destello,.lam-taza video,.cierre-vaso,.lam-panel::before,.corte-activa{display:none}
 .lam-marg.ti{display:block;position:relative;inset:auto;transform:none;width:min(1100px,calc(100% - 2.5rem));margin:0 auto 1.2rem;padding:0 0 .6rem;border-bottom:1px solid var(--dorado-tenue)}
 .lam-lienzo{width:min(1100px,calc(100% - 2.5rem));height:auto;grid-template-columns:1fr;row-gap:3rem;padding:0;display:grid}
 .lam-panel{display:contents}.lam-copy,.lam-taza,.lam-rotulos{grid-column:auto;grid-row:auto}
 .lam-copy{height:auto;max-height:none;position:relative;inset:auto;display:grid;grid-template-columns:1fr;gap:2.5rem;padding:0;align-items:center}
-.lam-titulo,.lam-corte{position:relative;inset:auto;opacity:1;transform:none;pointer-events:auto;display:flex;grid-column:auto}
-.hero-sub,.corte-cap,.corte-nota,.corte-formula{display:block}.corte-sello{display:inline-flex;opacity:1;transform:none}
-.corte-svg{width:min(100%,340px)}.corte-svg .cap-pct{font-size:10.5px}.corte-svg .cap-nom,.corte-svg .cap-tick{display:block}
+.lam-titulo,.lam-corte{position:relative;inset:auto;opacity:1;transform:none;pointer-events:auto;visibility:visible;display:flex;grid-column:auto}
+.hero-sub,.corte-cap,.corte-nota,.corte-formula,.lam-def{display:block}.corte-sello{display:inline-flex;opacity:1;transform:none}
+.corte-svg{width:min(100%,340px)}.corte-svg .cap-pct,.corte-svg .cap-nom,.corte-svg .cap-tick{display:block}
 .corte-svg g.anot .cap-pct{fill:var(--dorado)}.corte-svg g.anot .cap-nom{fill:var(--crema)}.corte-formula span,.lam-formula span{color:var(--dorado)}
 .lam-taza{position:relative;inset:auto;aspect-ratio:9/16;max-width:380px;margin-inline:auto;height:auto;-webkit-mask-image:none;mask-image:none}
-.lam-rotulos{position:relative;inset:auto;height:auto;max-height:none;max-width:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem 1.5rem;padding:0;opacity:1}
+.lam-taza img.lam-img{-webkit-mask-image:none;mask-image:none}
+.lam-rotulos{position:relative;inset:auto;height:auto;max-height:none;max-width:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:2rem 1.5rem;padding:0;opacity:1;visibility:visible}
 .rot{display:block;position:relative;inset:auto;height:auto;opacity:1;background:none;border-radius:0;border:0;border-left:1px solid rgba(242,183,73,.3);padding:0 0 0 1rem}
 .rot-punto{display:block;background:var(--dorado)}.rot-ir{color:var(--dorado);-webkit-text-stroke:0;font-size:.8rem}
-.rot-nombre{font-size:1.35rem;margin:.1rem 0 .4rem}.rot-cuerpo{opacity:1;transform:none}.rot-txt{display:block;-webkit-line-clamp:unset;overflow:visible}.rot-dato{display:inline-flex}
-.lam-cierre{position:relative;inset:auto;opacity:1;pointer-events:auto;background:none;padding:3rem 1.25rem 0}
+.rot-nombre{font-size:1.35rem;margin:.1rem 0 .4rem}.rot-cuerpo{opacity:1;transform:none}.rot-txt{display:block}.rot-txt .largo{display:inline}.rot-txt .corto{display:none}.rot-dato{display:inline-block}
+.lam-cierre{position:relative;inset:auto;opacity:1;pointer-events:auto;visibility:visible;background:none;padding:3rem 1.25rem 0}
+.cierre-hoja{grid-template-columns:1fr}
 .bebida-vaso{display:none}
 @media(min-width:901px){.lam-copy{grid-template-columns:1.1fr 1fr;gap:3rem}}
 
@@ -1166,7 +1186,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
 <!-- ================= BARRA SUPERIOR ================= -->
 <nav class="barra" aria-label="Navegación principal">
   <div class="wrap nav-inner">
-    <a class="brand" href="#lam" aria-label="Café Oriente, inicio de la página">
+    <a class="brand" href="#lam" aria-label="Café Oriente por Todo Vending CA, inicio de la página">
       <!-- isotipo: sol + taza -->
       <svg viewBox="0 0 64 64" aria-hidden="true">
         <defs><linearGradient id="solg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2B749"/><stop offset="1" stop-color="#E06A3B"/></linearGradient></defs>
@@ -1175,7 +1195,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
         <path d="M50 36c6 0 6 10-2 10" fill="none" stroke="#3D2314" stroke-width="4" stroke-linecap="round"/>
         <path d="M25 14c-2 4 2 6 0 10M32 11c-2 4 2 6 0 10M39 14c-2 4 2 6 0 10" fill="none" stroke="#FFF6EA" stroke-width="3" stroke-linecap="round"/>
       </svg>
-      <span class="brand-name">Café Oriente<small>por Todo Vending CA</small></span>
+      <span class="brand-name">Café Oriente <small>por Todo Vending CA</small></span>
     </a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="Abrir menú de navegación"><span></span><span></span><span></span></button>
     <ul class="nav-links" id="nav-menu">
@@ -1211,7 +1231,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
           <div class="lam-titulo on" id="lam-titulo">
             <span class="kicker">Café Oriente · Marca registrada<span class="solo-esc"> de TodoVending, C.A.</span></span>
             <h1>El respiro que tu <em>jornada</em> necesita</h1>
-            <p class="lam-formula" id="lam-formula" aria-hidden="true"><span data-capa="espresso">espresso</span><i>+</i><span data-capa="chocolate">chocolate</span><i>+</i><span data-capa="leche">leche</span><i>+</i><span data-capa="espuma">espuma</span><i>+</i><span data-capa="cacao">cacao</span></p>
+            <p class="lam-formula" id="lam-formula" aria-hidden="true"><span data-capa="espresso">espresso</span> <i>+</i> <span data-capa="chocolate">chocolate</span> <i>+</i> <span data-capa="leche">leche</span> <i>+</i> <span data-capa="espuma">espuma</span> <i>+</i> <span data-capa="cacao">cacao</span></p>
             <p class="hero-sub">Café premium en grano, molido al instante y servido por una estación 100 % automática. Disponible las 24 horas, todos los días, sin efectivo y sin esperas.</p>
             <p class="lam-def"><b>Mocachino:</b> espresso de grano, chocolate, leche y espuma, con cacao por encima.</p>
             <div class="hero-ctas">
@@ -1242,52 +1262,52 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
               <path d="M96 42 H234 L219 300 Q218 314 204 314 H126 Q112 314 111 300 Z" fill="none" stroke="#F2B749" stroke-width="1.2"/>
               <path d="M90 42 H240" stroke="#F2B749" stroke-width="2.2" stroke-linecap="round"/>
               <path d="M96 42 Q165 56 234 42" fill="none" stroke="rgba(242,183,73,.45)" stroke-width="1"/>
-              <g class="anot" data-capa="espresso"><path class="cap-tick" d="M68 276 H100"/><text class="cap-pct" x="62" y="280" text-anchor="end"><tspan class="pct-n">28</tspan> %</text><path class="cap-tick" d="M226 276 H250"/><text class="cap-nom" x="256" y="281">espresso de grano</text></g>
+              <g class="anot" data-capa="espresso"><path class="cap-tick" d="M68 276 H100"/><text class="cap-pct" x="62" y="280" text-anchor="end"><tspan class="pct-n">28</tspan> %</text><path class="cap-tick" d="M226 276 H250"/><text class="cap-nom" x="256" y="281">espresso</text></g>
               <g class="anot" data-capa="chocolate"><path class="cap-tick" d="M68 211 H102"/><text class="cap-pct" x="62" y="215" text-anchor="end"><tspan class="pct-n">20</tspan> %</text><path class="cap-tick" d="M222 211 H250"/><text class="cap-nom" x="256" y="216">chocolate</text></g>
               <g class="anot" data-capa="leche"><path class="cap-tick" d="M68 148 H104"/><text class="cap-pct" x="62" y="152" text-anchor="end"><tspan class="pct-n">26</tspan> %</text><path class="cap-tick" d="M220 148 H250"/><text class="cap-nom" x="256" y="153">leche</text></g>
-              <g class="anot" data-capa="espuma"><path class="cap-tick" d="M68 85 H106"/><text class="cap-pct" x="62" y="89" text-anchor="end"><tspan class="pct-n">20</tspan> %</text><path class="cap-tick" d="M218 85 H250"/><text class="cap-nom" x="256" y="90">espuma de leche</text></g>
+              <g class="anot" data-capa="espuma"><path class="cap-tick" d="M68 85 H106"/><text class="cap-pct" x="62" y="89" text-anchor="end"><tspan class="pct-n">20</tspan> %</text><path class="cap-tick" d="M218 85 H250"/><text class="cap-nom" x="256" y="90">espuma</text></g>
               <g class="anot" data-capa="cacao"><path class="cap-tick" d="M68 50 H96"/><text class="cap-pct" x="62" y="54" text-anchor="end"><tspan class="pct-n">6</tspan> %</text><path class="cap-tick" d="M234 50 H250"/><text class="cap-nom" x="256" y="55">cacao</text></g>
             </svg>
+            <span class="corte-activa" aria-hidden="true"><b id="corte-act-pct"></b><span id="corte-act-nom"></span></span>
             <p class="corte-formula" aria-hidden="true"><span data-capa="espresso">espresso</span> + <span data-capa="chocolate">chocolate</span> + <span data-capa="leche">leche</span> + <span data-capa="espuma">espuma</span> + <span data-capa="cacao">cacao</span></p>
             <span class="corte-sello" id="corte-sello" aria-hidden="true">= 1 mocachino</span>
             <p class="corte-nota">Proporciones ilustrativas. La estación dosifica cada capa sola: <b>la misma taza</b>, a cualquier hora.</p>
           </figure>
         </div>
 
-        <!-- rótulos: colocados en orden anatómico (de arriba abajo en el cuadro),
-             numerados por orden de aparición en el video. Cada número es un botón
-             que lleva al segundo exacto de su ingrediente. -->
+        <!-- rótulos 01→05 en orden de aparición en el video. Cada número es un
+             botón que lleva al segundo exacto de su ingrediente. El texto tiene
+             versión larga (escritorio) y corta (teléfono / portátiles bajos). -->
         <div class="lam-rotulos ve" id="lam-rotulos" role="group" aria-label="Capas del mocachino">
-          <span class="rot-leyenda" aria-hidden="true">Numerados por orden de aparición</span>
-          <article class="rot" data-rot="2" data-t="2.45">
-            <span class="rot-punto" aria-hidden="true"></span>
-            <button type="button" class="rot-ir" aria-label="Ver el hilo de chocolate (capa 2)">02</button>
-            <h3 class="rot-nombre">Hilo de <em>chocolate</em></h3>
-            <div class="rot-cuerpo"><p class="rot-txt">Un hilo de chocolate intenso atraviesa el espresso y baja al vaso. Es lo que lo hace mocachino.</p><span class="rot-dato">Dosificación automática · <b>siempre igual</b></span></div>
-          </article>
           <article class="rot" data-rot="1" data-t="0.95">
             <span class="rot-punto" aria-hidden="true"></span>
             <button type="button" class="rot-ir" aria-label="Ver el espresso de grano (capa 1)">01</button>
-            <h3 class="rot-nombre">Espresso de <em>grano</em></h3>
-            <div class="rot-cuerpo"><p class="rot-txt">Esa corona de crema es espresso de grano entero, molido en el instante de tu pedido. Nunca instantáneo.</p><span class="rot-dato">Molienda al momento · <b>&lt; 40 seg</b></span></div>
+            <p class="rot-nombre">Espresso de <em>grano</em></p>
+            <div class="rot-cuerpo"><p class="rot-txt"><span class="largo">Esa corona de crema es espresso de grano entero, molido en el instante de tu pedido. Nunca instantáneo.</span><span class="corto">Espresso de grano entero, molido al pedir. Nunca instantáneo.</span></p><span class="rot-dato">Molido al momento · <b>&lt; 40 s</b></span></div>
           </article>
-          <article class="rot" data-rot="4" data-t="4.85">
+          <article class="rot" data-rot="2" data-t="2.45">
             <span class="rot-punto" aria-hidden="true"></span>
-            <button type="button" class="rot-ir" aria-label="Ver la espuma de leche (capa 4)">04</button>
-            <h3 class="rot-nombre">Espuma de <em>leche</em></h3>
-            <div class="rot-cuerpo"><p class="rot-txt">La nube baja, el espresso se asienta encima y el vaso se arma solo, capa sobre capa. Siempre igual.</p><span class="rot-dato">Textura uniforme · <b>10 bebidas</b></span></div>
+            <button type="button" class="rot-ir" aria-label="Ver el hilo de chocolate (capa 2)">02</button>
+            <p class="rot-nombre">Hilo de <em>chocolate</em></p>
+            <div class="rot-cuerpo"><p class="rot-txt"><span class="largo">Un hilo de chocolate intenso atraviesa el espresso y baja al vaso. Es lo que lo hace mocachino.</span><span class="corto">Un hilo de chocolate atraviesa el espresso: eso lo hace mocachino.</span></p><span class="rot-dato">Misma dosis · <b>siempre igual</b></span></div>
           </article>
           <article class="rot" data-rot="3" data-t="3.5">
             <span class="rot-punto" aria-hidden="true"></span>
             <button type="button" class="rot-ir" aria-label="Ver la leche vaporizada (capa 3)">03</button>
-            <h3 class="rot-nombre"><em>Leche</em> vaporizada</h3>
-            <div class="rot-cuerpo"><p class="rot-txt">A la temperatura justa para envolver el café sin apagarlo. Ni tibia ni hirviendo, taza tras taza.</p><span class="rot-dato">Temperatura controlada · <b>sin supervisión</b></span></div>
+            <p class="rot-nombre"><em>Leche</em> vaporizada</p>
+            <div class="rot-cuerpo"><p class="rot-txt"><span class="largo">A la temperatura justa para envolver el café sin apagarlo. Ni tibia ni hirviendo, taza tras taza.</span><span class="corto">A la temperatura justa, ni tibia ni hirviendo, taza tras taza.</span></p><span class="rot-dato">Temperatura justa · <b>24/7</b></span></div>
+          </article>
+          <article class="rot" data-rot="4" data-t="4.85">
+            <span class="rot-punto" aria-hidden="true"></span>
+            <button type="button" class="rot-ir" aria-label="Ver la espuma de leche (capa 4)">04</button>
+            <p class="rot-nombre">Espuma de <em>leche</em></p>
+            <div class="rot-cuerpo"><p class="rot-txt"><span class="largo">La nube baja, el espresso se asienta encima y el vaso se arma solo, capa sobre capa. Siempre igual.</span><span class="corto">La nube baja y el vaso se arma solo, capa sobre capa.</span></p><span class="rot-dato">Misma textura · <b>10 bebidas</b></span></div>
           </article>
           <article class="rot" data-rot="5" data-t="6.9">
             <span class="rot-punto" aria-hidden="true"></span>
             <button type="button" class="rot-ir" aria-label="Ver el cacao espolvoreado (capa 5)">05</button>
-            <h3 class="rot-nombre">Cacao <em>espolvoreado</em></h3>
-            <div class="rot-cuerpo"><p class="rot-txt">Cacao sobre la espuma y el sello Café Oriente encendido en el vaso. Igual a las 7 que a las 3 de la madrugada.</p><span class="rot-dato">Listo · <b>tu respiro</b></span></div>
+            <p class="rot-nombre">Cacao <em>espolvoreado</em></p>
+            <div class="rot-cuerpo"><p class="rot-txt"><span class="largo">Cacao sobre la espuma y el sello Café Oriente encendido en el vaso. Igual a las 7 que a las 3 de la madrugada.</span><span class="corto">Cacao sobre la espuma y el sello Café Oriente encendido.</span></p><span class="rot-dato">Listo · <b>tu respiro</b></span></div>
           </article>
         </div>
       </div>
@@ -1312,7 +1332,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
 
       <!-- beat "Listo": el vaso respira sin anotaciones -->
       <div class="lam-listo" id="lam-listo" aria-hidden="true">
-        <span class="lam-sello"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#F2B749" stroke-width="3"/><path d="M12 34h40a20 20 0 0 1-40 0Z" fill="#F2B749"/><path d="M25 14c-2 4 2 6 0 10M32 11c-2 4 2 6 0 10M39 14c-2 4 2 6 0 10" fill="none" stroke="#F2B749" stroke-width="3" stroke-linecap="round"/></svg>Fig. 6 · Listo</span>
+        <span class="lam-sello"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="none" stroke="#F2B749" stroke-width="3"/><path d="M12 34h40a20 20 0 0 1-40 0Z" fill="#F2B749"/><path d="M25 14c-2 4 2 6 0 10M32 11c-2 4 2 6 0 10M39 14c-2 4 2 6 0 10" fill="none" stroke="#F2B749" stroke-width="3" stroke-linecap="round"/></svg>Fig. 1 · Listo</span>
         <p>Listo. Tu respiro, <b>en menos de 40 segundos</b>.</p>
       </div>
     </div>
@@ -1633,7 +1653,7 @@ footer a:hover{color:var(--dorado);text-decoration:underline}
       <div class="exlibris">
         <svg viewBox="0 0 84 84" aria-hidden="true"><circle class="fino" cx="42" cy="42" r="40"/><circle cx="42" cy="36" r="24"/><path d="M18 40h48a24 24 0 0 1-48 0Z"/><path d="M66 42c8 0 8 13-3 13"/><path d="M34 16c-2 5 2 7 0 12M42 13c-2 5 2 7 0 12M50 16c-2 5 2 7 0 12"/><path d="M10 74h64"/></svg>
         <div>
-          <a class="brand" href="/" style="text-decoration:none"><span class="brand-name">Café Oriente<small>Marca registrada de Todo Vending CA</small></span></a>
+          <a class="brand" href="/" style="text-decoration:none"><span class="brand-name">Café Oriente <small>Marca registrada de Todo Vending CA</small></span></a>
           <div class="footer-nap">
             <span>Centro Comercial Venezuela, Local 11, Calle Nueva Esparta, Lechería, Anzoátegui, Venezuela</span>
             <span><a href="tel:+584146164177" data-lugar="footer">+58 414-616-4177</a> · <a href="mailto:todovendingca@gmail.com" data-lugar="footer">todovendingca@gmail.com</a></span>
@@ -1722,27 +1742,30 @@ document.addEventListener('click', function(e){
     if (v !== visible){ visible = v; barra.classList.toggle('ve', v); }
   }
   function alScroll(){ if (!raf) raf = requestAnimationFrame(revisar); }
-  medir();
   window.addEventListener('scroll', alScroll, {passive:true});
   window.addEventListener('resize', function(){ medir(); alScroll(); });
-  revisar();
+  requestAnimationFrame(function(){ medir(); revisar(); });   // tras el primer pintado: no fuerza layout durante el parse
 })();
 
 // ================= Reveal, figuras grabadas y sellos (IntersectionObserver) =================
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var todos = document.querySelectorAll('.reveal, .fig, .sello');
-  // longitud real de cada trazo para que el dibujo vaya de 0 a 1
-  Array.prototype.forEach.call(document.querySelectorAll('.fig svg .traza'), function(p){
-    try { p.style.setProperty('--l', (p.getTotalLength() + 2).toFixed(1)); } catch(e){}
-  });
+  // longitud real de cada trazo para que el dibujo vaya de 0 a 1; se mide
+  // cuando la figura entra en pantalla (medirla al cargar forzaba un layout de toda la página)
+  function medirTrazos(fig){
+    Array.prototype.forEach.call(fig.querySelectorAll('svg .traza'), function(p){
+      try { p.style.setProperty('--l', (p.getTotalLength() + 2).toFixed(1)); } catch(e){}
+    });
+    void fig.offsetWidth;   // fija el punto de partida del trazo antes de animarlo
+  }
   if (reduce || !('IntersectionObserver' in window)){
     Array.prototype.forEach.call(todos, function(el){ el.classList.add('ve'); });
     return;
   }
   var io = new IntersectionObserver(function(entradas){
     entradas.forEach(function(en){
-      if (en.isIntersecting){ en.target.classList.add('ve'); io.unobserve(en.target); }
+      if (en.isIntersecting){ if (en.target.classList.contains('fig')) medirTrazos(en.target); en.target.classList.add('ve'); io.unobserve(en.target); }
     });
   }, {rootMargin:'0px 0px -8% 0px', threshold:0.12});
   Array.prototype.forEach.call(todos, function(el){ io.observe(el); });
@@ -1892,8 +1915,10 @@ document.addEventListener('click', function(e){
   var destello= document.getElementById('lam-destello');
   var portada = document.getElementById('lam-portada');
   var rotulos = document.getElementById('lam-rotulos');
-  var figN    = document.getElementById('fig-n');
   var figTxt  = document.getElementById('fig-txt');
+  var cActPct = document.getElementById('corte-act-pct');
+  var cActNom = document.getElementById('corte-act-nom');
+  var navBarra= document.querySelector('nav.barra');
   var lienzo  = fijo ? fijo.querySelector('.lam-lienzo') : null;
   if (!video || !escena) return;
 
@@ -1941,9 +1966,10 @@ document.addEventListener('click', function(e){
   var MOMENTOS = [0, 0.95, 2.45, 3.5, 4.85, 6.9];
   var LISTO_T = 7.3;          // el sello del vaso ya está encendido (7,25 s)
   var CIERRE_DESDE = 0.90;    // en p (el video ya llegó a su último cuadro)
+  // Lámina I es la Fig. 1 (cuadros clave 1a–1e en la tira); el corte es la Fig. 2.
   var FIGS = [
     'Mocachino: espresso, chocolate, leche, espuma y cacao',
-    'El espresso de grano','Cae el hilo de chocolate','La leche, a su temperatura','La espuma corona el vaso','Cacao y sello Café Oriente',
+    'Paso 1 de 5 · El espresso de grano','Paso 2 de 5 · Cae el hilo de chocolate','Paso 3 de 5 · La leche, a su temperatura','Paso 4 de 5 · La espuma corona el vaso','Paso 5 de 5 · Cacao y sello Café Oriente',
     'Listo: el mocachino terminado'
   ];
 
@@ -1982,7 +2008,8 @@ document.addEventListener('click', function(e){
   var h50 = false, h100 = false;
 
   // --- geometría (se mide una vez, al cargar fuentes y al redimensionar) ---
-  var arriba = 0, recorrido = 1, W = 1, H = 1, panelTop = 1e9;
+  var arriba = 0, recorrido = 1, W = 1, H = 1, panelTop = 1e9, navBot = 64;
+  var panelTops = {0:1e9, 1:1e9, 5:1e9};   // teléfono: alto del panel en cada estado (título / tarjeta / tarjeta corta)
   var vb = {x:0,y:0,w:1,h:1};       // caja base del video dentro del lienzo fijo
   var puntos = {};                  // punto de aterrizaje de cada rótulo (escritorio)
   var svgNS = 'http://www.w3.org/2000/svg';
@@ -2012,6 +2039,7 @@ document.addEventListener('click', function(e){
     var vr = taza.getBoundingClientRect();
     video.style.transform = tr;
     vb = {x: vr.left - fr.left, y: vr.top - fr.top, w: vr.width, h: vr.height};
+    navBot = navBarra ? navBarra.getBoundingClientRect().bottom - fr.top : 64;
     if (!movil.matches){
       rots.forEach(function(r){
         var punto = r.querySelector('.rot-punto');
@@ -2021,10 +2049,38 @@ document.addEventListener('click', function(e){
     }
     medirPanel();
   }
+  // Teléfono: mide dónde empieza el panel inferior en cada uno de sus tres
+  // estados (título, tarjeta de capa, tarjeta corta de la capa 5) para que el
+  // encuadre del video deje el vaso siempre por encima del texto.
   function medirPanel(){
     if (!movil.matches){ panelTop = 1e9; return; }
     var fr = fijo.getBoundingClientRect();
-    panelTop = panel.getBoundingClientRect().top - fr.top;
+    function top(){ return panel.getBoundingClientRect().top - fr.top; }
+    var antes = {
+      tit: titulo.classList.contains('on'), corte: corte.classList.contains('on'), f5: escena.classList.contains('fase5'),
+      on: rots.map(function(r){ return r.classList.contains('on'); }), prev: rots.map(function(r){ return r.classList.contains('prev'); })
+    };
+    rots.forEach(function(r){ r.classList.remove('on', 'prev'); });
+    escena.classList.remove('fase5');
+    titulo.classList.add('on'); corte.classList.remove('on');
+    panelTops[0] = top();
+    titulo.classList.remove('on'); corte.classList.add('on');
+    var m = 1e9;
+    rots.forEach(function(r){
+      if (+r.dataset.rot === 5) return;
+      r.classList.add('on'); m = Math.min(m, top()); r.classList.remove('on');
+    });
+    panelTops[1] = m;
+    escena.classList.add('fase5');
+    rots.forEach(function(r){ if (+r.dataset.rot === 5) r.classList.add('on'); });
+    panelTops[5] = top();
+    rots.forEach(function(r, i){ r.classList.toggle('on', antes.on[i]); r.classList.toggle('prev', antes.prev[i]); });
+    escena.classList.toggle('fase5', antes.f5);
+    titulo.classList.toggle('on', antes.tit); corte.classList.toggle('on', antes.corte);
+    panelTopDe(pasoActivo);
+  }
+  function panelTopDe(idx){
+    panelTop = !movil.matches ? 1e9 : (idx === 0 ? panelTops[0] : (idx === 5 ? panelTops[5] : panelTops[1]));
   }
   function progreso(){
     var p = (window.scrollY - arriba) / recorrido;
@@ -2033,16 +2089,34 @@ document.addEventListener('click', function(e){
   function suave(x){ x = x < 0 ? 0 : (x > 1 ? 1 : x); return x * x * (3 - 2 * x); }
   function clamp01(x){ return x < 0 ? 0 : (x > 1 ? 1 : x); }
 
-  // Encuadre del espécimen (transform-origin: 50 % 0). Teléfono: arranca
-  // enmarcado al 66 % sobre el titular, crece a pantalla completa de 0,25 a
-  // 1,2 s y el encuadre sube con la bebida. Al final, zoom ×1,45 sobre el
-  // vaso terminado (beat "Listo") en todas las pantallas.
+  // Encuadre del espécimen (transform-origin: 50 % 0).
+  // Escritorio: tamaño natural; en "Listo" zoom ×1,45 sobre el vaso terminado.
+  // Teléfono: se calcula con la geometría medida. Las filas r0–1240 del cuadro
+  // (corona de espresso arriba, base del vaso abajo) caben entre la barra
+  // superior y el panel de texto del estado actual; r0 pasa de 160 a 300 cuando
+  // cae el hilo (la corona puede entrar bajo la barra). El cambio de panel
+  // (título → tarjeta en 0,95 s; tarjeta → tarjeta corta en 6,9 s) se
+  // interpola para que el cuadro crezca sin saltos. En "Listo" el cuadro hace
+  // zoom ×1,25 y su base baja hasta cubrir el fondo (menos la barra de marcas).
   function encuadre(t){
-    var s = 1, ty = 0;
-    if (movil.matches){
-      var k = suave((t - 0.25) / 0.95);
-      s = 0.66 + 0.34 * k;
-      ty = 8 - 20 * k - 10 * suave((t - 2.6) / 3.0) + 9 * suave((t - 6.9) / 0.7);   // +8 %: el cuadro empieza bajo la barra
+    var s = 1, ty = 0, k;
+    if (movil.matches && panelTops[0] < 1e8){
+      var sc = Math.max(vb.w / 720, vb.h / 1280), offY = (vb.h - 1280 * sc) / 2;
+      var yTop = navBot + 8;
+      var yBot = (panelTops[0] - 12)
+        + (panelTops[1] - panelTops[0]) * suave((t - 0.95) / 0.5)
+        + (panelTops[5] - panelTops[1]) * suave((t - 6.9) / 0.4);
+      var r0 = 160 + 140 * suave((t - 2.2) / 0.5), r1 = 1240;
+      s = Math.min(1, (yBot - yTop) / ((r1 - r0) * sc));
+      ty = (yTop - (offY + r0 * sc) * s) / vb.h * 100;
+      k = suave((t - LISTO_T) / 0.6);
+      if (k > 0){
+        var base = ty / 100 * vb.h + s * vb.h;                       // borde inferior actual del cuadro
+        base += ((vb.h - 44) - base) * suave(k / 0.35);              // baja hasta la barra de marcas
+        s *= 1 + 0.25 * k;
+        ty = (base - s * vb.h) / vb.h * 100;
+      }
+      return {s: s, ty: ty};
     }
     var sz = 1 + 0.45 * suave((t - LISTO_T) / 0.6);
     return {s: s * sz, ty: ty + 62 * (1 - sz)};
@@ -2109,6 +2183,7 @@ document.addEventListener('click', function(e){
       pctN[i].textContent = f > 0 ? Math.round(c.pct * 100 * f) : '\u2014';
       fCorte[i].classList.toggle('on', on);
       if (fTit[i]) fTit[i].classList.toggle('on', on);
+      if (cActPct && idx === i + 1){ cActPct.textContent = Math.round(c.pct * 100 * f) + ' %'; cActNom.textContent = c.n; }
     });
     sello.classList.toggle('on', t >= 7.55);
   }
@@ -2144,14 +2219,13 @@ document.addEventListener('click', function(e){
       escena.classList.toggle('fase4', idx === 4);
       escena.classList.toggle('fase5', idx === 5);
       escena.classList.toggle('listo', idx === 6);
-      listoEl.classList.toggle('on', idx === 6);
-      var fi = idx === -1 ? 6 : idx;
-      figN.textContent = fi + 1;
-      figTxt.textContent = FIGS[fi];
-      requestAnimationFrame(medirPanel);
+      figTxt.textContent = FIGS[idx === -1 ? 6 : idx];
+      panelTopDe(idx);
     }
     cierre.classList.toggle('on', cerrado);
     escena.classList.toggle('cerrado', cerrado);
+    // el texto "Listo" entra 0,2 s después del beat: en teléfono el cuadro ya bajó hasta cubrir el fondo
+    listoEl.classList.toggle('on', idx === 6 && t >= LISTO_T + 0.2);
 
     if (p > 0.02) pista.classList.remove('ve');
     barra.classList.toggle('ve', p > 0.02 && !cerrado);
@@ -2166,6 +2240,7 @@ document.addEventListener('click', function(e){
     var ap = clamp01(p / 0.08);
     portada.style.opacity = (1 - ap).toFixed(3);
     rotulos.style.opacity = movil.matches ? '' : ap.toFixed(3);
+    rotulos.style.visibility = (movil.matches || ap > 0.02) ? '' : 'hidden';   // invisibles = fuera del orden de tabulación
 
     // destello anamórfico al encenderse el sello del vaso (7,1–7,6 s)
     var d = clamp01(1 - Math.abs(t - 7.32) / 0.28);
@@ -2184,7 +2259,7 @@ document.addEventListener('click', function(e){
   //     seek directo y tope de lo descargado ---
   function iniciar(){
     if (listo || !isFinite(video.duration) || video.duration <= 0) return;
-    duracion = video.duration; listo = true; aplicar();
+    duracion = video.duration; listo = true; aplicar(); vigilarRango();
   }
   medirEscena();
   video.addEventListener('loadedmetadata', iniciar);
@@ -2221,6 +2296,29 @@ document.addEventListener('click', function(e){
   video.addEventListener('progress', pedirCuadro);
   video.addEventListener('seeked', pedirCuadro);
   video.addEventListener('canplay', pedirCuadro);
+
+  // Requisito del hosting: el mp4 debe servirse con "Accept-Ranges: bytes"
+  // (curl -I -H 'Range: bytes=0-1' https://www.todovendingca.com/cafe-oriente/assets/mocachino-v2.mp4
+  // debe responder 206). Sin Range el navegador no puede saltar de cuadro
+  // (video.seekable queda vacío) y el hero se quedaría congelado en el cuadro 0:
+  // en ese caso, pasados 2,5 s, se muestra el vaso terminado.
+  function puedeBuscar(){
+    var sk = video.seekable;
+    return !!(sk && sk.length && sk.end(sk.length - 1) >= Math.min(1, (video.duration || 8) - 0.2));
+  }
+  var tRango = 0;
+  function vigilarRango(){
+    if (roto || !listo || !video.seekable) return;
+    clearTimeout(tRango);
+    if (puedeBuscar()) return;
+    tRango = setTimeout(function(){
+      if (roto || !listo || puedeBuscar()) return;
+      try { console.warn('Café Oriente: el servidor no acepta peticiones Range (video.seekable vacío); se muestra el vaso terminado.'); } catch(e){}
+      mostrarFinal();
+    }, 2500);
+  }
+  video.addEventListener('progress', vigilarRango);
+  video.addEventListener('canplay', vigilarRango);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) pedirCuadro(); });
 
   // --- saltos: rótulos, marcas y "Saltar animación" ---
