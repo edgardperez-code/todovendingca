@@ -70,6 +70,39 @@ Café Oriente:
    teléfono, correo, apertura de bebidas y en el 50 % / 100 % del hero. Solo envía si existe
    `window.plausible`; no se carga ningún script externo hasta que el dueño elija herramienta.
 
+## Página nueva desde cero (25/10/2026, sin publicar)
+
+El dueño pidió rehacer `/cafe-oriente` desde cero, "muy artística", con un hero que explique qué es
+un mocachino. La sección anterior describe la versión previa; queda en el historial de git
+(commit `126f026`). La nueva ocupa el mismo archivo `client/public/cafe-oriente/index.html`.
+
+- **Cómo se eligió**: cuatro conceptos con prototipo del hero (Anatomía de un mocachino,
+  Tipografía monumental, Corto cinematográfico, Pop premium), un jurado de tres evaluadores y
+  demo navegable para el dueño (https://claude.ai/artifact/6JwBjReaY5rMcCUWAVovvf). Ganó
+  "Anatomía" por unanimidad; se le injertaron ideas de los otros tres.
+- **Idea**: la página es un atlas de láminas científicas. Lámina I es el hero: el mismo video
+  controlado por scroll (`preload="auto"`, avance directo con `currentTime`, ~450vh), con cinco
+  rótulos que señalan cada capa (espresso, chocolate, leche, espuma, cacao), corte transversal
+  del vaso que se llena, "MOCA / CHINO" en trazo dorado que se disuelve al empezar y la fórmula
+  "espresso + chocolate + leche + espuma + cacao" bajo el H1. Debajo, una tira de cuadros del
+  video (Fig. 1a–1e, `cuadro-*-v1.webp`) y el resto del contenido como láminas.
+- **Contenido**: el mismo de siempre (resumen speakable, de grano a taza, 10 bebidas con capas,
+  estación, pagos, empresas con instalación sin costo, 7 clientes, 10 preguntas, pie con NAP),
+  respetando las decisiones del 24/10 (solo Café Oriente es sin efectivo, la imagen de la
+  estación es un render, la barra de WhatsApp no tapa el pie, la barra superior no se parte).
+- **Respaldo del video**: si el video no muestra ningún cuadro, o si el servidor no acepta
+  peticiones Range (`video.seekable` vacío durante 2,5 s), se muestra `final-v1.webp`. El
+  hosting debe responder 206 a `curl -I -H 'Range: bytes=0-1' .../mocachino-v2.mp4`.
+- **Medido en local**: Lighthouse móvil 90 / 100 / 100 / 100, LCP 3,5 s, CLS 0, sin errores de
+  consola, sin desbordes de 320 a 1920 px, JSON-LD de 7 nodos en un `@graph`, FAQ visible = FAQPage.
+- **Pendiente antes de publicar**: probar en un iPhone y un Android reales (desbloqueo del salto
+  de video en Safari y encuadre en pantallas bajas). Las anclas y la curva del scroll están
+  medidas sobre `mocachino-v2.mp4`: si cambia el video, hay que volver a medirlas. Las
+  proporciones del corte del vaso son ilustrativas.
+- **Detalles menores conocidos**: en teléfono horizontal el video queda pequeño; a 360×640 queda
+  un hueco en la capa 4; la página se sirve sin compresión gzip/brotli (se arreglaría con
+  `compression()` en Express, fuera de esta página).
+
 ## Pendientes que siguen necesitando datos del dueño
 
 - Medidas exactas de la Bianchi LEI 400, voltaje y si usa agua de red o de garrafón.
