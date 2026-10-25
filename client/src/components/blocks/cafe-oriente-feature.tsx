@@ -9,7 +9,7 @@ const points = [
   { icon: CreditCard, title: "Sin efectivo", text: "Pago Móvil, débito, crédito y débito inmediato." },
 ];
 
-// Bloque de la marca de café en el home: foto real de la estación y enlace
+// Bloque de la marca de café en el home: imagen de la estación (un render) y enlace
 // a la página de marca (donde está la animación y el menú que convencen).
 export function CafeOrienteFeature() {
   return (

@@ -51,12 +51,15 @@ misma carpeta; la propuesta de rediseño completo del sitio está en
 Rediseño completo del sitio (ver `docs/propuesta-2026/PROPUESTA.md`). En lo que toca a
 Café Oriente:
 
-1. **Hero intacto** salvo tres mejoras de la auditoría: `preload="metadata"` con descarga
-   completa al primer gesto; con "reducir movimiento" no se descarga el video; si el video
-   falla, se muestra `final-v1.webp`. Curva, MOMENTOS, 450vh, textos y video: sin cambios.
+1. **Hero intacto**: el video se descarga desde que abre la página (`preload="auto"`, como en
+   el hero aprobado). Se probó esperar al primer gesto (`preload="metadata"`) y se revirtió: en
+   datos móviles lentos el video quedaba congelado al empezar a bajar. Dos mejoras: con "reducir
+   movimiento" se cancela la descarga del video, y si el video no llega a mostrar ningún cuadro se muestra
+   `final-v1.webp` (un corte de red a mitad de descarga no cuenta). Curva, MOMENTOS, 450vh,
+   textos y video: sin cambios.
 2. **Todo lo demás rediseñado**: resumen con datos clave (`#resumen`, párrafo `.speakable`),
-   proceso, menú en tarjetas con ficha compartida (`aria-expanded`, Escape), estación con foto
-   real, pagos, `#empresas` con proceso de 3 pasos y tarjeta de contacto, FAQ de 10 preguntas
+   proceso, menú en tarjetas con ficha compartida (`aria-expanded`, Escape), estación (la imagen es un
+   render, no una foto de una instalación), pagos, `#empresas` con proceso de 3 pasos y tarjeta de contacto, FAQ de 10 preguntas
    (visibles y en FAQPage), footer con NAP y enlaces internos, barra fija de WhatsApp en móvil
    (solo aparece después del hero).
 3. **SEO**: título de 61 caracteres, descripción de 153, sin `meta keywords`, favicons,

@@ -37,8 +37,8 @@ export const SERVICES = [
   {
     id: "pagos",
     title: "Pagos modernos",
-    description: "Pago Móvil, tarjetas de débito y crédito y efectivo según el modelo. Menos manejo de dinero, más higiene y seguridad.",
-    tags: ["Pago Móvil", "Tarjetas"],
+    description: "Pago Móvil, tarjetas de débito y crédito y efectivo. Rápido para quien compra y sin manejo de dinero para tu negocio.",
+    tags: ["Pago Móvil", "Tarjetas", "Efectivo"],
   },
 ] as const;
 

@@ -67,7 +67,7 @@ export default function VendingGimnasios() {
           { value: `${gyms.length}`, label: "Espacios deportivos activos" },
           { value: "24/7", label: "Disponibilidad" },
           { value: "Frías", label: "Energéticas y agua" },
-          { value: "Pago Móvil", label: "Y tarjetas" },
+          { value: "Pago Móvil", label: "Tarjetas y efectivo" },
         ]}
       />
 

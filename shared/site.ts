@@ -131,7 +131,7 @@ export const ROUTES: RouteDef[] = [
     description:
       "Vending 24 horas para clínicas y hospitales en Anzoátegui: snacks, bebidas y café en grano para pacientes y personal de guardia. Instalación gratuita.",
     summary:
-      "Vending para clínicas y hospitales: disponibilidad 24 horas, higiene y pagos sin efectivo, café en grano para el personal de guardia, clientes actuales (Clínica Anzoátegui, Clínica Zambrano) y preguntas frecuentes.",
+      "Vending para clínicas y hospitales: disponibilidad 24 horas, higiene, pagos con Pago Móvil, tarjeta o efectivo, café en grano para el personal de guardia, clientes actuales (Clínica Anzoátegui, Clínica Zambrano) y preguntas frecuentes.",
     lastmod: LASTMOD,
     changefreq: "monthly",
     priority: 0.8,

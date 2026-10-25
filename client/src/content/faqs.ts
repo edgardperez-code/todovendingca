@@ -43,7 +43,7 @@ export const FAQS: FAQ[] = [
     id: "pagos",
     question: "¿Qué formas de pago aceptan las máquinas expendedoras?",
     answer:
-      "Las máquinas de Todo Vending CA aceptan Pago Móvil, tarjetas de débito y crédito y, según el modelo, efectivo. La estación de café Café Oriente funciona 100 % sin efectivo.",
+      "Las máquinas de Todo Vending CA aceptan Pago Móvil, tarjetas de débito y crédito y efectivo. La estación de café Café Oriente funciona 100 % sin efectivo.",
     topics: ["general", "clinicas"],
   },
   {
