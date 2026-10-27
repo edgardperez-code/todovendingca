@@ -42,8 +42,9 @@
 <link rel="preload" as="font" type="font/woff2" href="/cafe-oriente/assets/bricolage-latin-wght-v1.woff2" crossorigin>
 <link rel="preload" as="image" href="/cafe-oriente/assets/poster-v1.webp" fetchpriority="high">
 <!-- Clase de modo antes de pintar: «js» si hay JavaScript; «estatico» si la persona pidió
-     reducir el movimiento o el teléfono está apaisado (escena fija, vaso terminado). -->
-<script>(function(d){d.className='js';try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(max-width:900px) and (max-height:520px)').matches)d.classList.add('estatico')}catch(e){}})(document.documentElement)</script>
+     reducir el movimiento o la pantalla es muy baja (teléfono apaisado, zoom de 150–200 %):
+     escena fija, vaso terminado, nada cortado. -->
+<script>(function(d){d.className='js';try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||matchMedia('(max-height:540px)').matches)d.classList.add('estatico')}catch(e){}})(document.documentElement)</script>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -407,7 +408,11 @@
   --s1:4px; --s2:8px; --s3:12px;
   --nav-h:64px;
   --px:clamp(1rem,4vw,2.6rem);
+  /* retícula única: la barra, el hero y las secciones arrancan en la misma vertical */
+  --ancho:1320px;
+  --borde:max(var(--px),calc((100% - var(--ancho)) / 2));
   --sec-r:46px;
+  --r-card:24px; --r-grande:32px;
 }
 @media(max-width:960px){:root{--nav-h:60px}}
 @media(max-width:640px){:root{--sec-r:30px}}
@@ -421,9 +426,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 ul,ol{list-style:none}
 ::selection{background:var(--dorado);color:var(--tinta)}
 :focus-visible{outline:3px solid var(--naranja-boton);outline-offset:3px;border-radius:8px}
-.oscuro :focus-visible,.barra :focus-visible,.sticky-wa :focus-visible{outline-color:var(--dorado)}
+.oscuro :focus-visible,.barra :focus-visible,.ficha :focus-visible{outline-color:var(--dorado)}
+.sticky-wa :focus-visible,.faq-cab :focus-visible{outline-color:var(--tinta)}
 .defs{position:absolute;width:0;height:0;overflow:hidden}
-.wrap{width:min(1180px,calc(100% - 2 * var(--px)));margin-inline:auto}
+.wrap{width:min(var(--ancho),calc(100% - 2 * var(--px)));margin-inline:auto}
 
 /* ---------- pastillas, botones ---------- */
 .tag{display:inline-flex;align-items:center;gap:.55rem;max-width:100%;padding:.5rem .9rem .48rem;border-radius:999px;border:2px solid currentColor;font:700 .74rem/1.2 var(--fb);letter-spacing:.15em;text-transform:uppercase}
@@ -432,11 +438,11 @@ ul,ol{list-style:none}
   display:inline-flex;align-items:center;justify-content:center;gap:.55rem;min-height:50px;
   padding:.8rem 1.4rem;border-radius:999px;text-decoration:none;white-space:nowrap;
   font:600 .95rem/1.1 var(--fb);border:var(--b) solid var(--tinta);
-  box-shadow:5px 5px 0 var(--tinta);
+  box-shadow:var(--s1) var(--s1) 0 var(--tinta);
   transition:transform .14s ease,box-shadow .14s ease,background-color .2s;
 }
-.btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--tinta)}
-.btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--tinta)}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--tinta)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--tinta)}
 .btn svg{width:19px;height:19px;flex:0 0 19px;fill:currentColor}
 .btn-naranja{background:var(--naranja-boton);color:#fff}
 .btn-crema{background:var(--crema);color:var(--tinta)}
@@ -445,9 +451,9 @@ ul,ol{list-style:none}
 .btn .wa-ico{width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:var(--wa);display:grid;place-items:center;border:2px solid var(--tinta);margin-left:-.35rem}
 .btn .wa-ico svg{width:15px;height:15px;flex:none;fill:var(--tinta)}
 /* sobre fondos oscuros la sombra es dorada */
-.oscuro .btn{box-shadow:5px 5px 0 var(--dorado)}
-.oscuro .btn:hover{box-shadow:7px 7px 0 var(--dorado)}
-.oscuro .btn:active{box-shadow:1px 1px 0 var(--dorado)}
+.oscuro .btn{box-shadow:var(--s1) var(--s1) 0 var(--dorado)}
+.oscuro .btn:hover{box-shadow:6px 6px 0 var(--dorado)}
+.oscuro .btn:active{box-shadow:0 0 0 var(--dorado)}
 
 /* ================================================================
    BARRA SUPERIOR: espresso con dorado, siempre legible.
@@ -456,16 +462,16 @@ ul,ol{list-style:none}
    abierto limitado al alto de la pantalla, Escape cierra.
    ================================================================ */
 .barra{position:fixed;inset:0 0 auto;z-index:60;height:var(--nav-h);background:var(--espresso);color:var(--crema);box-shadow:0 1px 0 rgba(242,183,73,.28)}
-.nav-in{height:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0 var(--px);max-width:1520px;margin:0 auto}
-.marca{display:flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--crema);flex:none}
+.nav-in{height:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:0 var(--borde)}
+.marca{display:flex;align-items:center;gap:.65rem;min-height:44px;text-decoration:none;color:var(--crema);flex:none}
 .marca svg{width:40px;height:40px;flex:none;border-radius:50%;background:var(--crema);border:2px solid var(--dorado)}
 .marca-txt{display:flex;flex-direction:column;font:800 1.1rem/1 var(--fd);letter-spacing:.005em;white-space:nowrap}
 .marca-txt small{font:600 .72rem/1.15 var(--fb);letter-spacing:.09em;text-transform:uppercase;color:var(--dorado);margin-top:.3rem}
 .nav-links{display:flex;align-items:center;gap:1.45rem}
 .nav-links a{display:inline-flex;align-items:center;color:rgba(255,246,234,.92);text-decoration:none;font:600 .84rem/1 var(--fb);white-space:nowrap;min-height:40px}
 .nav-links a:hover{color:var(--dorado)}
-.nav-links .nav-cta{gap:.45rem;background:var(--wa);color:var(--tinta);padding:0 1rem;min-height:40px;border-radius:999px;border:2px solid var(--tinta);box-shadow:3px 3px 0 var(--dorado);transition:transform .14s,box-shadow .14s}
-.nav-links .nav-cta:hover{color:var(--tinta);transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--dorado)}
+.nav-links .nav-cta{gap:.45rem;background:var(--wa);color:var(--tinta);padding:0 1rem;min-height:40px;border-radius:999px;border:2px solid var(--tinta);box-shadow:var(--s1) var(--s1) 0 var(--dorado);transition:transform .14s,box-shadow .14s}
+.nav-links .nav-cta:hover{color:var(--tinta);transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--dorado)}
 .nav-links .nav-cta:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--dorado)}
 .nav-cta svg{width:16px;height:16px;fill:currentColor;flex:none}
 .nav-links .nav-sitio{color:var(--dorado);font-size:.8rem;border-left:1px solid rgba(242,183,73,.4);padding-left:1.15rem}
@@ -513,9 +519,12 @@ ul,ol{list-style:none}
   position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;
   --bg:#FFF6EA;--fg:#2B1709;--sh:#2B1709;--wc:#2B1709;--cs:#E06A3B;
   --cinta-h:40px;
-  --cap-h:min(calc(100svh - var(--nav-h) - var(--cinta-h) - 2.6rem),800px);
-  --cap-w:calc(var(--cap-h) * 9 / 16);
   --wfs:min(11vw,17svh,10.4rem);
+  --wtop:calc(var(--nav-h) + 1.05rem + 10px);
+  /* el arco empieza justo bajo la línea base de MOCACHINO: solo roza la base de las letras */
+  --cap-top:calc(var(--wtop) + var(--wfs) * .7);
+  --cap-h:min(calc(100svh - var(--cap-top) - var(--cinta-h) - 1.3rem),800px);
+  --cap-w:calc(var(--cap-h) * 9 / 16);
   --word-h:calc(var(--wfs) * .86 + .2rem);
   --gx:clamp(1.2rem,3.2vw,3.2rem);
   --peek:52px;
@@ -531,21 +540,24 @@ ul,ol{list-style:none}
 .tinte.on{visibility:visible}
 
 /* --- la palabra gigante: empieza delineada y se rellena con la bebida --- */
-.palabra{position:absolute;left:0;right:0;top:calc(var(--nav-h) + 1.05rem);z-index:1;text-align:center;pointer-events:none;user-select:none;font:800 var(--wfs)/.9 var(--fn);letter-spacing:-.035em;text-transform:uppercase;white-space:nowrap}
+.palabra{position:absolute;left:0;right:0;top:var(--wtop);z-index:1;--fondo:var(--bg);text-align:center;pointer-events:none;user-select:none;font:800 var(--wfs)/.9 var(--fn);letter-spacing:-.035em;text-transform:uppercase;white-space:nowrap}
 .palabra-in{position:relative;display:inline-block}
-.palabra .hueco{color:color-mix(in srgb,var(--wc) 8%,transparent);-webkit-text-stroke:3px var(--wc)}
-.palabra .lleno{position:absolute;inset:0;color:var(--wc);-webkit-text-stroke:3px var(--wc);clip-path:inset(-10% calc(100% - var(--fill,0%)) -10% -2%)}
+/* trazo primero y relleno sólido encima: el relleno tapa la mitad interior del trazo y
+   con ella los contornos solapados de la fuente variable (travesaños de la A y la H) */
+.palabra .hueco{color:color-mix(in srgb,var(--wc) 9%,var(--fondo));-webkit-text-stroke:6px var(--wc);paint-order:stroke fill}
+.palabra .lleno{position:absolute;inset:0;color:var(--wc);-webkit-text-stroke:6px var(--wc);paint-order:stroke fill;clip-path:inset(-10% calc(100% - var(--fill,0%)) -10% -2%)}
+.tinte .palabra{--fondo:var(--bg2)}
 .palabra .asi{
-  position:absolute;left:0;top:0;transform:translate(-14%,-26%) rotate(-6deg);transform-origin:0 0;
+  position:absolute;left:0;top:0;transform:translate(-14%,-16%) rotate(-4deg);transform-origin:0 0;
   font:700 clamp(.74rem,calc(var(--wfs) * .095),1rem)/1 var(--fb);letter-spacing:.16em;text-transform:uppercase;
   background:var(--naranja-boton);color:#fff;padding:.62em 1em .58em;border-radius:999px;border:var(--b) solid var(--tinta);box-shadow:var(--s1) var(--s1) 0 var(--tinta);white-space:nowrap;
 }
 
 /* --- lienzo: izquierda (titular y pila) · centro (cápsula) · derecha (stickers) --- */
-.lienzo{position:relative;z-index:2;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.05fr) var(--cap-w) minmax(0,.78fr);column-gap:var(--gx);padding:1.3rem var(--px) 1.3rem}
+.lienzo{position:relative;z-index:2;flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.05fr) var(--cap-w) minmax(0,.78fr);column-gap:var(--gx);padding:1.3rem var(--borde) 1.3rem}
 .izq{grid-column:1;min-height:0;display:grid;padding-top:var(--word-h)}
 .panel{grid-area:1/1;min-height:0;display:grid;position:relative}
-.cap{grid-column:2;align-self:center;position:relative;height:var(--cap-h);width:var(--cap-w);z-index:3}
+.cap{grid-column:2;align-self:end;position:relative;height:var(--cap-h);width:var(--cap-w);z-index:3}
 .capsula{position:relative;width:100%;height:100%;border-radius:999px 999px 34px 34px;overflow:hidden;border:var(--b) solid var(--tinta);box-shadow:var(--s3) var(--s3) 0 var(--cs);background:#2a1608 url("/cafe-oriente/assets/poster-v1.webp") center 58%/cover no-repeat}
 .capsula video,.capsula img{width:100%;height:100%;object-fit:cover;object-position:50% 58%}
 .der{grid-column:3;min-height:0;display:grid;padding-top:var(--word-h)}
@@ -569,14 +581,14 @@ ul,ol{list-style:none}
 .intro .def b{font-family:var(--fd);font-style:italic;font-weight:700}
 .ctas{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.35rem}
 .pista-hint{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.2rem;font:600 .78rem/1 var(--fb);letter-spacing:.12em;text-transform:uppercase}
-.pista-hint svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;animation:rebota 1.5s ease-in-out infinite}
+.pista-hint svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;animation:rebota 1.5s ease-in-out 3}
 @keyframes rebota{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
 
 /* --- la pila de tarjetas: cada una deja a la vista número y nombre --- */
 .pila{grid-area:1/1;align-self:end;display:grid;position:relative;padding-top:calc(var(--peek) * 5);z-index:3}
 .carta{
   grid-area:1/1;align-self:start;position:relative;max-width:540px;
-  border:var(--b) solid var(--tinta);border-radius:26px;box-shadow:var(--s2) var(--s2) 0 var(--sh);
+  border:var(--b) solid var(--tinta);border-radius:var(--r-card);box-shadow:var(--s2) var(--s2) 0 var(--sh);
   padding:.85rem 1.35rem 1.25rem;min-height:var(--card-h,272px);display:flex;flex-direction:column;
   --num:var(--dorado);--em:var(--dorado);will-change:transform;
 }
@@ -587,7 +599,8 @@ ul,ol{list-style:none}
 .carta[data-i="4"]{background:var(--naranja);color:var(--tinta);--num:var(--tinta);--em:var(--crema)}
 .carta[data-i="5"]{background:var(--dorado);color:var(--tinta);--num:var(--tinta);--em:var(--naranja-hondo);box-shadow:var(--s2) var(--s2) 0 var(--crema)}
 /* antes del primer cálculo (con JS) las tarjetas esperan fuera de cuadro */
-.js:not(.estatico) .carta{visibility:hidden;transform:translate3d(0,110vh,0)}
+.js:not(.estatico) .carta{opacity:0;transform:translate3d(0,110vh,0)}
+.carta{pointer-events:none}
 .carta-cab{display:flex;align-items:center;gap:.7rem;min-height:calc(var(--peek) - .85rem - var(--b) - 4px)}
 .carta-num{font:800 2.25rem/1 var(--fn);letter-spacing:-.05em;color:var(--num)}
 .carta-nom{font:700 .8rem/1 var(--fb);letter-spacing:.14em;text-transform:uppercase}
@@ -607,16 +620,18 @@ ul,ol{list-style:none}
 .stickers{grid-area:1/1;align-self:center;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1.1rem 1.2rem;max-width:360px;justify-self:center}
 .sello{position:relative;width:clamp(118px,11vw,156px);aspect-ratio:1}
 .sello-fondo{position:absolute;inset:0;border-radius:50%;background:var(--sh);transform:translate(var(--s1),var(--s1))}
-.sello-aro{position:absolute;inset:0;width:100%;height:100%;animation:gira 30s linear infinite;will-change:transform}
+/* el sello gira y las marquesinas avanzan con el scroll (JS): si el dedo para, todo para.
+   Nada se mueve solo (WCAG 2.2.2); sin JS o con «reducir movimiento», quietos. */
+.sello-aro{position:absolute;inset:0;width:100%;height:100%}
 .sello-iso{position:absolute;left:32%;top:32%;width:36%;height:36%}
-@keyframes gira{to{transform:rotate(360deg)}}
-.stk-10{width:clamp(96px,8.2vw,118px);aspect-ratio:1;border-radius:50%;background:var(--crema);color:var(--tinta);border:var(--b) solid var(--tinta);box-shadow:var(--s1) var(--s1) 0 var(--sh);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(9deg);text-align:center;line-height:1}
+.stk-10{width:clamp(112px,8.2vw,120px);aspect-ratio:1;border-radius:50%;background:var(--crema);color:var(--tinta);border:var(--b) solid var(--tinta);box-shadow:var(--s1) var(--s1) 0 var(--sh);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(9deg);text-align:center;line-height:1}
 .stk-10 b{font:800 clamp(2.1rem,2.9vw,2.8rem)/.9 var(--fn);letter-spacing:-.04em}
-.stk-10 span{font:700 .72rem/1.15 var(--fb);letter-spacing:.06em;text-transform:uppercase;margin-top:.25rem}
+.stk-10 span{font:700 .72rem/1.15 var(--fb);letter-spacing:.04em;text-transform:uppercase;margin-top:.2rem}
+.stk-10 em{display:block;font-style:normal;letter-spacing:.02em}
 .estrella-wrap{filter:drop-shadow(var(--s1) var(--s1) 0 var(--sh))}
 .estrella{width:clamp(108px,9vw,128px);aspect-ratio:1;display:grid;place-items:center;text-align:center;background:var(--naranja-boton);color:#fff;transform:rotate(-7deg);font:800 .76rem/1.15 var(--fb);letter-spacing:.05em;text-transform:uppercase;
   clip-path:polygon(50% 0%,57.1% 9.6%,67.1% 3%,70.5% 14.5%,82.1% 11.7%,81.4% 23.6%,93.3% 25%,88.5% 36%,99.2% 41.3%,91% 50%,99.2% 58.7%,88.5% 64%,93.3% 75%,81.4% 76.4%,82.1% 88.3%,70.5% 85.5%,67.1% 97%,57.1% 90.4%,50% 100%,42.9% 90.4%,32.9% 97%,29.5% 85.5%,17.9% 88.3%,18.6% 76.4%,6.7% 75%,11.5% 64%,.8% 58.7%,9% 50%,.8% 41.3%,11.5% 36%,6.7% 25%,18.6% 23.6%,17.9% 11.7%,29.5% 14.5%,32.9% 3%,42.9% 9.6%)}
-.ficha-it{background:var(--espresso);color:var(--crema);border:var(--b) solid var(--tinta);border-radius:20px;box-shadow:var(--s1) var(--s1) 0 var(--dorado);padding:.75rem 1rem .8rem;transform:rotate(2.5deg);line-height:1.1}
+.ficha-it{background:var(--espresso);color:var(--crema);border:var(--b) solid var(--tinta);border-radius:var(--r-card);box-shadow:var(--s1) var(--s1) 0 var(--dorado);padding:.75rem 1rem .8rem;transform:rotate(2.5deg);line-height:1.1}
 .ficha-it b{display:block;font:800 1.15rem/1.05 var(--fd);color:var(--dorado)}
 .ficha-it span{display:block;font:600 .72rem/1.2 var(--fb);letter-spacing:.1em;text-transform:uppercase;margin-top:.3rem}
 
@@ -625,7 +640,7 @@ ul,ol{list-style:none}
 .pista.listo .sello-listo{transform:translate(-50%,-50%) rotate(-10deg) scale(1)}
 
 /* --- cierre: «Este respiro, en tu empresa.» alrededor de la cápsula --- */
-.cierre{position:absolute;z-index:4;left:0;right:0;top:var(--nav-h);bottom:var(--cinta-h);display:grid;grid-template-columns:minmax(0,1.05fr) var(--cap-w) minmax(0,.78fr);column-gap:var(--gx);padding:1.3rem var(--px);opacity:0;visibility:hidden;pointer-events:none;color:var(--crema)}
+.cierre{position:absolute;z-index:4;left:0;right:0;top:var(--nav-h);bottom:var(--cinta-h);display:grid;grid-template-columns:minmax(0,1.05fr) var(--cap-w) minmax(0,.78fr);column-gap:var(--gx);padding:1.3rem var(--borde);opacity:0;visibility:hidden;pointer-events:none;color:var(--crema)}
 .cierre.on{visibility:visible;pointer-events:auto}
 .cierre-txt{grid-column:1;align-self:center;padding-top:var(--word-h);max-width:540px}
 .cierre .tag{background:var(--dorado);color:var(--tinta);border-color:var(--dorado)}
@@ -633,11 +648,12 @@ ul,ol{list-style:none}
 .cierre h2 em{font-style:italic;font-weight:600;color:var(--dorado)}
 .cierre-txt p{max-width:44ch;font-size:clamp(.96rem,1.1vw,1.05rem);line-height:1.6;color:rgba(255,246,234,.9)}
 .cierre-txt p strong{color:var(--dorado);font-weight:700}
+.cierre-txt p .corto,.cifra .corto{display:none}
 .cierre .ctas{margin-top:1.3rem}
 .confianza{display:flex;gap:.7rem;align-items:flex-start;margin-top:1.4rem;max-width:46ch;font-size:.86rem!important;line-height:1.5}
 .confianza i{flex:none;width:30px;height:30px;border-radius:50%;background:var(--dorado);color:var(--tinta);display:grid;place-items:center;font:800 .95rem/1 var(--fb);font-style:normal;border:2px solid var(--tinta)}
 .cifras{grid-column:3;align-self:center;padding-top:var(--word-h);display:grid;grid-template-columns:1fr 1fr;gap:1rem;width:100%;max-width:360px;justify-self:center}
-.cifra{border-radius:22px;border:var(--b) solid var(--tinta);padding:1rem 1rem .9rem;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end;line-height:1}
+.cifra{border-radius:var(--r-card);border:var(--b) solid var(--tinta);padding:1rem 1rem .9rem;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end;line-height:1}
 .cifra b{font:800 clamp(1.9rem,2.9vw,2.9rem)/.9 var(--fn);letter-spacing:-.045em;white-space:nowrap}
 .cifra span{font:700 .72rem/1.2 var(--fb);letter-spacing:.1em;text-transform:uppercase;margin-top:.5rem}
 .cifra.k1{background:var(--dorado);color:var(--tinta);box-shadow:var(--s2) var(--s2) 0 var(--crema);transform:rotate(-1.5deg)}
@@ -648,10 +664,9 @@ ul,ol{list-style:none}
 /* --- pie de la escena: marquesina + «Saltar animación» --- */
 .pie-escena{position:relative;z-index:8;height:var(--cinta-h);flex:none;display:flex;align-items:stretch;background:var(--pbg,var(--fg));color:var(--pfg,var(--bg))}
 .cinta{flex:1;min-width:0;overflow:hidden;display:flex;align-items:center;white-space:nowrap;font:700 .74rem/1 var(--fb);letter-spacing:.2em;text-transform:uppercase}
-.cinta-track{display:inline-flex;animation:marquesina 38s linear infinite}
+.cinta-track{display:inline-flex}
 .cinta-track > span{display:inline-flex;gap:2rem;padding-right:2rem}
 .cinta-track i{font-style:normal;opacity:.7}
-@keyframes marquesina{to{transform:translateX(-50%)}}
 .saltar{flex:none;display:inline-flex;align-items:center;gap:.45rem;padding:0 1.1rem;background:var(--dorado);color:var(--tinta);border-left:var(--b) solid var(--tinta);font:700 .8rem/1 var(--fb);text-decoration:none;white-space:nowrap}
 .saltar svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .saltar:hover{background:var(--crema)}
@@ -662,7 +677,9 @@ ul,ol{list-style:none}
   .carta{--card-h:236px;padding-bottom:1.05rem}
   .carta-num{font-size:1.95rem}
   .carta-txt .largo{display:none}.carta-txt .corto{display:inline}
-  .intro .def{display:none}
+  .sub .largo{display:none}.sub .corto{display:inline}
+  .intro .sub{margin:.8rem 0 .5rem}
+  .formula{margin-top:.95rem}
   .pista-hint{display:none}
 }
 @media(min-width:901px) and (max-height:700px){
@@ -673,6 +690,26 @@ ul,ol{list-style:none}
   .carta-dato{display:none}
   .intro .sub{display:none}
 }
+/* escritorio muy bajo (zoom de 150–200 %, portátiles con barras): todo dentro de la escena */
+@media(min-width:901px) and (max-height:660px){
+  .cierre h2{font-size:clamp(1.9rem,3vw,2.5rem);margin:.55rem 0 .5rem}
+  .cierre .tag{display:none}
+  .cierre-txt p .largo,.confianza .largo{display:none}
+  .cierre-txt p .corto{display:inline}
+  .cierre .ctas{margin-top:.85rem}
+  .confianza{margin-top:.8rem}
+  .cifras{gap:.65rem}
+  .cifra{min-height:0;padding:.6rem .75rem .55rem}
+  .cifra b{font-size:clamp(1.45rem,2.2vw,1.8rem)}
+  .cifra span{margin-top:.35rem}
+}
+@media(min-width:901px) and (max-height:640px){
+  .formula{display:none}
+  .intro .ctas .wa-ico{display:none}
+  .intro h1{font-size:clamp(1.9rem,3vw,2.3rem)}
+  .intro .def{margin-top:.6rem}
+  .ctas{margin-top:.9rem}
+}
 /* tabletas apaisadas y portátiles estrechos: columnas más justas */
 @media(min-width:901px) and (max-width:1180px){
   .escena{--gx:1.1rem}
@@ -682,6 +719,11 @@ ul,ol{list-style:none}
   .intro .tag{display:none}
   .stickers{gap:.8rem}
   .cifras{grid-template-columns:1fr;gap:.75rem;max-width:230px}
+}
+@media(min-width:901px) and (max-width:1180px) and (max-height:660px){
+  .cifras{grid-template-columns:1fr 1fr;max-width:300px;gap:.55rem}
+}
+@media(min-width:901px) and (max-width:1180px){
   .cifra{min-height:0;padding:.8rem .9rem .75rem;border-radius:18px}
   .cifra b{font-size:clamp(1.7rem,2.6vw,2.2rem)}
   .cierre h2{font-size:clamp(2rem,3.4vw,2.8rem)}
@@ -693,26 +735,47 @@ ul,ol{list-style:none}
    ================================================================ */
 @media(max-width:900px){
   .escena{--cinta-h:46px;--peek:7px;--wfs:min(11.4vw,6.4rem);--word-h:0px}
-  .palabra{position:relative;top:auto;margin-top:1.25rem;flex:none;line-height:.92}
+  .palabra{position:relative;top:auto;margin-top:2.15rem;flex:none;line-height:.92}
   .tinte{padding-top:var(--nav-h)}
-  .palabra .hueco{-webkit-text-stroke-width:2px}
-  .palabra .lleno{-webkit-text-stroke-width:2px}
-  .palabra .asi{left:auto;right:0;transform:translate(4%,-30%) rotate(5deg);transform-origin:100% 0;font-size:.72rem;padding:.5em .85em .46em}
+  .palabra .hueco{-webkit-text-stroke-width:4px}
+  .palabra .lleno{-webkit-text-stroke-width:4px}
+  /* el sticker va encima de la palabra y solo roza la punta de «HINO» */
+  .palabra .asi{left:auto;right:0;transform:translate(3%,-74%) rotate(3deg);transform-origin:100% 0;font-size:.72rem;letter-spacing:.13em;padding:.44em .8em .4em;box-shadow:3px 3px 0 var(--tinta)}
   .lienzo{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:.65rem 1rem .6rem}
   .cap{order:1;flex:1 1 0;min-height:0;width:100%;height:auto;display:flex;justify-content:center;align-self:stretch}
   .capsula{height:100%;width:auto;aspect-ratio:9/15;max-width:100%;border-radius:999px 999px 26px 26px;box-shadow:var(--s2) var(--s2) 0 var(--cs)}
   .capsula video,.capsula img{object-position:50% 72%}
   .sello-listo{font-size:1.75rem;top:12%;box-shadow:var(--s1) var(--s1) 0 var(--crema)}
   .izq{order:2;width:100%;max-width:560px;padding-top:0;flex:none;display:flex;flex-direction:column;gap:.55rem}
-  .der{display:none}
+  /* stickers: capa propia sobre la escena, colocada con la geometría de la cápsula
+     (medida al cargar y al redimensionar). Tableta: a los lados; teléfono: «10» en el hombro. */
+  .der{display:block;position:absolute;inset:0;z-index:4;padding:0;pointer-events:none}
+  .der[hidden]{display:none}
+  .der .stickers{display:block;position:static;max-width:none;gap:0}
+  .der .stickers > *{position:absolute}
+  .der:not([data-modo]) .stickers{display:none}
+  .der[data-modo="lados"] .sello{width:124px;left:calc(var(--cl) / 2 - 62px);top:calc(var(--ct) + var(--ch) * .07)}
+  .der[data-modo="lados"] .stk-10{width:112px;left:calc(var(--cl) / 2 - 40px);top:calc(var(--ct) + var(--ch) * .07 + 150px)}
+  .der[data-modo="lados"] .estrella-wrap{left:calc((var(--cr) + var(--lw)) / 2 - 58px);top:calc(var(--ct) + var(--ch) * .09)}
+  .der[data-modo="lados"] .estrella{width:116px}
+  .der[data-modo="lados"] .ficha-it{left:calc((var(--cr) + var(--lw)) / 2 - 86px);width:172px;top:calc(var(--ct) + var(--ch) * .09 + 150px)}
+  .der[data-modo="hombro"] .sello,.der[data-modo="hombro"] .estrella-wrap,.der[data-modo="hombro"] .ficha-it{display:none}
+  .der[data-modo="hombro"] .stk-10{width:70px;left:calc(var(--cl) + var(--cw) * .854 - 35px);top:calc(var(--ct) + var(--cw) * .146 - 30px);transform:rotate(9deg);transition:transform .3s cubic-bezier(.3,1.5,.45,1)}
+  .der[data-modo="hombro"] .stk-10 b{font-size:1.75rem}
+  .der[data-modo="hombro"] .stk-10 span{font-size:.72rem;letter-spacing:0;text-transform:none;margin-top:.1rem}
+  .der[data-modo="hombro"] .stk-10 em{display:none}
+  .pista.listo .der[data-modo="hombro"] .stk-10{transform:rotate(9deg) scale(0)}
   .receta{display:flex;gap:4px;width:100%}
   .rc{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;min-height:30px;padding:0 2px;border:2px solid var(--tinta);border-radius:10px;background:var(--crema);color:var(--tinta);font:600 .72rem/1 var(--fb);letter-spacing:-.01em;white-space:nowrap;transition:background-color .2s,color .2s}
   .rc.ok{background:var(--dorado)}
   .rc.ya{background:var(--tinta);color:var(--dorado);box-shadow:2px 2px 0 var(--sh)}
   .panel{display:grid}
   .intro{align-self:end;max-width:none}
-  .intro .tag,.intro .def,.formula,.pista-hint{display:none}
+  .intro .tag,.pista-hint{display:none}
+  /* la fórmula y el subtítulo siguen en el árbol accesible; a la vista queda la definición */
+  .formula,.intro .sub{position:absolute!important;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
   .intro h1{font-size:clamp(1.85rem,8.2vw,2.6rem);max-width:15ch}
+  .intro .def{margin:.45rem 0 0;max-width:none;font-size:.82rem;line-height:1.4;padding-left:.6rem}
   .intro .sub{margin:.5rem 0 0;font-size:.9rem;line-height:1.45}
   .sub .largo{display:none}.sub .corto{display:inline}
   .ctas{gap:.6rem;margin-top:.85rem}
@@ -729,8 +792,12 @@ ul,ol{list-style:none}
   .carta-txt{font-size:.9rem;line-height:1.45}
   .carta-txt .largo{display:none}.carta-txt .corto{display:inline}
   .carta-dato{display:none}
-  /* cierre en teléfono: bloque espresso que cubre la escena */
-  .cierre{display:flex;flex-direction:column;justify-content:center;gap:0;padding:1rem 1rem 1.1rem;background:var(--espresso);overflow:hidden}
+  /* «por encima» en cursiva: tinta sobre naranja (5,1:1) a este tamaño */
+  .carta[data-i="4"]{--em:var(--tinta)}
+  /* cierre en teléfono: una hoja espresso que sube y cubre la escena (sin fundido cruzado);
+     el contenido entra cuando la hoja ya tapa lo de abajo */
+  .cierre{display:flex;flex-direction:column;justify-content:center;gap:0;padding:1rem 1rem 1.1rem;background:var(--espresso);overflow:hidden;opacity:1;transform:translate3d(0,100%,0);border-top:var(--b) solid var(--dorado);border-radius:26px 26px 0 0;will-change:transform}
+  .cierre > *{opacity:var(--co,0)}
   .cierre-txt{padding-top:0;max-width:560px;width:100%;margin:0 auto}
   .cierre h2{font-size:clamp(1.9rem,8.6vw,2.7rem);margin:.75rem 0 .6rem}
   .cierre-txt p{font-size:.92rem;line-height:1.5}
@@ -741,31 +808,60 @@ ul,ol{list-style:none}
   .cifra.k1{box-shadow:var(--s1) var(--s1) 0 var(--crema)!important}
   .cifra b{font-size:clamp(1.6rem,7vw,2.2rem)}
   .confianza{order:4;font-size:.84rem!important;margin:1rem auto 0;max-width:560px;width:100%}
+  .cierre .confianza{max-width:none}
   .cinta{font-size:.72rem;letter-spacing:.16em}
   .saltar{padding:0 .95rem;font-size:.82rem}
 }
-/* teléfonos bajos: se aligera el texto, la cápsula conserva su tamaño */
+/* teléfonos bajos: se aligera el texto y la cápsula gana alto (pila de 2 cantos) */
 @media(max-width:900px) and (max-height:760px){
-  .intro .sub{display:none}
+  .escena{--pila-n:2}
+  .lienzo{gap:.4rem}
+  .pila{padding-top:calc(var(--peek) * 2)}
+  .capsula{aspect-ratio:9/13}
+  .intro h1{font-size:clamp(1.7rem,7.8vw,2.4rem)}
+  .intro .def{margin-top:.3rem;font-size:.8rem;line-height:1.35}
+  .ctas{margin-top:.7rem}
   .carta-tag{display:none}
   .cierre-txt p{font-size:.86rem}
   .cierre .tag{display:none}
 }
+/* teléfonos muy bajos (Android con la barra del navegador): se conserva el texto corto de
+   cada capa y del cierre; las cifras pasan a pastillas compactas */
 @media(max-width:900px) and (max-height:680px){
-  .carta-txt{display:none}
-  .cierre-txt p{display:none}
+  .cierre h2{font-size:clamp(1.7rem,7.6vw,2.2rem);margin:.2rem 0 .45rem}
+  .cierre-txt p .largo,.confianza .largo{display:none}
+  .cierre-txt p .corto{display:inline}
+  .cierre .ctas{margin-top:.75rem}
+  .cierre .ctas .btn{min-height:44px;padding:.55rem .9rem}
+  .cifras{margin-top:.8rem;gap:.45rem}
+  .cifra{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:.45rem;padding:.45rem .7rem;border-radius:999px}
+  .cifra b{font-size:1.3rem}
+  .cifra span{margin-top:0;font-size:.72rem;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cifra .largo{display:none}.cifra .corto{display:inline}
+  .confianza{margin-top:.7rem}
 }
 /* tableta vertical: hay alto de sobra, el texto vuelve a su versión larga */
 @media(min-width:600px) and (max-width:900px) and (min-height:900px){
   .escena{--peek:9px}
   .intro h1{font-size:clamp(2.4rem,6vw,3.2rem)}
   .sub .largo{display:inline}.sub .corto{display:none}
-  .intro .sub{font-size:1.02rem;max-width:52ch}
+  .intro .sub{position:static!important;width:auto;height:auto;overflow:visible;clip:auto;clip-path:none;white-space:normal;font-size:1.02rem;max-width:52ch}
+  .intro .def{font-size:.92rem}
+  /* cierre de tableta: la hoja ocupa la mitad baja y la cápsula, reducida, queda arriba
+     con el vaso terminado y el «¡Listo!» */
+  .cierre{top:auto;height:auto;justify-content:flex-start;padding:1.6rem 2rem 1.4rem}
+  .cierre .tag{display:inline-flex}
+  .cierre h2{font-size:clamp(2.2rem,5.6vw,2.9rem);margin:.7rem 0 .55rem}
+  .cierre-txt{max-width:none}
+  .cierre-txt p{max-width:60ch}
+  .cifras{grid-template-columns:repeat(4,minmax(0,1fr));max-width:none;margin-top:1.3rem}
+  .cifra b{font-size:clamp(1.6rem,4.2vw,2.1rem)}
   .carta-txt .largo{display:inline}.carta-txt .corto{display:none}
   .carta{padding:.85rem 1.3rem 1.1rem}
   .carta-tit{font-size:2rem}
   .carta-txt{font-size:1rem}
   .rc{font-size:.84rem;min-height:36px}
+  .cap{transform-origin:50% 0}
 }
 
 /* ================================================================
@@ -773,9 +869,8 @@ ul,ol{list-style:none}
    ================================================================ */
 .banda-wrap{position:relative;z-index:3;overflow:hidden;padding:1.2rem 0;background:linear-gradient(var(--espresso) 50%,var(--crema) 50%)}
 .banda{background:var(--dorado);color:var(--tinta);border-block:var(--b) solid var(--tinta);overflow:hidden;white-space:nowrap;padding:.85rem 0;font:800 .95rem/1 var(--fn);letter-spacing:.12em;text-transform:uppercase;transform:rotate(-1.4deg) scale(1.04)}
-.banda .cinta-track{animation-duration:46s}
 .banda i{font-style:normal;color:var(--naranja-hondo)}
-.banda-pie{background:linear-gradient(var(--naranja) 50%,var(--espresso) 50%);margin-top:calc(var(--sec-r) * -1);padding-top:calc(var(--sec-r) + .2rem)}
+.banda-pie{background:linear-gradient(var(--leche) 50%,var(--espresso) 50%);margin-top:calc(var(--sec-r) * -1);padding-top:calc(var(--sec-r) + .2rem)}
 .banda-pie .banda{transform:rotate(1.2deg) scale(1.04)}
 
 /* ================================================================
@@ -806,7 +901,7 @@ ul,ol{list-style:none}
 /* ---------- Resumen (crema) ---------- */
 .resumen{padding-top:clamp(3.2rem,6vw,5rem)}
 .datos{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1.15rem;margin-top:2.2rem}
-.dato{border-radius:26px;border:var(--b) solid var(--tinta);box-shadow:var(--s2) var(--s2) 0 var(--tinta);padding:1.25rem 1.2rem 1.1rem;min-height:168px;display:flex;flex-direction:column;justify-content:flex-end;line-height:1}
+.dato{border-radius:var(--r-card);border:var(--b) solid var(--tinta);box-shadow:var(--s2) var(--s2) 0 var(--tinta);padding:1.25rem 1.2rem 1.1rem;min-height:168px;display:flex;flex-direction:column;justify-content:flex-end;line-height:1}
 .dato b{font:800 clamp(2.3rem,3.9vw,3.6rem)/.9 var(--fn);letter-spacing:-.045em;white-space:nowrap}
 .dato span{font:700 .74rem/1.25 var(--fb);letter-spacing:.1em;text-transform:uppercase;margin-top:.65rem}
 .dato.d1{background:var(--dorado);transform:rotate(-1.2deg)}
@@ -814,9 +909,9 @@ ul,ol{list-style:none}
 .dato.d2 b{color:var(--dorado)}
 .dato.d3{background:var(--naranja);transform:rotate(-.6deg)}
 .dato.d4{background:var(--blanco);transform:rotate(1deg)}
-.dato.d5{background:var(--espresso);color:var(--crema);transform:rotate(-.9deg);box-shadow:var(--s2) var(--s2) 0 var(--dorado)}
+.dato.d5{background:var(--espresso);color:var(--crema);transform:rotate(-.9deg)}
 .dato.d5 b{color:var(--dorado)}
-.speakable{margin-top:2.6rem;max-width:74ch;font-size:clamp(1rem,1.2vw,1.1rem);line-height:1.75;padding:1.4rem 1.6rem;border-radius:24px;background:var(--blanco);border:var(--b) solid var(--tinta);box-shadow:var(--s2) var(--s2) 0 var(--dorado)}
+.speakable{margin-top:2.6rem;max-width:74ch;font-size:clamp(1rem,1.2vw,1.1rem);line-height:1.75;padding:1.4rem 1.6rem;border-radius:var(--r-card);background:var(--blanco);border:var(--b) solid var(--tinta);box-shadow:var(--s2) var(--s2) 0 var(--tinta)}
 .speakable strong{font-weight:700;color:var(--naranja-txt)}
 .resumen-sello{width:132px;flex:none;transform:rotate(8deg);filter:drop-shadow(var(--s1) var(--s1) 0 var(--tinta))}
 
@@ -824,7 +919,7 @@ ul,ol{list-style:none}
 .tachado{position:relative;white-space:nowrap}
 .tachado::after{content:"";position:absolute;left:-.04em;right:-.04em;top:54%;height:.11em;background:var(--naranja);transform:rotate(-3deg);border-radius:4px}
 .pasos3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.4rem;margin-top:2.8rem;counter-reset:p}
-.paso{position:relative;border-radius:28px;border:var(--b) solid var(--tinta);padding:1.4rem 1.4rem 1.6rem;color:var(--tinta);box-shadow:var(--s3) var(--s3) 0 var(--dorado)}
+.paso{position:relative;border-radius:var(--r-card);border:var(--b) solid var(--tinta);padding:1.4rem 1.4rem 1.6rem;color:var(--tinta);box-shadow:var(--s3) var(--s3) 0 var(--dorado)}
 .paso.p1{background:var(--dorado);box-shadow:var(--s3) var(--s3) 0 var(--crema);transform:rotate(-1deg)}
 .paso.p2{background:var(--crema);transform:rotate(.7deg)}
 .paso.p3{background:var(--naranja);transform:rotate(-.6deg)}
@@ -843,16 +938,14 @@ ul,ol{list-style:none}
 .proceso-pie{display:flex;align-items:center;gap:2rem;margin-top:3.4rem}
 .cota{flex:none;width:150px;aspect-ratio:1;display:grid;place-items:center;text-align:center;background:var(--dorado);color:var(--tinta);transform:rotate(-8deg);font:700 .74rem/1.2 var(--fb);letter-spacing:.06em;text-transform:uppercase;clip-path:polygon(50% 0%,57.1% 9.6%,67.1% 3%,70.5% 14.5%,82.1% 11.7%,81.4% 23.6%,93.3% 25%,88.5% 36%,99.2% 41.3%,91% 50%,99.2% 58.7%,88.5% 64%,93.3% 75%,81.4% 76.4%,82.1% 88.3%,70.5% 85.5%,67.1% 97%,57.1% 90.4%,50% 100%,42.9% 90.4%,32.9% 97%,29.5% 85.5%,17.9% 88.3%,18.6% 76.4%,6.7% 75%,11.5% 64%,.8% 58.7%,9% 50%,.8% 41.3%,11.5% 36%,6.7% 25%,18.6% 23.6%,17.9% 11.7%,29.5% 14.5%,32.9% 3%,42.9% 9.6%)}
 .cota b{display:block;font:800 2rem/1 var(--fn);letter-spacing:-.04em;margin-bottom:.2rem}
-.nota-grano{flex:1;max-width:760px;background:var(--blanco);color:var(--tinta);border:var(--b) solid var(--tinta);border-radius:22px;box-shadow:var(--s2) var(--s2) 0 var(--dorado);padding:1.2rem 1.5rem;font-size:1.02rem;line-height:1.65;transform:rotate(-1.2deg)}
+.nota-grano{flex:1;max-width:760px;background:var(--blanco);color:var(--tinta);border:var(--b) solid var(--tinta);border-radius:var(--r-card);box-shadow:var(--s2) var(--s2) 0 var(--dorado);padding:1.2rem 1.5rem;font-size:1.02rem;line-height:1.65;transform:rotate(-1.2deg)}
 .nota-grano strong{font-family:var(--fd);font-weight:800;font-size:1.15em;color:var(--naranja-txt)}
 
 /* ---------- Menú (leche) ---------- */
-.en-servicio{display:inline-flex;align-items:center;gap:.6rem;padding:.55rem 1rem;border-radius:999px;background:var(--espresso);color:var(--crema);font:700 .78rem/1 var(--fb);letter-spacing:.08em;text-transform:uppercase;border:var(--b) solid var(--tinta);box-shadow:var(--s1) var(--s1) 0 var(--dorado);white-space:nowrap}
+.en-servicio{display:inline-flex;align-items:center;gap:.6rem;padding:.55rem 1rem;border-radius:999px;background:var(--espresso);color:var(--crema);font:700 .78rem/1 var(--fb);letter-spacing:.08em;text-transform:uppercase;border:var(--b) solid var(--tinta);box-shadow:var(--s1) var(--s1) 0 var(--tinta);white-space:nowrap}
 .en-servicio i{position:relative;width:10px;height:10px;border-radius:50%;background:var(--dorado)}
-.en-servicio i::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--dorado);animation:latido 2s ease-out infinite}
-@keyframes latido{0%{transform:scale(1);opacity:.7}80%,100%{transform:scale(2.8);opacity:0}}
 .catalogo{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1.5rem 1.15rem;margin-top:2.6rem;align-items:stretch}
-.bebida{position:relative;display:grid;grid-template-rows:auto 112px auto 1fr;align-content:start;gap:.5rem;text-align:left;padding:.9rem .95rem 2.9rem;border-radius:24px;border:var(--b) solid var(--tinta);background:var(--blanco);box-shadow:var(--s2) var(--s2) 0 var(--tinta);transition:transform .14s ease,box-shadow .14s ease,background-color .2s;cursor:pointer}
+.bebida{position:relative;display:grid;grid-template-rows:auto 112px auto 1fr;align-content:start;gap:.5rem;text-align:left;padding:.9rem .95rem 2.9rem;border-radius:var(--r-card);border:var(--b) solid var(--tinta);background:var(--blanco);box-shadow:var(--s2) var(--s2) 0 var(--tinta);transition:transform .14s ease,box-shadow .14s ease,background-color .2s;cursor:pointer}
 .bebida:nth-child(3n+2){background:var(--crema)}
 .bebida:hover{transform:translate(-2px,-3px);box-shadow:10px 11px 0 var(--tinta)}
 .bebida:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--tinta)}
@@ -874,7 +967,7 @@ ul,ol{list-style:none}
 .bebida[aria-expanded="true"] .bebida-mas{transform:rotate(45deg)}
 .no-js .bebida-mas{display:none}
 .bebida-ref{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%) rotate(-3deg);background:var(--naranja-boton);color:#fff;border:2px solid var(--tinta);border-radius:999px;padding:.35rem .7rem;font:700 .72rem/1 var(--fb);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;box-shadow:3px 3px 0 var(--tinta)}
-.ficha{grid-column:1/-1;display:grid;grid-template-columns:200px 1fr;gap:2rem;align-items:center;position:relative;background:var(--cacao);color:var(--crema);border:var(--b) solid var(--tinta);border-radius:30px;box-shadow:var(--s3) var(--s3) 0 var(--dorado);padding:1.6rem 2rem 1.7rem;margin:.4rem 0 .6rem}
+.ficha{grid-column:1/-1;display:grid;grid-template-columns:200px 1fr;gap:2rem;align-items:center;position:relative;background:var(--cacao);color:var(--crema);border:var(--b) solid var(--tinta);border-radius:var(--r-grande);box-shadow:var(--s3) var(--s3) 0 var(--dorado);padding:1.6rem 2rem 1.7rem;margin:.4rem 0 .6rem}
 .ficha[hidden]{display:none}
 .ficha-asa{display:none}
 .ficha-vaso{text-align:center}
@@ -906,7 +999,7 @@ ul,ol{list-style:none}
 .stk.s2{top:34%;right:-1.1rem;width:92px;aspect-ratio:1;border-radius:50%;background:var(--crema);color:var(--tinta);display:grid;place-items:center;text-align:center;line-height:1.15;transform:rotate(8deg);padding:.4rem;white-space:normal}
 .stk.s2 b{display:block;font:800 1.45rem/1 var(--fn);letter-spacing:-.03em}
 .stk.s3{bottom:3.6rem;left:-.9rem;background:var(--naranja);color:var(--tinta);padding:.6rem .9rem;border-radius:999px;transform:rotate(4deg)}
-.ficha-tec{margin-top:1.8rem;background:var(--blanco);border:var(--b) solid var(--tinta);border-radius:24px;box-shadow:var(--s2) var(--s2) 0 var(--tinta);padding:.4rem 1.4rem}
+.ficha-tec{margin-top:1.8rem;background:var(--blanco);border:var(--b) solid var(--tinta);border-radius:var(--r-card);box-shadow:var(--s2) var(--s2) 0 var(--tinta);padding:.4rem 1.4rem}
 .ficha-tec > div{display:grid;grid-template-columns:minmax(0,11rem) 1fr;gap:1rem;padding:.85rem 0;border-bottom:2px dotted rgba(43,23,9,.45)}
 .ficha-tec > div:last-child{border-bottom:0}
 .ficha-tec dt{font:700 .74rem/1.4 var(--fb);letter-spacing:.1em;text-transform:uppercase;color:var(--naranja-txt);padding-top:.15rem}
@@ -919,7 +1012,7 @@ ul,ol{list-style:none}
 
 /* ---------- Pagos (cacao) ---------- */
 .pagos4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.3rem;margin-top:2.6rem}
-.pago{border-radius:26px;border:var(--b) solid var(--tinta);padding:1.3rem 1.3rem 1.4rem;color:var(--tinta);box-shadow:var(--s2) var(--s2) 0 var(--dorado)}
+.pago{border-radius:var(--r-card);border:var(--b) solid var(--tinta);padding:1.3rem 1.3rem 1.4rem;color:var(--tinta);box-shadow:var(--s2) var(--s2) 0 var(--dorado)}
 .pago.g1{background:var(--dorado);box-shadow:var(--s2) var(--s2) 0 var(--crema);transform:rotate(-1.4deg)}
 .pago.g2{background:var(--crema);transform:rotate(1deg)}
 .pago.g3{background:var(--naranja);transform:rotate(-.8deg)}
@@ -936,10 +1029,10 @@ ul,ol{list-style:none}
 /* ---------- Empresas (crema) ---------- */
 .empresas-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(2rem,5vw,4.4rem);align-items:start}
 .h2-247{font-family:var(--fn);font-style:normal!important;font-weight:800!important;letter-spacing:-.04em;color:var(--naranja-txt)}
-.destacado{margin-top:1.6rem;background:var(--dorado);border:var(--b) solid var(--tinta);border-radius:24px;box-shadow:var(--s2) var(--s2) 0 var(--tinta);padding:1.25rem 1.5rem;font-size:1.08rem;line-height:1.6;transform:rotate(-.8deg)}
+.destacado{margin-top:1.6rem;background:var(--dorado);border:var(--b) solid var(--tinta);border-radius:var(--r-card);box-shadow:var(--s2) var(--s2) 0 var(--tinta);padding:1.25rem 1.5rem;font-size:1.08rem;line-height:1.6;transform:rotate(-.8deg)}
 .destacado strong{font-family:var(--fd);font-weight:800;font-size:1.12em}
 .pasos-e{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2.4rem;counter-reset:pe}
-.pasos-e li{position:relative;background:var(--blanco);border:var(--b) solid var(--tinta);border-radius:22px;box-shadow:var(--s1) var(--s1) 0 var(--tinta);padding:1rem 1rem 1.15rem;counter-increment:pe}
+.pasos-e li{position:relative;background:var(--blanco);border:var(--b) solid var(--tinta);border-radius:var(--r-card);box-shadow:var(--s1) var(--s1) 0 var(--tinta);padding:1rem 1rem 1.15rem;counter-increment:pe}
 .pasos-e li::before{content:counter(pe,decimal-leading-zero);display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--espresso);color:var(--dorado);font:800 1.15rem/1 var(--fn);letter-spacing:-.03em;margin-bottom:.7rem}
 .pasos-e b{display:block;font:800 1.08rem/1.2 var(--fd);margin-bottom:.35rem}
 .pasos-e span{display:block;font-size:.9rem;line-height:1.5}
@@ -947,7 +1040,7 @@ ul,ol{list-style:none}
 .beneficios li{display:grid;grid-template-columns:34px 1fr;gap:.8rem;align-items:start;line-height:1.55}
 .beneficios li::before{content:"✓";display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--dorado);border:2px solid var(--tinta);font:800 .95rem/1 var(--fb);color:var(--tinta)}
 .beneficios strong{font-weight:700}
-.ficha-pedido{position:sticky;top:calc(var(--nav-h) + 1.5rem);background:var(--espresso);color:var(--crema);border:var(--b) solid var(--tinta);border-radius:30px;box-shadow:var(--s3) var(--s3) 0 var(--dorado);padding:1.8rem 1.7rem 1.9rem}
+.ficha-pedido{position:sticky;top:calc(var(--nav-h) + 1.5rem);background:var(--espresso);color:var(--crema);border:var(--b) solid var(--tinta);border-radius:var(--r-grande);box-shadow:var(--s3) var(--s3) 0 var(--dorado);padding:1.8rem 1.7rem 1.9rem}
 .ficha-pedido .tag{color:var(--dorado)}
 .ficha-pedido h3{font:800 clamp(1.7rem,2.6vw,2.2rem)/1.06 var(--fd);letter-spacing:-.02em;margin:.9rem 0 .6rem}
 .ficha-pedido h3 em{font-style:italic;font-weight:600;color:var(--dorado)}
@@ -968,18 +1061,20 @@ ul,ol{list-style:none}
 .sello-gratis{width:118px;aspect-ratio:1;flex:none;border-radius:50%;background:var(--dorado);border:var(--b) solid var(--tinta);box-shadow:var(--s1) var(--s1) 0 var(--tinta);display:grid;place-items:center;text-align:center;transform:rotate(-9deg);font:700 .72rem/1.15 var(--fb);letter-spacing:.08em;text-transform:uppercase}
 .sello-gratis b{display:block;font:800 2.2rem/1 var(--fn);letter-spacing:-.04em}
 
-/* ---------- Preguntas (naranja) ---------- */
+/* ---------- Preguntas (leche; el naranja, en los números y el «+») ---------- */
 .faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(2rem,5vw,4.4rem);align-items:start}
 .faq-cab{position:sticky;top:calc(var(--nav-h) + 1.5rem)}
 .faq-mas{margin-top:1.6rem;font-size:.98rem;line-height:1.6;max-width:36ch}
 .faq-mas .btn{margin-top:1rem;white-space:normal;text-align:center}
+.faq-mas-pie{display:none}
+.faq-mas-pie a{color:var(--naranja-txt);font-weight:600}
 .faq-list{display:grid;gap:1rem}
-.faq-item{background:var(--blanco);border:var(--b) solid var(--tinta);border-radius:22px;box-shadow:var(--s1) var(--s1) 0 var(--tinta);transition:box-shadow .2s}
+.faq-item{background:var(--blanco);border:var(--b) solid var(--tinta);border-radius:var(--r-card);box-shadow:var(--s1) var(--s1) 0 var(--tinta);transition:box-shadow .2s}
 .faq-item[open]{box-shadow:var(--s2) var(--s2) 0 var(--espresso)}
 .faq-item summary{list-style:none;display:grid;grid-template-columns:2.6rem 1fr 34px;gap:.6rem;align-items:center;padding:1rem 1.1rem;cursor:pointer;font:700 1.02rem/1.35 var(--fb);min-height:56px}
 .faq-item summary::-webkit-details-marker{display:none}
 .faq-item summary i{font:800 1.2rem/1 var(--fn);font-style:normal;color:var(--naranja-txt);letter-spacing:-.03em}
-.faq-item summary::after{content:"+";display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:2px solid var(--tinta);background:var(--dorado);font:700 1.2rem/1 var(--fb);transition:transform .2s}
+.faq-item summary::after{content:"+";display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:2px solid var(--tinta);background:var(--naranja);font:700 1.2rem/1 var(--fb);transition:transform .2s}
 .faq-item[open] summary::after{transform:rotate(45deg)}
 .faq-item p{padding:0 1.3rem 1.25rem 4.3rem;line-height:1.65;font-size:.97rem}
 .faq-item p a{color:var(--naranja-txt);font-weight:600}
@@ -996,7 +1091,7 @@ footer::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:
 .footer-nap .contacto{display:flex;flex-wrap:wrap;gap:.2rem .9rem}
 .footer-nap .contacto a{display:inline-flex;align-items:center;min-height:44px;color:var(--crema);font-weight:600}
 .footer-nap .horario{color:var(--dorado);font-weight:600}
-.footer-nap .horario span{white-space:nowrap}
+.footer-nap .horario span{display:block;white-space:nowrap}
 footer h3{font:700 .78rem/1.2 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--dorado);margin-bottom:.7rem}
 footer ul{display:grid;gap:.1rem}
 footer ul a{display:inline-flex;align-items:center;min-height:44px;color:rgba(255,246,234,.92);text-decoration:none;font-size:.94rem}
@@ -1010,6 +1105,14 @@ footer ul a:hover{color:var(--dorado);text-decoration:underline;text-underline-o
   .sticky-wa.ve{transform:none;visibility:visible}
   .sticky-wa .btn{width:100%;box-shadow:var(--s1) var(--s1) 0 var(--tinta)}
   footer{padding-bottom:6.5rem}
+  html{scroll-padding-bottom:calc(5rem + env(safe-area-inset-bottom,0px))}
+  .ficha{scroll-margin-bottom:calc(5rem + env(safe-area-inset-bottom,0px))}
+}
+@media(min-width:600px) and (max-width:900px){.sticky-wa .btn{display:flex;width:auto;max-width:420px;margin-inline:auto}}
+@media(max-width:900px) and (max-height:540px){
+  .sticky-wa{padding:.3rem 1rem calc(.3rem + env(safe-area-inset-bottom,0px))}
+  .sticky-wa .btn{min-height:44px;padding:.35rem 1rem}
+  html{scroll-padding-bottom:calc(3.8rem + env(safe-area-inset-bottom,0px))}
 }
 
 /* ================================================================
@@ -1019,11 +1122,23 @@ footer ul a:hover{color:var(--dorado);text-decoration:underline;text-underline-o
   .datos{grid-template-columns:repeat(6,minmax(0,1fr))}
   .dato{grid-column:span 2}
   .dato.d4,.dato.d5{grid-column:span 3}
-  .catalogo{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .catalogo{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2rem 1.1rem}
   .pagos4{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+/* menú en tableta y portátil estrecho: dos columnas de tarjetas horizontales (5 filas exactas) */
+@media(min-width:641px) and (max-width:1100px){
+  .bebida{grid-template-columns:104px minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:1.1rem;row-gap:.35rem;padding:.95rem 3.1rem 1rem .95rem}
+  .bebida-vaso{grid-column:1;grid-row:1/4;align-self:center}
+  .bebida-vaso svg{height:104px}
+  .bebida-top,.bebida-nombre,.bebida-desc{grid-column:2}
+  .bebida-top{justify-content:flex-start;gap:.7rem}
+  .bebida-nombre{min-height:0}
+  .bebida-ref{left:auto;right:3.4rem;transform:rotate(-3deg)}
+}
 @media(max-width:900px){
-  .pasos3{grid-template-columns:1fr;gap:1.3rem;max-width:620px}
+  .pasos3{
+  .faq-mas-cab{display:none}
+  .faq-mas-pie{display:block;max-width:none;margin-top:1.4rem}grid-template-columns:1fr;gap:1.3rem;max-width:620px}
   .estacion{grid-template-columns:1fr}
   .empresas-grid,.faq-grid{grid-template-columns:1fr}
   .ficha-pedido,.faq-cab{position:static}
@@ -1035,9 +1150,9 @@ footer ul a:hover{color:var(--dorado);text-decoration:underline;text-underline-o
   .datos{grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem}
   .dato,.dato.d4{grid-column:auto}
   .dato{min-height:118px;padding:1rem .95rem .9rem;border-radius:20px;box-shadow:var(--s1) var(--s1) 0 var(--tinta)}
-  .dato.d5{grid-column:1/-1;box-shadow:var(--s1) var(--s1) 0 var(--dorado)}
+  .dato.d5{grid-column:1/-1}
   .dato b{font-size:clamp(2rem,10vw,2.6rem)}
-  .speakable{padding:1.1rem 1.15rem;box-shadow:var(--s1) var(--s1) 0 var(--dorado)}
+  .speakable{padding:1.1rem 1.15rem;box-shadow:var(--s1) var(--s1) 0 var(--tinta)}
   .paso{padding:1.15rem 1.1rem 1.3rem;box-shadow:var(--s2) var(--s2) 0 var(--dorado)}
   .paso.p1{box-shadow:var(--s2) var(--s2) 0 var(--crema)}
   .paso-ico{width:80px;height:80px}.paso-ico svg{width:70px}
@@ -1050,14 +1165,6 @@ footer ul a:hover{color:var(--dorado);text-decoration:underline;text-underline-o
   .bebida-nombre{font-size:1.05rem}
   .js .bebida-desc{display:none}
   .bebida-mas{width:28px;height:28px;right:.55rem;bottom:.55rem}
-  /* ficha como hoja inferior */
-  .ficha{position:fixed;left:0;right:0;bottom:0;z-index:70;margin:0;grid-template-columns:1fr;gap:.8rem;border-radius:30px 30px 0 0;border-bottom:0;box-shadow:0 -6px 0 var(--dorado);padding:1.6rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom,0px));max-height:84vh;max-height:84svh;overflow-y:auto}
-  .ficha-asa{display:block;position:absolute;top:.6rem;left:50%;width:46px;height:5px;border-radius:5px;background:rgba(242,183,73,.6);transform:translateX(-50%)}
-  .ficha-vaso{display:flex;align-items:center;gap:1rem;text-align:left}
-  .ficha-vaso svg{height:120px;margin:0}
-  .ficha h3{font-size:1.9rem}
-  .ficha-velo{position:fixed;inset:0;z-index:65;background:rgba(36,18,8,.6)}
-  .ficha-velo.ve{display:block}
   .pagos4{grid-template-columns:1fr;gap:1.1rem}
   .pago{display:grid;grid-template-columns:64px 1fr;gap:0 1rem;align-items:start;padding:1rem 1.1rem 1.15rem;box-shadow:var(--s1) var(--s1) 0 var(--dorado)}
   .pago.g1{box-shadow:var(--s1) var(--s1) 0 var(--crema)}
@@ -1073,7 +1180,31 @@ footer ul a:hover{color:var(--dorado);text-decoration:underline;text-underline-o
   .confian b{width:100%}
   .destacado{padding:1.05rem 1.15rem}
 }
+/* ficha de bebida como hoja inferior: teléfono y teléfono apaisado (el JS usa la misma consulta) */
+@media(max-width:640px),(max-height:520px){
+  /* ficha como hoja inferior */
+  .ficha{position:fixed;left:0;right:0;bottom:0;z-index:70;margin:0;grid-template-columns:1fr;gap:.8rem;border-radius:30px 30px 0 0;border-bottom:0;box-shadow:0 -6px 0 var(--dorado);padding:1.6rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom,0px));max-height:84vh;max-height:84svh;overflow-y:auto}
+  .ficha-asa{display:block;position:absolute;top:.6rem;left:50%;width:46px;height:5px;border-radius:5px;background:rgba(242,183,73,.6);transform:translateX(-50%)}
+  .ficha-vaso{display:flex;align-items:center;gap:1rem;text-align:left}
+  .ficha-vaso svg{height:120px;margin:0}
+  .ficha h3{font-size:1.9rem}
+  .ficha-velo{position:fixed;inset:0;z-index:65;background:rgba(36,18,8,.6)}
+  .ficha-velo.ve{display:block}
+}
+@media(min-width:641px) and (max-height:520px){
+  .ficha{grid-template-columns:150px minmax(0,1fr);gap:1.4rem;align-items:start;padding:1.3rem 1.6rem calc(1.2rem + env(safe-area-inset-bottom,0px))}
+  .ficha-vaso{display:block;text-align:center}
+  .ficha-vaso svg{height:150px;margin:0 auto}
+  .ficha h3{font-size:1.7rem;margin:.35rem 0 .4rem}
+}
+@media(max-width:400px){.stk.s2{right:-.4rem}}
+@media(max-width:374px){.bebida-tag{letter-spacing:.01em;padding:.32rem .42rem}}
 @media(hover:none){.bebida:hover,.btn:hover{transform:none}}
+/* tabletas táctiles con la barra de escritorio: objetivos de 44 px o más */
+@media(pointer:coarse) and (min-width:961px){
+  .nav-links a,.nav-links .nav-cta{min-height:44px}
+  .escena{--cinta-h:46px}
+}
 
 /* ================================================================
    SIN JS o CON «REDUCIR MOVIMIENTO» (y teléfono apaisado): escena fija,
@@ -1083,7 +1214,7 @@ html.no-js .pista,html.estatico .pista{height:auto}
 html.no-js .escena,html.estatico .escena{position:relative;height:auto;overflow:visible;display:block;background:var(--crema);color:var(--tinta);padding:calc(var(--nav-h) + 2.2rem) 0 0;--wc:#2B1709;--fill:100%;--cs:#E06A3B;--sh:#2B1709}
 html.no-js .palabra,html.estatico .palabra{position:relative;top:auto;margin:0 auto 1.6rem;padding:0 var(--px)}
 @media(min-width:901px){html.no-js .palabra .asi,html.estatico .palabra .asi{transform:translate(-6%,-48%) rotate(-6deg)}}
-html.no-js .lienzo,html.estatico .lienzo{display:grid;grid-template-columns:minmax(0,1fr) min(380px,34vw);gap:2.6rem 3.2rem;max-width:1240px;margin:0 auto;padding:0 var(--px) 3.4rem;align-items:start}
+html.no-js .lienzo,html.estatico .lienzo{display:grid;grid-template-columns:minmax(0,1fr) min(380px,34vw,calc((100svh - var(--nav-h) - 2.8rem) * 9 / 16));gap:2.6rem 3.2rem;margin:0;padding:0 var(--borde) 3.4rem;align-items:start}
 html.no-js .izq,html.estatico .izq{grid-column:1;grid-row:1;display:block;padding-top:0}
 html.no-js .panel,html.estatico .panel{display:block}
 html.no-js .intro,html.estatico .intro{opacity:1!important;visibility:visible!important;transform:none!important}
@@ -1094,6 +1225,7 @@ html.no-js .carta-txt .largo,html.estatico .carta-txt .largo{display:inline}
 html.no-js .carta-txt .corto,html.estatico .carta-txt .corto{display:none}
 html.no-js .carta-dato,html.estatico .carta-dato{display:inline-block;margin-top:1rem;transform:none}
 html.no-js .carta-tag,html.estatico .carta-tag{display:inline-block}
+html.no-js .carta-cab,html.estatico .carta-cab{flex-wrap:wrap;row-gap:.45rem}
 html.no-js .carta-txt,html.estatico .carta-txt{display:block}
 html.no-js .cap,html.estatico .cap{grid-column:2;grid-row:1;position:sticky;top:calc(var(--nav-h) + 1.4rem);height:auto;width:100%;aspect-ratio:9/16;align-self:start}
 html.no-js .capsula,html.estatico .capsula{height:100%;width:100%;aspect-ratio:auto}
@@ -1101,7 +1233,7 @@ html.no-js .capsula video{display:none}
 html.no-js video::-webkit-media-controls,html.no-js video::-webkit-media-controls-enclosure{display:none!important}
 html.no-js .sello-listo,html.estatico .sello-listo{transform:translate(-50%,-50%) rotate(-10deg) scale(1);transition:none}
 html.no-js .tinte,html.estatico .tinte,html.no-js .der,html.estatico .der,html.no-js .receta,html.estatico .receta,html.no-js .pista-hint,html.estatico .pista-hint,html.no-js .saltar,html.estatico .saltar,html.no-js .nav-prog,html.estatico .nav-prog{display:none}
-html.no-js .cierre,html.estatico .cierre{position:relative;inset:auto;opacity:1;visibility:visible;pointer-events:auto;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:2.4rem 3.4rem;align-items:center;background:var(--espresso);padding:clamp(3.4rem,7vw,5.4rem) max(var(--px),calc((100% - 1240px) / 2 + var(--px)))}
+html.no-js .cierre,html.estatico .cierre{position:relative;inset:auto;opacity:1;visibility:visible;pointer-events:auto;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:2.4rem 3.4rem;align-items:center;background:var(--espresso);padding:clamp(3.4rem,7vw,5.4rem) var(--borde)}
 html.no-js .cierre-txt,html.estatico .cierre-txt{padding-top:0}
 html.no-js .cifras,html.estatico .cifras{grid-column:2;padding-top:0;max-width:440px;grid-template-columns:1fr 1fr}
 html.no-js .confianza,html.estatico .confianza{grid-column:1}
@@ -1111,7 +1243,8 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
   html.no-js .lienzo,html.estatico .lienzo{grid-template-columns:1fr;gap:2rem}
   html.no-js .palabra,html.estatico .palabra{margin-top:1.4rem}
   html.no-js .palabra .asi,html.estatico .palabra .asi{transform:translate(2%,-78%) rotate(4deg)}
-  html.no-js .cap,html.estatico .cap{grid-column:1;grid-row:1;position:relative;top:auto;width:min(320px,82vw);justify-self:center;aspect-ratio:9/15;display:block;flex:none}
+  /* la cápsula deja asomar el H1 en la primera pantalla */
+  html.no-js .cap,html.estatico .cap{grid-column:1;grid-row:1;position:relative;top:auto;width:clamp(220px,calc((100svh - var(--nav-h) - 21rem) * .6),min(320px,82vw));justify-self:center;aspect-ratio:9/15;display:block;flex:none}
   html.no-js .izq,html.estatico .izq{grid-row:2}
   html.no-js .intro .tag,html.estatico .intro .tag,html.no-js .intro .def,html.estatico .intro .def,html.no-js .formula,html.estatico .formula{display:flex}
   html.no-js .intro .tag,html.estatico .intro .tag{display:inline-flex}
@@ -1120,9 +1253,23 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
   html.no-js .sub .corto,html.estatico .sub .corto{display:none}
   html.no-js .intro .sub,html.estatico .intro .sub{display:block}
   html.no-js .pila,html.estatico .pila{grid-template-columns:1fr}
-  html.no-js .cierre,html.estatico .cierre{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:3rem var(--px)}
+  /* la hoja del teléfono no sube aquí: el cierre es un bloque más, en su sitio y visible */
+  html.no-js .cierre,html.estatico .cierre{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:3rem var(--px);transform:none!important;border-radius:0;border-top:0;will-change:auto}
+  html.no-js .cierre > *,html.estatico .cierre > *{opacity:1}
+  html.no-js .cierre-txt,html.estatico .cierre-txt,html.no-js .cifras,html.estatico .cifras{margin-left:0;margin-right:0}
+  html.no-js .cierre-txt,html.estatico .cierre-txt,html.no-js .cifras,html.estatico .cifras{align-self:flex-start}
   html.no-js .cierre .tag,html.estatico .cierre .tag,html.no-js .cierre-txt p,html.estatico .cierre-txt p{display:revert}
   html.no-js .cierre .tag,html.estatico .cierre .tag{display:inline-flex}
+}
+/* teléfono apaisado (estático): dos columnas, H1 y botones en la primera pantalla y el vaso a la derecha */
+@media(max-width:900px) and (max-height:540px){
+  html.estatico .escena,html.no-js .escena{padding-top:calc(var(--nav-h) + .9rem);--wfs:min(7vw,13svh)}
+  html.estatico .palabra,html.no-js .palabra{margin:1.3rem auto .9rem}
+  html.estatico .palabra .asi,html.no-js .palabra .asi{transform:translate(-4%,-88%) rotate(-4deg);right:auto;left:0;transform-origin:0 0}
+  html.estatico .lienzo,html.no-js .lienzo{grid-template-columns:minmax(0,1fr) auto;gap:1.6rem 2rem}
+  html.estatico .cap,html.no-js .cap{grid-column:2;grid-row:1;position:sticky;top:calc(var(--nav-h) + .8rem);width:auto;height:calc(100svh - var(--nav-h) - 1.8rem);aspect-ratio:9/15;align-self:start}
+  html.estatico .izq,html.no-js .izq{grid-column:1;grid-row:1}
+  html.estatico .intro h1,html.no-js .intro h1{font-size:clamp(1.8rem,4.4vw,2.4rem)}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -1239,13 +1386,17 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
 
       <div class="cap" id="cap">
         <div class="capsula" id="capsula">
-          <video id="video"
+          <!-- El video va en una plantilla inerte y se inserta aquí mismo durante el parseo
+               (la descarga empieza en el mismo punto, preload="auto"). Con «reducir movimiento»
+               o sin JS no se inserta: cero bytes del mp4. Si el mp4 falla antes de que llegue
+               el script del final, el fallo queda anotado en data-fallo. -->
+          <template id="tpl-video"><video id="video"
                  src="/cafe-oriente/assets/mocachino-v2.mp4"
                  poster="/cafe-oriente/assets/poster-v1.webp"
                  width="720" height="1280"
                  muted playsinline preload="auto" disablepictureinpicture
-                 aria-label="Un mocachino Café Oriente se arma en el aire: un hilo de chocolate atraviesa el espresso y la leche, la espuma corona el vaso, cae el cacao y se enciende el logo"></video>
-          <script>(function(v){if(v&&document.documentElement.classList.contains('estatico')){v.preload='none';v.removeAttribute('src');try{v.load()}catch(e){}}})(document.getElementById('video'))</script>
+                 aria-label="Un mocachino Café Oriente se arma en el aire: un hilo de chocolate atraviesa el espresso y la leche, la espuma corona el vaso, cae el cacao y se enciende el logo"></video></template>
+          <script>(function(t){if(!t||document.documentElement.classList.contains('estatico'))return;var v=document.importNode(t.content.firstElementChild,true);v.addEventListener('error',function(){v.setAttribute('data-fallo','1')});t.parentNode.insertBefore(v,t)})(document.getElementById('tpl-video'))</script>
           <noscript><img src="/cafe-oriente/assets/final-v1.webp" width="720" height="1280" alt="Mocachino Café Oriente terminado, con espuma de leche y cacao espolvoreado."></noscript>
         </div>
         <span class="sello-listo" aria-hidden="true">¡Listo!</span>
@@ -1263,7 +1414,7 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
             </svg>
             <svg class="sello-iso" viewBox="0 0 64 64"><use href="#iso"/></svg>
           </div>
-          <div class="stk-10"><b>10</b><span>bebidas<br>en el menú</span></div>
+          <div class="stk-10"><b>10</b><span>bebidas<em> en el menú</em></span></div>
           <div class="estrella-wrap"><div class="estrella"><div>Molido<br>al instante</div></div></div>
           <div class="ficha-it"><b>Bianchi LEI 400</b><span>Ingeniería italiana</span></div>
         </div>
@@ -1275,18 +1426,18 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
       <div class="cierre-txt">
         <span class="tag"><i></i>Para empresas y clínicas</span>
         <h2>Este respiro, en tu <em>empresa</em>.</h2>
-        <p>La misma estación Bianchi LEI 400 que acabas de ver, <strong>instalada sin costo</strong> en tu oficina o clínica. Nosotros la reponemos y la mantenemos; tú solo pones el espacio.</p>
+        <p><span class="largo">La misma estación Bianchi LEI 400 que acabas de ver, <strong>instalada sin costo</strong> en tu oficina o clínica. Nosotros la reponemos y la mantenemos; tú solo pones el espacio.</span><span class="corto">La estación que acabas de ver, <strong>instalada sin costo</strong> en tu empresa.</span></p>
         <div class="ctas">
           <a class="btn btn-wa" href="https://wa.me/584146164177?text=Hola%2C%20quiero%20pedir%20una%20estaci%C3%B3n%20Caf%C3%A9%20Oriente%20para%20mi%20empresa" target="_blank" rel="noopener" data-lugar="cierre"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>Pedir mi estación</a>
           <a class="btn btn-crema" href="#menu">Ver las 10 bebidas</a>
         </div>
-        <p class="confianza"><i aria-hidden="true">✓</i><span><strong>Ya en servicio en la Clínica Anzoátegui.</strong> Instalamos en todo el estado Anzoátegui y pronto en el resto de Venezuela.</span></p>
+        <p class="confianza"><i aria-hidden="true">✓</i><span><strong>Ya en servicio en la Clínica Anzoátegui.</strong><span class="largo"> Instalamos en todo el estado Anzoátegui y pronto en el resto de Venezuela.</span></span></p>
       </div>
       <div class="cifras">
-        <div class="cifra k1"><b>24/7</b><span>Siempre disponible</span></div>
-        <div class="cifra k2"><b>&lt;&#8201;40&nbsp;s</b><span>De grano a taza</span></div>
+        <div class="cifra k1"><b>24/7</b><span><span class="largo">Siempre disponible</span><span class="corto">disponible</span></span></div>
+        <div class="cifra k2"><b>&lt;&nbsp;40&nbsp;s</b><span><span class="largo">De grano a taza</span><span class="corto">por taza</span></span></div>
         <div class="cifra k3"><b>100&nbsp;%</b><span>Automática</span></div>
-        <div class="cifra k4"><b>0</b><span>Efectivo · pagos digitales</span></div>
+        <div class="cifra k4"><b>0</b><span><span class="largo">Efectivo · pagos digitales</span><span class="corto">efectivo</span></span></div>
       </div>
     </div>
 
@@ -1325,13 +1476,13 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
       <svg class="resumen-sello rv" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
         <defs><path id="circ2" d="M100,100 m-70,0 a70,70 0 1,1 140,0 a70,70 0 1,1 -140,0"/></defs>
         <circle cx="100" cy="100" r="96" fill="#241208" stroke="#2B1709" stroke-width="5"/>
-        <text font-family="Sora,sans-serif" font-size="14.5" font-weight="700" fill="#F2B749" letter-spacing="1.5"><textPath href="#circ2" textLength="430" lengthAdjust="spacing">HECHO EN LECHERÍA ✦ ANZOÁTEGUI ✦ VENEZUELA ✦</textPath></text>
+        <text font-family="Sora,sans-serif" font-size="14.5" font-weight="700" fill="#F2B749" letter-spacing="1.5"><textPath href="#circ2" textLength="430" lengthAdjust="spacing">DESDE LECHERÍA ✦ ANZOÁTEGUI ✦ VENEZUELA ✦</textPath></text>
         <use href="#iso" x="64" y="64" width="72" height="72"/>
       </svg>
     </div>
     <ul class="datos">
       <li class="dato d1 rv"><b>10</b><span>bebidas en el menú</span></li>
-      <li class="dato d2 rv"><b>&lt;&#8201;40&nbsp;s</b><span>de grano a taza</span></li>
+      <li class="dato d2 rv"><b>&lt;&nbsp;40&nbsp;s</b><span>de grano a taza</span></li>
       <li class="dato d3 rv"><b>24/7</b><span>siempre disponible</span></li>
       <li class="dato d4 rv"><b>0</b><span>efectivo: pagos digitales</span></li>
       <li class="dato d5 rv"><b>$0</b><span>instalación para tu empresa</span></li>
@@ -1386,7 +1537,7 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
     </ol>
 
     <div class="proceso-pie">
-      <div class="cota rv" aria-hidden="true"><div><b>&lt;&#8201;40&nbsp;s</b>de grano<br>a taza</div></div>
+      <div class="cota rv" aria-hidden="true"><div><b>&lt;&nbsp;40&nbsp;s</b>de grano<br>a taza</div></div>
       <p class="nota-grano rv"><strong>Frescura en punto de tráfico.</strong> Esa es nuestra promesa: en clínicas, oficinas y espacios de alta rotación, cada taza es una garantía de grano recién molido que rompe la monotonía de las jornadas más largas.</p>
     </div>
   </div>
@@ -1401,7 +1552,7 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
         <h2 id="menu-h" class="rv">Diez bebidas. Un solo botón de <em>distancia</em>.</h2>
         <p class="lead rv">Elige como lo harías frente a la máquina y <strong>toca cualquier bebida para ver qué lleva por dentro</strong>. Todas las bebidas con café se preparan con grano recién molido; las de chocolate y té, con insumos premium.</p>
       </div>
-      <p class="en-servicio rv"><i aria-hidden="true"></i>Estación en servicio · 24/7</p>
+      <p class="en-servicio rv"><i aria-hidden="true"></i>Disponible 24/7 · 10 bebidas</p>
     </div>
 
     <div class="catalogo" id="menu-lista">
@@ -1536,12 +1687,12 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
 </section>
 
 <!-- ================= PREGUNTAS (naranja) ================= -->
-<section id="faq" class="sec sec-naranja" aria-labelledby="faq-h">
+<section id="faq" class="sec sec-leche" aria-labelledby="faq-h">
   <div class="wrap faq-grid">
     <div class="faq-cab">
       <span class="tag rv"><i></i>Preguntas frecuentes</span>
       <h2 id="faq-h" class="rv">Todo lo que quieres saber sobre <em>Café Oriente</em></h2>
-      <p class="faq-mas rv">¿Buscas vending de snacks y bebidas? Mira todas las preguntas de Todo Vending CA.<br><a class="btn btn-crema" href="/preguntas-frecuentes">Ver todas las preguntas</a></p>
+      <p class="faq-mas faq-mas-cab">¿Buscas vending de snacks y bebidas?<br><a class="btn btn-crema" href="/preguntas-frecuentes">Preguntas frecuentes de Todo Vending CA</a></p>
     </div>
     <div class="faq-list">
       <details class="faq-item rv" open><summary><i>01</i>¿Qué es Café Oriente?</summary><p>Café Oriente es la marca registrada de café premium de TodoVending, C.A. Se sirve desde estaciones automáticas Bianchi LEI 400 con molino de grano integrado: el café se muele al instante para cada bebida, garantizando frescura y un aroma superior. Nunca usamos café instantáneo.</p></details>
@@ -1555,6 +1706,7 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
       <details class="faq-item rv"><summary><i>09</i>¿En qué zonas instalan Café Oriente?</summary><p>Instalamos en todo el estado Anzoátegui (Lechería, Barcelona, Puerto La Cruz y el resto del estado), y pronto en el resto de Venezuela. La Clínica Anzoátegui ya cuenta con su estación Café Oriente.</p></details>
       <details class="faq-item rv"><summary><i>10</i>¿La máquina de Café Oriente está disponible todo el día?</summary><p>Sí. La estación Café Oriente es 100% automática y autónoma, y opera las 24 horas del día, los 7 días de la semana, incluso en turnos nocturnos.</p></details>
     </div>
+    <p class="faq-mas faq-mas-pie">¿Buscas vending de snacks y bebidas? Consulta las <a href="/preguntas-frecuentes">preguntas frecuentes de Todo Vending CA</a>.</p>
   </div>
 </section>
 
@@ -1579,7 +1731,7 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
           <div class="footer-nap">
             <span>Centro Comercial Venezuela, Local 11, Calle Nueva Esparta, Lechería, Anzoátegui, Venezuela</span>
             <span class="contacto"><a href="tel:+584146164177" data-lugar="footer">+58 414-616-4177</a><a href="mailto:todovendingca@gmail.com" data-lugar="footer">todovendingca@gmail.com</a></span>
-            <span class="horario"><span>Lunes a viernes 8:00–17:00</span> · <span>Sábados 8:00–12:00</span></span>
+            <span class="horario"><span>Lunes a viernes 8:00–17:00</span><span>Sábados 8:00–12:00</span></span>
           </div>
         </div>
       </div>
@@ -1612,6 +1764,12 @@ html.no-js .carta[data-i="5"],html.estatico .carta[data-i="5"]{box-shadow:var(--
   <a class="btn btn-wa" href="https://wa.me/584146164177?text=Hola%2C%20quiero%20informaci%C3%B3n%20de%20Caf%C3%A9%20Oriente%20para%20mi%20empresa" target="_blank" rel="noopener" data-lugar="sticky"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>Escríbenos por WhatsApp</a>
 </aside>
 <script>
+
+// ================= Posición del scroll (una sola lectura por evento) =================
+// Leer window.scrollY obliga a recalcular estilos si algo ya escribió en el cuadro:
+// se lee una vez, al despachar el evento (estilos limpios), y los rAF usan esta copia.
+var posScroll = window.scrollY || 0;
+window.addEventListener('scroll', function(){ posScroll = window.scrollY; }, {passive:true});
 
 // ================= Analítica (sin cookies, opcional) =================
 // Si algún día se carga Plausible, estos eventos ya están listos.
@@ -1661,7 +1819,7 @@ document.addEventListener('click', function(e){
   function medir(){ limite = hero.offsetTop + hero.offsetHeight - window.innerHeight * 0.5; }
   function revisar(){
     raf = 0;
-    var v = window.scrollY > limite && !fichaVisible;
+    var v = posScroll > limite && !fichaVisible;
     if (v !== visible){ visible = v; barra.classList.toggle('ve', v); }
   }
   function alScroll(){ if (!raf) raf = requestAnimationFrame(revisar); }
@@ -1739,7 +1897,7 @@ document.addEventListener('click', function(e){
 
   var botones = Array.prototype.slice.call(lista.querySelectorAll('.bebida'));
   var abierta = -1;
-  var movil = window.matchMedia('(max-width:640px)');
+  var movil = window.matchMedia('(max-width:640px), (max-height:520px)');
 
   function pintar(i){
     var b = BEBIDAS[i], boton = botones[i];
@@ -1785,6 +1943,13 @@ document.addEventListener('click', function(e){
       boton.setAttribute('aria-expanded','true');
       pintar(i); colocar(i);
       if (movil.matches){ var c = ficha.querySelector('.ficha-cerrar'); if (c) c.focus({preventScroll:true}); }
+      else {
+        // en tableta o portátil la ficha puede abrirse bajo el borde inferior (o bajo la barra
+        // fija de WhatsApp): se trae a la vista lo justo (scroll-padding de html descuenta las barras)
+        var r = ficha.getBoundingClientRect(), sw = document.getElementById('sticky-wa');
+        var abajo = window.innerHeight - (sw && sw.classList.contains('ve') ? sw.offsetHeight : 0);
+        if (r.bottom > abajo || r.top < 0) ficha.scrollIntoView({block:'nearest'});
+      }
       window.tvTrack('abrir_bebida', {bebida: BEBIDAS[i].n});
     });
   });
@@ -1817,6 +1982,13 @@ document.addEventListener('click', function(e){
   var video   = document.getElementById('video');
   var pista   = document.getElementById('hero');
   var escena  = document.getElementById('escena');
+  var capsula = document.getElementById('capsula');
+  var capEl   = document.getElementById('cap');
+  var lienzo  = escena ? escena.querySelector('.lienzo') : null;
+  var pieEsc  = escena ? escena.querySelector('.pie-escena') : null;
+  var cintaTr = pieEsc ? pieEsc.querySelector('.cinta-track') : null;
+  var aro     = escena ? escena.querySelector('.sello-aro') : null;
+  var llenos  = escena ? Array.prototype.slice.call(escena.querySelectorAll('.palabra .lleno')) : [];
   var intro   = document.getElementById('intro');
   var pila    = document.getElementById('pila');
   var der     = document.getElementById('der');
@@ -1825,7 +1997,7 @@ document.addEventListener('click', function(e){
   var saltar  = document.getElementById('saltar');
   var navProg = document.getElementById('nav-prog');
   var nav     = document.querySelector('nav.barra');
-  if (!video || !pista || !escena) return;
+  if (!pista || !escena || !capsula) return;
 
   var cartas = Array.prototype.slice.call(pila.querySelectorAll('.carta'));
   var rcs    = receta ? Array.prototype.slice.call(receta.querySelectorAll('.rc')) : [];
@@ -1841,12 +2013,12 @@ document.addEventListener('click', function(e){
     img.src = '/cafe-oriente/assets/final-v1.webp'; img.width = 720; img.height = 1280;
     img.alt = 'Mocachino Café Oriente terminado, con espuma de leche y cacao espolvoreado.';
     img.decoding = 'async';
-    if (video.parentNode) video.parentNode.replaceChild(img, video);
+    if (video && video.parentNode) video.parentNode.replaceChild(img, video);
+    else capsula.insertBefore(img, capsula.firstChild);
     video = img;
   }
-  video.addEventListener('error', function(){ if (video.readyState < 2) mostrarFinal(); });
 
-  if (raiz.classList.contains('estatico')){
+  if (!video || raiz.classList.contains('estatico')){
     // Sin animación: no se descarga el video (el src se quitó al parsear); vaso
     // terminado, receta completa y todo el contenido a la vista.
     mostrarFinal();
@@ -1854,6 +2026,11 @@ document.addEventListener('click', function(e){
     if (nav) nav.classList.remove('en-hero');
     return;
   }
+
+  // Error del mp4: puede haber ocurrido mientras llegaba el resto del HTML (antes de que
+  // existiera este oyente); el script en línea junto a la plantilla lo dejó en data-fallo.
+  video.addEventListener('error', function(){ if (video.readyState < 2) mostrarFinal(); });
+  if ((video.error || video.getAttribute('data-fallo')) && video.readyState < 2) mostrarFinal();
 
   // --- curva scroll (0..1) → segundo del video («suave», la de la página aprobada) ---
   var D_REF = 7.9167;
@@ -1914,7 +2091,7 @@ document.addEventListener('click', function(e){
     if (!tinte) return;
     if (on !== tinteOn){ tinteOn = on; tinte.classList.toggle('on', on); }
     if (!on) return;
-    var W = escena.clientWidth, H = altoVista, A = Math.min(18, H * 0.022);
+    var W = anchoEscena, H = altoVista, A = Math.min(18, H * 0.022);
     var Y = (H + 2 * A) * (1 - f) - A, fase = f * 7, pts = [];
     for (var k = 0; k <= 24; k++){
       var x = W * k / 24;
@@ -1931,15 +2108,48 @@ document.addEventListener('click', function(e){
   function suave(x){ x = clamp(x); return x * x * (3 - 2 * x); }
 
   // --- geometría: se mide tras el primer pintado y al redimensionar ---
-  var arriba = 0, recorrido = 1, altoVista = 800, peek = 52;
+  // Toda la lectura de geometría vive aquí (al cargar y al redimensionar): el manejador
+  // del scroll solo escribe, así no fuerza recálculos de estilo de la escena.
+  var arriba = 0, recorrido = 1, altoVista = 800, peek = 52, pilaN = 3, anchoEscena = 1000, altoPista = 1;
+  var escalaCierre = 1;   // tableta vertical: a qué tamaño queda la cápsula en el cierre
+  var tablaCierre = window.matchMedia('(min-width:600px) and (max-width:900px) and (min-height:900px)');
   function medirEscena(){
-    arriba    = pista.getBoundingClientRect().top + window.scrollY;
+    posScroll = window.scrollY;
+    arriba    = pista.getBoundingClientRect().top + posScroll;
     altoVista = window.innerHeight;
-    recorrido = pista.offsetHeight - altoVista;
+    altoPista = pista.offsetHeight;
+    recorrido = altoPista - altoVista;
     if (recorrido <= 0) recorrido = 1;
-    peek = parseFloat(getComputedStyle(escena).getPropertyValue('--peek')) || 52;
+    anchoEscena = escena.clientWidth;
+    var cs = getComputedStyle(escena);
+    peek  = parseFloat(cs.getPropertyValue('--peek')) || 52;
+    pilaN = parseFloat(cs.getPropertyValue('--pila-n')) || 3;
+    // stickers en teléfono y tableta: se colocan con la geometría real de la cápsula
+    if (capEl) capEl.style.transform = '';
+    escalaCierre = 1;
+    if (movil.matches && der && capsula){
+      var dr = der.getBoundingClientRect(), cr = capsula.getBoundingClientRect();
+      var cl = cr.left - dr.left, ct = cr.top - dr.top;
+      var modo = dr.width >= 700 && cl >= 150 ? 'lados' : (dr.width < 700 ? 'hombro' : '');
+      if (modo){
+        der.setAttribute('data-modo', modo);
+        der.style.setProperty('--cl', cl.toFixed(1) + 'px');
+        der.style.setProperty('--cr', (cl + cr.width).toFixed(1) + 'px');
+        der.style.setProperty('--ct', ct.toFixed(1) + 'px');
+        der.style.setProperty('--cw', cr.width.toFixed(1) + 'px');
+        der.style.setProperty('--ch', cr.height.toFixed(1) + 'px');
+        der.style.setProperty('--lw', dr.width.toFixed(1) + 'px');
+      } else der.removeAttribute('data-modo');
+      // tableta vertical: la hoja del cierre ocupa la mitad baja; la cápsula se reduce
+      // desde arriba hasta quedar entera sobre ella, con el vaso terminado y el «¡Listo!»
+      if (tablaCierre.matches && cierre){
+        var er = escena.getBoundingClientRect();
+        var techo = er.height - (pieEsc ? pieEsc.offsetHeight : 46) - cierre.offsetHeight - 18;
+        escalaCierre = Math.max(0.35, Math.min(1, (techo - (cr.top - er.top)) / cr.height));
+      }
+    } else if (der) der.removeAttribute('data-modo');
   }
-  function progreso(){ return clamp((window.scrollY - arriba) / recorrido); }
+  function progreso(){ return clamp((posScroll - arriba) / recorrido); }
 
   // --- la pila: cada tarjeta entra desde abajo; las anteriores suben un «peek»
   //     y dejan a la vista su número y su nombre ---
@@ -1952,21 +2162,22 @@ document.addEventListener('click', function(e){
       var y = altoVista * 1.1 * (1 - k) - d * peek * k;
       var rot = 6 * (1 - k) + (i % 2 ? 0.8 : -0.8) * clamp(d) * k;
       var tr = 'translate3d(0,' + y.toFixed(1) + 'px,0) rotate(' + rot.toFixed(2) + 'deg)';
+      // fuera de cuadro las tarjetas son transparentes, pero siguen en el árbol
+      // accesible (en orden): un lector de pantalla oye la receta completa
       var vis = k > 0.001 && c < 0.999;
-      var op = esMovil && d > 2.2 ? clamp(3.2 - d) : 1;
-      op *= 1 - c;
-      var clave = tr + '|' + vis + '|' + op.toFixed(2);
+      var op = esMovil && d > pilaN - 0.8 ? clamp(pilaN + 0.2 - d) : 1;
+      op = vis ? op * (1 - c) : 0;
+      var clave = tr + '|' + op.toFixed(2);
       if (ultimo[i] !== clave){
         ultimo[i] = clave;
         cartas[i].style.transform = tr;
-        cartas[i].style.visibility = vis ? 'visible' : 'hidden';
         cartas[i].style.opacity = op.toFixed(2);
         cartas[i].style.zIndex = 10 + i;
       }
       encima += k;
     }
-    // el titular se retira cuando llega la primera tarjeta
-    var q = clamp(e[0] * 1.25);
+    // el titular se retira mientras llega la primera tarjeta (se cruzan, sin hueco)
+    var q = clamp((e[0] - 0.35) / 0.5);
     var ti = (-30 * q).toFixed(1) + '|' + q.toFixed(2);
     if (ultimo.intro !== ti){
       ultimo.intro = ti;
@@ -1977,12 +2188,13 @@ document.addEventListener('click', function(e){
     }
     // teléfono: índice de la receta
     for (var r = 0; r < rcs.length; r++){
-      var ok = e[r] >= 0.5, ya = ok && (r === rcs.length - 1 ? e[5] < 0.5 : e[r + 1] < 0.5);
+      var ok = e[r] >= 0.9, ya = ok && (r === rcs.length - 1 ? e[5] < 0.9 : e[r + 1] < 0.9);
       var cl = 'rc' + (ok ? ' ok' : '') + (ya ? ' ya' : '');
       if (rcs[r].className !== cl) rcs[r].className = cl;
     }
   }
 
+  var esMovilAhora = movil.matches, estFill = '', estEnHero = null;
   function aplicar(){
     var p = progreso();
     if (!h50 && p >= 0.5){ h50 = true; window.tvTrack('hero_50'); }
@@ -1998,7 +2210,9 @@ document.addEventListener('click', function(e){
     var activa = -1, hechas = 0;
     for (var i = 0; i < e.length; i++){ if (e[i] >= 1) hechas = i + 1; else if (e[i] > 0 && activa < 0) activa = i; }
     var base = PAL[activa >= 0 ? activa : hechas], sig = activa >= 0 ? PAL[activa + 1] : base, f = activa >= 0 ? e[activa] : 0;
-    var col = [base[0], base[1], mezcla(base[2], sig[2], f), base[3], mezcla(base[4], sig[4], f), sig[0], sig[1], sig[3],
+    // las sombras se funden en pasos de 1/32: menos cambios de variables heredadas
+    var fq = Math.round(f * 32) / 32;
+    var col = [base[0], base[1], mezcla(base[2], sig[2], fq), base[3], mezcla(base[4], sig[4], fq), sig[0], sig[1], sig[3],
                f > 0.04 ? sig[1] : base[1], f > 0.04 ? sig[0] : base[0]];
     for (var w = 0; w < VARS.length; w++){
       var s = 'rgb(' + Math.round(col[w][0]) + ',' + Math.round(col[w][1]) + ',' + Math.round(col[w][2]) + ')';
@@ -2010,24 +2224,42 @@ document.addEventListener('click', function(e){
     var esListo = t >= LISTO_T;
     if (esListo !== estListo){ estListo = esListo; pista.classList.toggle('listo', esListo); }
 
-    // cierre: fundido atado al scroll
+    // cierre atado al scroll. Escritorio: fundido alrededor de la cápsula.
+    // Teléfono y tableta: una hoja espresso opaca que sube (sin fundido cruzado) y su
+    // contenido entra cuando ya tapa la escena; en tableta la cápsula se reduce encima.
     var c = suave((p - CIERRE_DESDE) / CIERRE_ANCHO);
-    var cc = c.toFixed(2);
+    var cc = c.toFixed(3) + (esMovilAhora ? 'm' : 'd');
     if (cc !== estCierre){
       estCierre = cc;
-      cierre.style.opacity = cc;
+      if (esMovilAhora){
+        cierre.style.opacity = '';
+        cierre.style.transform = c >= 0.999 ? 'none' : 'translate3d(0,' + ((1 - c) * 100).toFixed(2) + '%,0)';
+        cierre.style.setProperty('--co', clamp((c - 0.6) / 0.4).toFixed(2));
+        if (capEl) capEl.style.transform = escalaCierre < 1 && c > 0 ? 'scale(' + (1 - (1 - escalaCierre) * c).toFixed(4) + ')' : '';
+      } else {
+        cierre.style.transform = '';
+        cierre.style.opacity = c.toFixed(2);
+      }
       cierre.classList.toggle('on', c > 0.02);
       if (der) der.style.opacity = (1 - c).toFixed(2);
       if (receta) receta.style.opacity = (1 - c).toFixed(2);
     }
 
     // la palabra MOCACHINO se rellena de izquierda a derecha con la bebida
-    escena.style.setProperty('--fill', (clamp((t - 0.25) / 6.95) * 100).toFixed(1) + '%');
+    // (la variable va en cada capa rellena, no en la escena: no se recalcula nada más)
+    var fill = (clamp((t - 0.25) / 6.95) * 100).toFixed(1) + '%';
+    if (fill !== estFill){ estFill = fill; for (var l = 0; l < llenos.length; l++) llenos[l].style.setProperty('--fill', fill); }
+    // la cinta avanza y el sello gira con el scroll
+    if (cintaTr) cintaTr.style.transform = 'translate3d(' + (-((p * 1.5) % 1) * 50).toFixed(2) + '%,0,0)';
+    if (aro) aro.style.transform = 'rotate(' + (p * 300).toFixed(1) + 'deg)';
     if (navProg) navProg.style.transform = 'scaleX(' + p.toFixed(3) + ')';
-    if (nav) nav.classList.toggle('en-hero', window.scrollY < arriba + pista.offsetHeight - 2);
+    var enHero = posScroll < arriba + altoPista - 2;
+    if (nav && enHero !== estEnHero){ estEnHero = enHero; nav.classList.toggle('en-hero', enHero); }
 
     pintarPila(e, c);
-    pedirCuadro();
+    // el seek se pide en este mismo cuadro
+    if (rafId){ cancelAnimationFrame(rafId); rafId = 0; }
+    bucle();
   }
 
   // --- video: preload="auto" desde el primer byte (decisión del dueño),
@@ -2112,15 +2344,54 @@ document.addEventListener('click', function(e){
   var rz = 0;
   function alRedimensionar(){
     if (rz) return;
-    rz = requestAnimationFrame(function(){ rz = 0; ultimo = {}; medirEscena(); aplicar(); });
+    rz = requestAnimationFrame(function(){
+      rz = 0; ultimo = {}; estCierre = -1; esMovilAhora = movil.matches;
+      medirEscena(); aplicar();
+    });
   }
-  window.addEventListener('scroll', aplicar, {passive:true});
+  var rafScroll = 0;
+  function alScroll(){ if (!rafScroll) rafScroll = requestAnimationFrame(function(){ rafScroll = 0; aplicar(); }); }
+  window.addEventListener('scroll', alScroll, {passive:true});
   window.addEventListener('resize', alRedimensionar);
   window.addEventListener('orientationchange', alRedimensionar);
   if (movil.addEventListener) movil.addEventListener('change', alRedimensionar);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(alRedimensionar);
   // se mide tras el primer pintado: no fuerza layout durante el parse
   requestAnimationFrame(function(){ medirEscena(); aplicar(); });
+})();
+
+// ================= Marquesinas: avanzan con el scroll =================
+// Nada se mueve solo (WCAG 2.2.2): las bandas doradas avanzan mientras se hace scroll
+// y se paran con él. La cinta del hero la mueve el propio hero (salvo en modo estático).
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var estatico = document.documentElement.classList.contains('estatico');
+  var tracks = Array.prototype.filter.call(document.querySelectorAll('.cinta-track'), function(t){
+    return estatico || !t.closest('#escena');
+  });
+  if (!tracks.length) return;
+  var mitad = [], visibles = tracks.map(function(){ return true; }), raf = 0;
+  function medir(){ mitad = tracks.map(function(t){ return t.scrollWidth / 2 || 1; }); }
+  function mover(){
+    raf = 0;
+    var y = posScroll;
+    for (var i = 0; i < tracks.length; i++){
+      if (!visibles[i]) continue;
+      var x = (y * 0.45 + i * 180) % mitad[i];
+      tracks[i].style.transform = 'translate3d(' + (-x).toFixed(1) + 'px,0,0)';
+    }
+  }
+  function pedir(){ if (!raf) raf = requestAnimationFrame(mover); }
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(en){
+      en.forEach(function(e){ var i = tracks.indexOf(e.target); if (i > -1) visibles[i] = e.isIntersecting; });
+      pedir();
+    });
+    tracks.forEach(function(t){ io.observe(t); });
+  }
+  window.addEventListener('scroll', pedir, {passive:true});
+  window.addEventListener('resize', function(){ medir(); pedir(); });
+  requestAnimationFrame(function(){ medir(); mover(); });
 })();
 
 </script>
