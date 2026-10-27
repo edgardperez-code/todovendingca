@@ -90,7 +90,8 @@ un mocachino. La sección anterior describe la versión previa; queda en el hist
   estación, pagos, empresas con instalación sin costo, 7 clientes, 10 preguntas, pie con NAP),
   respetando las decisiones del 24/10 (solo Café Oriente es sin efectivo, la imagen de la
   estación es un render, la barra de WhatsApp no tapa el pie, la barra superior no se parte).
-- **Respaldo del video**: si el video no muestra ningún cuadro, o si el servidor no acepta
+- **Respaldo del video**: si el video no muestra ningún cuadro (también si el mp4 falló antes de
+  que cargara el script final, arreglado el 27/10), o si el servidor no acepta
   peticiones Range (`video.seekable` vacío durante 2,5 s), se muestra `final-v1.webp`. El
   hosting debe responder 206 a `curl -I -H 'Range: bytes=0-1' .../mocachino-v2.mp4`.
 - **Medido en local**: Lighthouse móvil 90 / 100 / 100 / 100, LCP 3,5 s, CLS 0, sin errores de
@@ -102,6 +103,36 @@ un mocachino. La sección anterior describe la versión previa; queda en el hist
 - **Detalles menores conocidos**: en teléfono horizontal el video queda pequeño; a 360×640 queda
   un hueco en la capa 4; la página se sirve sin compresión gzip/brotli (se arreglaría con
   `compression()` en Express, fuera de esta página).
+
+## Variante «Pop premium» (27/10/2026, sin publicar)
+
+Tras ver los cuatro prototipos, al dueño le gustó **Pop premium**. Se construyó la página completa
+con ese concepto como **variante** para compararla con Anatomía:
+`docs/cafe-oriente/variantes/pop-premium/index.html`. Vive en `docs/` para que no se sirva en el
+sitio. Es un reemplazo directo de `client/public/cafe-oriente/index.html`, con las mismas URLs
+absolutas, canonical, head, JSON-LD, contenido, mensajes de WhatsApp, `tvTrack` y mecánica del
+video. **Si el dueño la elige**, se copia encima de ese archivo y se borra la carpeta de variantes.
+
+- **Qué conserva del prototipo**: bloques de color planos, la pantalla del hero que se tiñe con
+  cada ingrediente (ahora como un líquido que sube atado al scroll, sin destellos), MOCACHINO que se
+  rellena letra a letra (dorada en las fases oscuras), cápsula en arco con sombra dura, stickers,
+  tarjetas de ingredientes que se apilan dejando ver número y nombre, «= un Mocachino», sello
+  «¡Listo!», marquesinas.
+- **Qué corrige de las críticas del jurado**: navegación completa con las reglas del 24/10, verde
+  WhatsApp solo en botones de WhatsApp, más dorado sobre espresso (barra, cierre, pie), contraste
+  ≥ 4,5:1, stickers que no tocan la cápsula ni el H1, cápsula más grande en teléfono, 450 vh, sin el
+  respaldo de 19 cuadros WebP (solo `final-v1.webp`), cierre compuesto en escritorio.
+- **Proceso**: constructor, cuatro revisores (arte y marca, móvil y tableta, técnica, contenido),
+  dos rondas de corrección y verificación final aprobada.
+- **Medido en local**: Lighthouse móvil 91 / 100 / 100 / 100, LCP 3,3 s, CLS 0, TBT ≤ 80 ms;
+  sin errores de consola; sin desbordes de 360 a 1440 px; JSON-LD de 7 nodos; FAQ 10 = FAQPage;
+  10 bebidas idénticas a Anatomía; respaldo correcto con el mp4 bloqueado, con HTML lento + 404,
+  con «reducir movimiento» y sin JS.
+- **Detalles menores conocidos**: en teléfonos bajos (360×640, 375×667) el vaso se ve pequeño;
+  entre p ≈ 0,89 y 0,91 del hero las tarjetas se funden con un leve fantasma; a 1024×600 la última
+  tarjeta roza la marquesina; en escritorio la cápsula queda unos 60 px a la derecha del centro.
+- **Ambas páginas**: el HTML se sirve sin gzip/brotli. Con compresión en Express (dejando fuera el
+  mp4 para no romper las respuestas 206) el LCP móvil bajaría de ~3,2 s a ~2,5 s.
 
 ## Pendientes que siguen necesitando datos del dueño
 

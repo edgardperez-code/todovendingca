@@ -2378,6 +2378,9 @@ document.addEventListener('click', function(e){
   }
   function mostrarFinal(){ if (roto) return; roto = true; imagenFinal(); }
   video.addEventListener('error', function(){ if (video.readyState < 2) mostrarFinal(); });
+  // Si el mp4 falló antes de que existiera este oyente (HTML lento + 404 o corte de red),
+  // el evento ya pasó: se comprueba el estado actual.
+  if (!reduce && video.error && video.readyState < 2) mostrarFinal();
 
   if (reduce){
     // Sin animación: no se descarga el video; vaso terminado y todo a la vista
