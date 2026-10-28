@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, ArrowUp } from "lucide-react";
 import { SiWhatsapp, SiInstagram, SiTiktok } from "react-icons/si";
+import { EnlaceInterno } from "@/lib/navegacion";
 
 const navLinks = [
   { href: "/#inicio", label: "Inicio" },
@@ -9,10 +10,12 @@ const navLinks = [
   { href: "/#ubicaciones", label: "Ubicaciones" },
   { href: "/#faq", label: "FAQ" },
   { href: "/#contacto", label: "Contacto" },
-  { href: "/cafe-oriente", label: "Café Oriente" },
+  // Pagina estatica servida por Express (no es ruta de React): <a> normal.
+  { href: "/cafe-oriente", label: "Café Oriente", external: true },
   { href: "/maquinas-expendedoras-lecheria", label: "Vending en Lechería" },
   { href: "/vending-para-empresas", label: "Vending para Empresas" },
   { href: "/vending-gimnasios", label: "Vending para Gimnasios" },
+  { href: "/gift-card", label: "Gift Cards Todo Vending" },
 ];
 
 export function Footer() {
@@ -28,7 +31,9 @@ export function Footer() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {/* Brand */}
             <div className="lg:col-span-1">
-              <a href="#inicio" className="flex items-center gap-2 mb-4" data-testid="link-footer-logo">
+              {/* Igual que el logo del header: "/" funciona desde cualquier pagina
+                  ("#inicio" solo servia estando ya en el home). */}
+              <EnlaceInterno href="/" className="flex items-center gap-2 mb-4" data-testid="link-footer-logo">
                 <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-lg">TV</span>
                 </div>
@@ -36,7 +41,7 @@ export function Footer() {
                   <span className="font-bold text-lg text-white">Todo Vending</span>
                   <span className="text-primary font-semibold ml-1">CA</span>
                 </div>
-              </a>
+              </EnlaceInterno>
               <p className="text-slate-400 text-sm mb-4">
                 Tu solucion integral en maquinas expendedoras. Tecnologia, 
                 servicio y conveniencia en un solo lugar.
@@ -80,17 +85,20 @@ export function Footer() {
             <div>
               <h4 className="font-semibold text-white mb-4">Enlaces</h4>
               <ul className="space-y-2">
-                {navLinks.map((link) => (
-                  <li key={link.href}>
-                    <a
-                      href={link.href}
-                      className="text-slate-400 text-sm transition-colors hover-elevate"
-                      data-testid={`link-footer-${link.label.toLowerCase()}`}
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
+                {navLinks.map((link) => {
+                  const Enlace = "external" in link && link.external ? "a" : EnlaceInterno;
+                  return (
+                    <li key={link.href}>
+                      <Enlace
+                        href={link.href}
+                        className="text-slate-400 text-sm transition-colors hover-elevate"
+                        data-testid={`link-footer-${link.label.toLowerCase()}`}
+                      >
+                        {link.label}
+                      </Enlace>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 

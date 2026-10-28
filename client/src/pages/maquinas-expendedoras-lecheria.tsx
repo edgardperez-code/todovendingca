@@ -3,7 +3,8 @@ import { Footer } from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Zap, ShieldCheck } from "lucide-react";
-import { motion } from "framer-motion";
+// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
+import { motion } from "@/lib/movimiento";
 import { SubpageHero } from "@/components/subpage-hero";
 import { SubpageFAQ } from "@/components/subpage-faq";
 import { SubpageCTA } from "@/components/subpage-cta";

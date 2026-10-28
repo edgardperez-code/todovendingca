@@ -3,6 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tema antes de pintar: lee el tema guardado (el mismo que usa
+         ThemeProvider) y pone la clase en <html> de una vez. Sin esto, con tema
+         oscuro guardado la pagina se dibujaba clara y luego cambiaba. -->
+    <script>
+      (function () {
+        try {
+          var tema = localStorage.getItem("vending-theme");
+          if (tema === "system") {
+            tema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          if (tema !== "dark") tema = "light";
+          var raiz = document.documentElement;
+          raiz.classList.remove("light", "dark");
+          raiz.classList.add(tema);
+        } catch (e) {
+          // Almacenamiento bloqueado: se queda el tema claro por defecto.
+        }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

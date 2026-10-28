@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SiWhatsapp } from "react-icons/si";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { EnlaceInterno } from "@/lib/navegacion";
 
 // Hero compacto para subpaginas, con el mismo estilo visual del home:
 // gradiente sutil, badge "eyebrow", h1 en dos colores y CTA de WhatsApp.
@@ -30,12 +31,9 @@ export function SubpageHero({
         />
       </div>
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-3xl"
-        >
+        {/* Sin animacion de entrada: es la primera pantalla y debe salir
+            pintada desde el servidor. */}
+        <div className="max-w-3xl">
           <Badge className="mb-6" variant="secondary">
             {eyebrow}
           </Badge>
@@ -58,14 +56,14 @@ export function SubpageHero({
                 {ctaText}
               </Button>
             </a>
-            <a href="/#servicios">
+            <EnlaceInterno href="/#servicios">
               <Button size="lg" variant="outline" className="w-full sm:w-auto gap-2">
                 Ver Servicios
                 <ArrowRight className="h-4 w-4" />
               </Button>
-            </a>
+            </EnlaceInterno>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

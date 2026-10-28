@@ -1,10 +1,16 @@
+import "./cargar-entorno";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
+import { iniciarConciliacion } from "./tienda";
 import { createServer } from "http";
 
 const app = express();
 const httpServer = createServer(app);
+
+// Detras del proxy de Railway (un salto): asi req.ip es la IP real del cliente
+// y no la del proxy.
+app.set("trust proxy", 1);
 
 declare module "http" {
   interface IncomingMessage {
@@ -91,6 +97,8 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+const RUTAS_SIN_CUERPO_EN_LOG = ["/api/checkout", "/api/pedidos", "/api/webhooks", "/api/admin"];
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -105,8 +113,16 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
+      // Solo se registra req.path, que NO incluye la query: la clave del pedido
+      // (?k=) y la busqueda del admin (?buscar=, que puede ser un email) nunca
+      // llegan al log. El codigo de Gift Card, en cambio, viaja en la ruta de
+      // los endpoints admin: se enmascara para que nunca quede escrito.
+      const rutaLog = path.replace(/^(\/api\/admin\/gift-cards\/)[^/]+/, "$1***");
+      let logLine = `${req.method} ${rutaLog} ${res.statusCode} in ${duration}ms`;
+      // En estas rutas viajan emails y codigos de Gift Card: solo se registra
+      // metodo, ruta, status y duracion, nunca el cuerpo.
+      const rutaSensible = RUTAS_SIN_CUERPO_EN_LOG.some((prefijo) => path.startsWith(prefijo));
+      if (capturedJsonResponse && !rutaSensible) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
 
@@ -158,6 +174,9 @@ app.use((req, res, next) => {
     },
     () => {
       log(`serving on port ${port}`);
+      // Con el servidor ya escuchando: reconsulta en SPIDI los pedidos que
+      // pudieron quedarse sin aviso y reintenta los correos que no salieron.
+      iniciarConciliacion();
     },
   );
 })();

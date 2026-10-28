@@ -7,6 +7,10 @@ export type SEOData = {
   path: string; // ej: "/" o "/cafe-oriente"
   ogImage?: string;
   jsonLd?: object[];
+  // true en paginas que no deben aparecer en buscadores (carrito, resultado
+  // de pago). Igual llaman a useSEO: el servidor usa ssrSEO para saber que la
+  // ruta existe y responder 200 en vez de 404.
+  noindex?: boolean;
 };
 
 // Capturado durante el renderToString en el servidor (síncrono, sin condición de
@@ -18,6 +22,12 @@ export function resetSSRSeo() {
 }
 
 const JSONLD_ATTR = "data-seo-jsonld";
+// Marca los <meta name="robots"> que pone este modulo (o el servidor para una
+// pagina noindex), para poder quitarlos al navegar a una pagina indexable.
+const ROBOTS_ATTR = "data-seo-robots";
+// Guarda el valor original del robots de la plantilla mientras se pisa.
+const ROBOTS_ORIGINAL_ATTR = "data-seo-robots-original";
+const ROBOTS_NOINDEX = "noindex, nofollow";
 
 export function useSEO(data: SEOData) {
   if (typeof window === "undefined") {
@@ -37,8 +47,9 @@ export function useSEO(data: SEOData) {
     setMetaByName("twitter:description", data.description);
     setCanonical(`${SITE_URL}${data.path}`);
     setJsonLd(data.jsonLd || []);
+    setRobots(data.noindex === true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.title, data.description, data.path]);
+  }, [data.title, data.description, data.path, data.noindex]);
 }
 
 function setMetaByName(name: string, content: string) {
@@ -82,6 +93,41 @@ function setJsonLd(blocks: object[]) {
   });
 }
 
+// La plantilla (client/index.html) ya trae un robots "index, follow". En una
+// pagina noindex se pisa su valor (guardando el original) en vez de agregar
+// otro meta, y al volver a una pagina indexable se restaura.
+function setRobots(noindex: boolean) {
+  const metas = Array.from(document.querySelectorAll<HTMLMetaElement>('meta[name="robots"]'));
+  if (noindex) {
+    if (metas.length === 0) {
+      const el = document.createElement("meta");
+      el.setAttribute("name", "robots");
+      el.setAttribute(ROBOTS_ATTR, "1");
+      el.setAttribute("content", ROBOTS_NOINDEX);
+      document.head.appendChild(el);
+      return;
+    }
+    metas.forEach((el) => {
+      if (!el.hasAttribute(ROBOTS_ATTR) && !el.hasAttribute(ROBOTS_ORIGINAL_ATTR)) {
+        el.setAttribute(ROBOTS_ORIGINAL_ATTR, el.getAttribute("content") ?? "");
+      }
+      el.setAttribute("content", ROBOTS_NOINDEX);
+    });
+    return;
+  }
+  metas.forEach((el) => {
+    if (el.hasAttribute(ROBOTS_ATTR)) {
+      el.remove();
+      return;
+    }
+    const original = el.getAttribute(ROBOTS_ORIGINAL_ATTR);
+    if (original !== null) {
+      el.setAttribute("content", original);
+      el.removeAttribute(ROBOTS_ORIGINAL_ATTR);
+    }
+  });
+}
+
 // Usado solo en el servidor para construir el <head> de la respuesta HTML.
 export function renderHeadTags(data: SEOData): string {
   const canonical = `${SITE_URL}${data.path}`;
@@ -108,6 +154,7 @@ export function renderHeadTags(data: SEOData): string {
     <meta name="twitter:title" content="${escapeAttr(data.title)}" />
     <meta name="twitter:description" content="${escapeAttr(data.description)}" />
     <meta name="twitter:image" content="${data.ogImage || `${SITE_URL}/og-image.jpg`}" />
+    ${data.noindex ? `<meta name="robots" content="${ROBOTS_NOINDEX}" ${ROBOTS_ATTR}="1" />` : ""}
     ${jsonLdBlocks}`;
 }
 

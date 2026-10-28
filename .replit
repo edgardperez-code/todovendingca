@@ -49,4 +49,4 @@ integrations = ["resend:1.0.0"]
 [userenv]
 
 [userenv.shared]
-ADMIN_KEY = "d47ff5b9c422a38bb58a6341f8dd63d5"
+

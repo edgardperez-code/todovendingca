@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/hero-section";
 import { AboutSection } from "@/components/about-section";
 import { ServicesSection } from "@/components/services-section";
 import { CafeOrienteSection } from "@/components/cafe-oriente-section";
+import { GiftCardPromoSection } from "@/components/gift-card-promo-section";
 import { LocationsSection } from "@/components/locations-section";
 import { ValuePropsSection } from "@/components/value-props-section";
 import { FAQSection } from "@/components/faq-section";
@@ -46,6 +47,7 @@ export default function Home() {
         <AboutSection />
         <ServicesSection />
         <CafeOrienteSection />
+        <GiftCardPromoSection />
         <LocationsSection />
         <ValuePropsSection />
         <FAQSection />

@@ -8,7 +8,8 @@ import {
   TrendingUp,
   Handshake
 } from "lucide-react";
-import { motion } from "framer-motion";
+// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
+import { motion } from "@/lib/movimiento";
 
 const valueProps = [
   {

@@ -63,13 +63,9 @@ export function HeroSection() {
 
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left content */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center lg:text-left"
-          >
+          {/* Left content. Sin animacion de entrada: es lo primero que se ve y
+              debe salir pintado desde el servidor, sin "aparecer" despues. */}
+          <div className="text-center lg:text-left">
             <Badge className="mb-6" variant="secondary">
               Lecheria, Anzoategui
             </Badge>
@@ -92,18 +88,11 @@ export function HeroSection() {
 
             {/* Feature badges */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.text}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                >
-                  <Badge variant="outline" className="py-2 px-4 gap-2">
-                    <feature.icon className="h-4 w-4 text-primary" />
-                    {feature.text}
-                  </Badge>
-                </motion.div>
+              {features.map((feature) => (
+                <Badge key={feature.text} variant="outline" className="py-2 px-4 gap-2">
+                  <feature.icon className="h-4 w-4 text-primary" />
+                  {feature.text}
+                </Badge>
               ))}
             </div>
 
@@ -128,15 +117,10 @@ export function HeroSection() {
                 </Button>
               </a>
             </div>
-          </motion.div>
+          </div>
 
           {/* Right content - Vending Machine Illustration */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative hidden lg:flex justify-center"
-          >
+          <div className="relative hidden lg:flex justify-center">
             <div className="relative">
               {/* Vending Machine Image - Optimized for fast loading */}
               <motion.img 
@@ -163,7 +147,7 @@ export function HeroSection() {
                 transition={{ duration: 5, repeat: Infinity }}
               />
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 

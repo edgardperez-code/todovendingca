@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
+// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
+import { motion } from "@/lib/movimiento";
 
 // CTA final de subpagina, identico al bloque inferior de la seccion Servicios.
 export function SubpageCTA({ title, text, ctaText }: { title: string; text: string; ctaText: string }) {

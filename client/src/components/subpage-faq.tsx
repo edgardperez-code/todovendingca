@@ -5,7 +5,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { motion } from "framer-motion";
+// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
+import { motion } from "@/lib/movimiento";
 
 export type SubpageFAQItem = { question: string; answer: string };
 

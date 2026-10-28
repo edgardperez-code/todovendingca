@@ -176,6 +176,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Quien pidio menos movimiento en su sistema salta directo a la seccion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* Custom gradient animations */
 @keyframes gradient-shift {
   0%, 100% {

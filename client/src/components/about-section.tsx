@@ -3,7 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Target, Award, Sparkles } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
-import { motion } from "framer-motion";
+// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
+import { motion } from "@/lib/movimiento";
 
 const stats = [
   { value: "100%", label: "Satisfaccion", icon: Award },

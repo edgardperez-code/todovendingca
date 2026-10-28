@@ -27,7 +27,8 @@ import {
   CheckCircle
 } from "lucide-react";
 import { SiWhatsapp, SiInstagram, SiTiktok } from "react-icons/si";
-import { motion } from "framer-motion";
+// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
+import { motion } from "@/lib/movimiento";
 import { insertContactMessageSchema, type InsertContactMessage } from "@shared/schema";
 
 const contactFormSchema = insertContactMessageSchema.extend({
@@ -286,6 +287,7 @@ export function ContactSection() {
                                 <Input 
                                   placeholder="+58 414-XXX-XXXX" 
                                   {...field}
+                                  value={field.value ?? ""}
                                   data-testid="input-phone"
                                 />
                               </FormControl>
@@ -303,6 +305,7 @@ export function ContactSection() {
                                 <Input 
                                   placeholder="Nombre de tu empresa" 
                                   {...field}
+                                  value={field.value ?? ""}
                                   data-testid="input-company"
                                 />
                               </FormControl>

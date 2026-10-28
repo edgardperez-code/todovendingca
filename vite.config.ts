@@ -34,7 +34,16 @@ export default defineConfig({
   server: {
     fs: {
       strict: true,
-      deny: ["**/.*"],
+      // Solo estas carpetas se pueden servir en desarrollo. Antes valia toda la
+      // raiz del repo, y spidi.env (credenciales de SPIDI) salia por /@fs/,
+      // incluso esquivando el deny con el flujo NTFS "spidi.env::$DATA".
+      allow: [
+        path.resolve(import.meta.dirname, "client"),
+        path.resolve(import.meta.dirname, "shared"),
+        path.resolve(import.meta.dirname, "attached_assets"),
+        path.resolve(import.meta.dirname, "node_modules"),
+      ],
+      deny: ["**/.*", "**/*.env", "**/*.env.*", "**/*.env:*", "**/*.{crt,pem}", "**/.git/**"],
     },
   },
 });

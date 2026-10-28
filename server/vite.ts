@@ -13,6 +13,9 @@ export async function setupVite(server: Server, app: Express) {
     middlewareMode: true,
     hmr: { server, path: "/vite-hmr" },
     allowedHosts: true as const,
+    // Se conservan las reglas fs de vite.config.ts (strict + deny): antes este
+    // objeto reemplazaba todo `server` y Vite entregaba spidi.env por /@fs/.
+    fs: viteConfig.server?.fs,
   };
 
   const vite = await createViteServer({
@@ -22,6 +25,9 @@ export async function setupVite(server: Server, app: Express) {
       ...viteLogger,
       error: (msg, options) => {
         viteLogger.error(msg, options);
+        // Un acceso negado por las reglas fs (alguien pidio /@fs/.../spidi.env)
+        // es una peticion rechazada, no un fallo del servidor: no debe tumbarlo.
+        if (msg.includes("outside of Vite serving allow list")) return;
         process.exit(1);
       },
     },
