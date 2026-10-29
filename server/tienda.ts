@@ -24,6 +24,11 @@
 //   Un pedido de prueba reserva stock como uno real (asi se puede probar el
 //   "Sin stock"), pero al pagarse lo devuelve: nunca gasta codigos reales. Con
 //   TIENDA_PRECIO_PRUEBA_USD se cobra ese monto por unidad (solo en prueba).
+//   Con TIENDA_PRUEBA_ENTREGA_INVENTARIO=1 (y el servidor en modo prueba) la
+//   tienda se ve y entrega como en produccion: un pedido de prueba SI entrega
+//   los codigos del inventario y no se muestran avisos de prueba (ni en la
+//   pagina ni en los correos). Es para ensayar con codigos inventados: antes
+//   de pasar a produccion hay que quitar esa variable y anular esos codigos.
 //   Si el entorno es desconocido (ni produccion confirmada ni un host de prueba
 //   conocido), el checkout se cierra siempre: el pago podria ser real.
 import { randomBytes, randomInt, timingSafeEqual } from "node:crypto";
@@ -210,13 +215,19 @@ function esPedidoDePrueba(pedido: Pedido, giftCards: GiftCard[]): boolean {
   return esNumeroPedidoDePrueba(pedido.numero) || giftCards.some((g) => g.estado === ESTADO_GIFT_CARD_PRUEBA);
 }
 
+// TIENDA_PRUEBA_ENTREGA_INVENTARIO=1: ensayo "como en produccion" (ver arriba).
+// Solo vale con el servidor en modo prueba.
+function ensayoComoProduccion(): boolean {
+  return process.env.TIENDA_PRUEBA_ENTREGA_INVENTARIO?.trim() === "1" && modoPrueba();
+}
+
 // GET /api/tienda/config: solo si los pagos son de prueba y contra que entorno
 // de SPIDI. Nada de credenciales, URLs ni ids. Es el modo del servidor AHORA:
 // sirve para la franja general de la tienda, no para rotular pedidos ya hechos.
 export function configTienda(): ConfigTienda {
   // Se lee una sola vez para que los dos campos digan lo mismo.
   const entorno = entornoSpidi();
-  return { modoPrueba: entorno !== "produccion", entorno };
+  return { modoPrueba: entorno !== "produccion" && !ensayoComoProduccion(), entorno };
 }
 
 // === Checkout ===
@@ -692,6 +703,8 @@ function avisarPagoRealEnModoPrueba(pedido: Pedido): void {
 // - Pedido TV- (real): los codigos salen del INVENTARIO que cargo el dueno
 //   (primero los que el pedido tenia reservados). Si no alcanzan, el pedido
 //   queda pagado igual y lo que falte se entrega a mano (ver pagarPedido).
+// - Pedido TVP- con TIENDA_PRUEBA_ENTREGA_INVENTARIO=1 y el servidor aun en
+//   modo prueba: entrega del inventario igual que uno real.
 // - Pedido TVP- (creado en modo prueba): no gasta inventario real. Se generan
 //   codigos con prefijo PRUEBA- en estado "prueba" (a la vista del comprador,
 //   pero el canje los rechaza), aunque el servidor ya este en produccion; sus
@@ -709,7 +722,7 @@ function prepararEntrega(pedido: Pedido): EntregaPago {
     );
   }
   const unidades = unidadesDelPedido(pedido);
-  if (!prueba) return { tipo: "inventario", unidades };
+  if (!prueba || ensayoComoProduccion()) return { tipo: "inventario", unidades };
 
   const usados = new Set<string>();
   const giftCards: NuevaGiftCard[] = [];
@@ -789,7 +802,7 @@ function datosCorreo(pedido: Pedido, giftCards: GiftCard[]): DatosCorreoVenta {
     // Asunto con [PRUEBA] y una nota de que no es una compra real. Lo decide
     // el pedido, no el modo actual del servidor: asi tambien el reenvio desde
     // admin y los reintentos del barrido rotulan bien un pago real.
-    esPrueba: esPedidoDePrueba(pedido, giftCards),
+    esPrueba: esPedidoDePrueba(pedido, giftCards) && !ensayoComoProduccion(),
   };
 }
 
@@ -1199,7 +1212,7 @@ function aPedidoPublico(pedido: Pedido, giftCards: GiftCard[]): PedidoPublico {
     // modo desde que se crea. Un pedido real (TV-) pendiente no se rotula de
     // prueba porque el servidor este ahora en modo prueba: lo que pague el
     // comprador es dinero real (y se le entregara cuando vuelva a produccion).
-    modoPrueba: esPedidoDePrueba(pedido, giftCards),
+    modoPrueba: esPedidoDePrueba(pedido, giftCards) && !ensayoComoProduccion(),
     faltanCodigos: faltanCodigosDe(pedido, giftCards),
   };
 }
@@ -1658,7 +1671,7 @@ function aPedidoAdmin(pedido: Pedido, giftCards: GiftCard[]): PedidoAdmin {
     id: pedido.id,
     numero: pedido.numero,
     estado: pedido.estado,
-    modoPrueba: esPedidoDePrueba(pedido, giftCards),
+    modoPrueba: esPedidoDePrueba(pedido, giftCards) && !ensayoComoProduccion(),
     creadoEn: new Date(pedido.creadoEn).toISOString(),
     pagadoEn: aIso(pedido.pagadoEn),
     totalUsd: pedido.totalUsdCentavos / 100,
