@@ -1,6 +1,7 @@
 // Resend email integration for Todo Vending CA contact form
 // Using direct RESEND_API_KEY secret for simplified configuration
 import { Resend } from 'resend';
+import { crearPdfGiftCards } from './gift-card-pdf';
 
 interface ContactEmailData {
   name: string;
@@ -303,6 +304,17 @@ export async function sendGiftCardsComprador(data: DatosCorreoVenta): Promise<bo
     const client = new Resend(apiKey);
     const comprobante = urlSegura(data.comprobanteUrl);
 
+    // PDF con las tarjetas a tamano real para imprimir. Si no se puede generar,
+    // el correo sale igual sin el adjunto: los codigos van tambien en el texto.
+    let pdf: Buffer | null = null;
+    if (data.giftCards.length > 0) {
+      try {
+        pdf = await crearPdfGiftCards(data.giftCards, data.numero);
+      } catch (error) {
+        console.error(`No se pudo generar el PDF de Gift Cards (pedido ${data.numero}):`, (error as Error).message);
+      }
+    }
+
     const filasCodigos = data.giftCards
       .map(
         (g) => `
@@ -343,6 +355,11 @@ export async function sendGiftCardsComprador(data: DatosCorreoVenta): Promise<bo
             </tr>
             ${filasCodigos}
           </table>
+          ${pdf ? `
+          <p style="color: #1f2937;">
+            Te adjuntamos ${data.giftCards.length === 1 ? 'tu Gift Card' : 'tus Gift Cards'} en PDF, lista${data.giftCards.length === 1 ? '' : 's'} para imprimir a tamaño real.
+          </p>
+          ` : ''}
           ` : `
           <p style="color: #1f2937;">Recibimos tu pago del pedido <strong>${escaparHtml(data.numero)}</strong>.</p>
           ${notaFaltanHtml(data.faltanCodigos)}
@@ -384,6 +401,7 @@ export async function sendGiftCardsComprador(data: DatosCorreoVenta): Promise<bo
         ? `Recibimos tu pago. Estas son tus Gift Cards del pedido ${data.numero}:`
         : `Recibimos tu pago del pedido ${data.numero}.`,
       ...data.giftCards.map((g) => `  ${g.codigo}  (${formatoUsd(g.montoUsd)})`),
+      pdf ? 'Te adjuntamos tus Gift Cards en PDF, listas para imprimir a tamaño real.' : null,
       data.faltanCodigos > 0 ? '' : null,
       data.faltanCodigos > 0 ? textoFaltanComprador(data.faltanCodigos) : null,
       '',
@@ -406,6 +424,7 @@ export async function sendGiftCardsComprador(data: DatosCorreoVenta): Promise<bo
       html: emailHtml,
       text: emailTexto,
       replyTo: CORREO_NEGOCIO,
+      attachments: pdf ? [{ filename: `GiftCard-TodoVending-${data.numero}.pdf`, content: pdf }] : undefined,
     });
 
     if (result.error) {
