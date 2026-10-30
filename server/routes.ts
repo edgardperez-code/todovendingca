@@ -319,6 +319,19 @@ export async function registerRoutes(
   app.get("/cafe-oriente", cafeOrienteHandler);
   app.get("/cafe-oriente/", cafeOrienteHandler);
 
+  // /cafe-oriente/pop: la misma pagina con el diseno "Pop premium". El selector
+  // de version de ambas paginas enlaza entre /cafe-oriente y /cafe-oriente/pop;
+  // su canonical apunta a /cafe-oriente, asi que no compite en buscadores.
+  const cafeOrientePopHandler = (req: any, res: any) => {
+    const isDev = process.env.NODE_ENV !== "production";
+    const filePath = isDev
+      ? path.resolve(process.cwd(), "client", "public", "cafe-oriente", "pop", "index.html")
+      : path.resolve(__dirname, "public", "cafe-oriente", "pop", "index.html");
+    res.sendFile(filePath);
+  };
+  app.get("/cafe-oriente/pop", cafeOrientePopHandler);
+  app.get("/cafe-oriente/pop/", cafeOrientePopHandler);
+
   // /cafeoriente (URL antigua, sin guion) -> 301 a /cafe-oriente. Consolida
   // el canonical en una sola URL y evita contenido duplicado.
   app.get(["/cafeoriente", "/cafeoriente/"], (_req, res) => {

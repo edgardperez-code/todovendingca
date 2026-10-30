@@ -111,3 +111,26 @@ Hasta 2,67 s los tres elementos solo flotan; 2,67 s cae la primera gota; 3,7–5
 fijo (el tramo más quieto); 5–6,6 s la espuma y el espresso bajan al vaso; 6,75 s aparece la
 paleta; **7,25 s se enciende el logo dorado** (el mejor momento; el cierre entra a p 0.91 =
 7,20 s y lo tapa). En móvil el vaso nunca se ve porque el texto ocupa la parte de abajo.
+
+## Página nueva publicada (30/10/2026): Anatomía + Pop con selector
+
+La página de arriba quedó reemplazada. `/cafe-oriente` es ahora la versión **"Anatomía de un
+mocachino"** y `/cafe-oriente/pop` la versión **"Pop premium"**, las dos traídas de la rama
+`claude/gracious-ride-gl30vp` (allí está su historia y `docs/cafe-oriente/CONTEXTO.md` completo).
+Solo se publicó Café Oriente: el resto del rediseño de esa rama no está en main, porque main tiene
+la Tienda (Gift Cards) y la rama no.
+
+- **Portada de Anatomía**: el dueño pidió que la palabra grande diga **MOCA / CCINO** (partida en
+  "MOCA / CHINO" se leía "chino"). Son paths SVG, no texto: Fraunces opsz 144 wght 900, tracking
+  -40, coordenadas truncadas a enteros, centrada como la original (`translate(160 1700)`). El
+  resto de textos sigue diciendo "mocachino"; Pop sigue diciendo MOCACHINO en su hero.
+- **Selector de versión** (`.vsel`, en las dos páginas): en el hero, un enlace integrado en el
+  diseño (esquina inferior derecha del marco en Anatomía, inicio de la cinta en Pop); tras el hero,
+  una pastilla fija abajo a la izquierda que aparece junto con la barra de WhatsApp (#sticky-wa.ve),
+  sube encima de ella en teléfono y se esconde en el pie; y un enlace en el menú hamburguesa.
+  Evento de analítica `cambiar_version`. Una pastilla fija durante el hero tapaba "Para tu empresa"
+  en laptops de 657 px de alto: por eso solo aparece después.
+- **Pop**: canonical y og:url a `/cafe-oriente` (no compite en buscadores; compartida en Facebook
+  abre Anatomía). No está en el sitemap. Ruta en `server/routes.ts` (`cafeOrientePopHandler`).
+- **Enlaces**: main no tiene `/vending-para-clinicas` ni `/preguntas-frecuentes`; en las dos páginas
+  se quitaron o apuntan a `/#faq`. Favicon: `/favicon.png`.
