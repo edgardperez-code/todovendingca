@@ -36,7 +36,7 @@
 <meta name="twitter:description" content="Estación automática Bianchi LEI 400 con molino de grano integrado. 10 bebidas en menos de 40 segundos, sin efectivo. Instalación gratuita para empresas y clínicas en Anzoátegui.">
 <meta name="twitter:image" content="https://www.todovendingca.com/cafe-oriente/og-image-v2.jpg">
 <!-- Fuentes propias (sin Google Fonts). Se precargan las del primer pantallazo:
-     Fraunces (titular), Sora (texto) y Bricolage (la palabra MOCACHINO y las cifras). -->
+     Fraunces (titular), Sora (texto) y Bricolage (la palabra MOCACCINO y las cifras). -->
 <link rel="preload" as="font" type="font/woff2" href="/cafe-oriente/assets/fraunces-latin-opsz-v1.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/cafe-oriente/assets/fraunces-latin-opsz-italic-v1.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="/cafe-oriente/assets/sora-latin-wght-v1.woff2" crossorigin>
@@ -522,7 +522,7 @@ ul,ol{list-style:none}
   --cinta-h:40px;
   --wfs:min(11vw,17svh,10.4rem);
   --wtop:calc(var(--nav-h) + 1.05rem + 10px);
-  /* el arco empieza justo bajo la línea base de MOCACHINO: solo roza la base de las letras */
+  /* el arco empieza justo bajo la línea base de MOCACCINO: solo roza la base de las letras */
   --cap-top:calc(var(--wtop) + var(--wfs) * .7);
   --cap-h:min(calc(100svh - var(--cap-top) - var(--cinta-h) - 1.3rem),800px);
   --cap-w:calc(var(--cap-h) * 9 / 16);
@@ -742,7 +742,7 @@ html:not(.estatico):not(.no-js) .cierre.on:not(.activo) a,html:not(.estatico):no
   .tinte{padding-top:var(--nav-h)}
   .palabra .hueco{-webkit-text-stroke-width:4px}
   .palabra .lleno{-webkit-text-stroke-width:4px}
-  /* el sticker va encima de la palabra y solo roza la punta de «HINO» */
+  /* el sticker va encima de la palabra y solo roza la punta de «CINO» */
   .palabra .asi{left:auto;right:0;transform:translate(3%,-74%) rotate(3deg);transform-origin:100% 0;font-size:.72rem;letter-spacing:.13em;padding:.44em .8em .4em;box-shadow:3px 3px 0 var(--tinta)}
   .lienzo{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:.65rem 1rem .6rem}
   .cap{order:1;flex:1 1 0;min-height:0;width:100%;height:auto;display:flex;justify-content:center;align-self:stretch}
@@ -1352,9 +1352,9 @@ html.no-js .vsel-hero,html.estatico .vsel-hero{display:none}
 <header class="pista" id="hero">
   <div class="escena" id="escena">
 
-    <div class="palabra" aria-hidden="true"><span class="palabra-in"><span class="hueco">Mocachino</span><span class="lleno">Mocachino</span><span class="asi">Así se arma un</span></span></div>
+    <div class="palabra" aria-hidden="true"><span class="palabra-in"><span class="hueco">Mocaccino</span><span class="lleno">Mocaccino</span><span class="asi">Así se arma un</span></span></div>
     <!-- «tinte»: el color de la capa siguiente sube como un líquido con el scroll -->
-    <div class="tinte" id="tinte" aria-hidden="true"><div class="palabra"><span class="palabra-in"><span class="hueco">Mocachino</span><span class="lleno">Mocachino</span><span class="asi">Así se arma un</span></span></div></div>
+    <div class="tinte" id="tinte" aria-hidden="true"><div class="palabra"><span class="palabra-in"><span class="hueco">Mocaccino</span><span class="lleno">Mocaccino</span><span class="asi">Así se arma un</span></span></div></div>
 
     <div class="lienzo">
 
@@ -2279,7 +2279,7 @@ document.addEventListener('click', function(e){
       if (receta) receta.style.opacity = (1 - c).toFixed(2);
     }
 
-    // la palabra MOCACHINO se rellena de izquierda a derecha con la bebida
+    // la palabra MOCACCINO se rellena de izquierda a derecha con la bebida
     // (la variable va en cada capa rellena, no en la escena: no se recalcula nada más)
     var fill = (clamp((t - 0.25) / 6.95) * 100).toFixed(1) + '%';
     if (fill !== estFill){ estFill = fill; for (var l = 0; l < llenos.length; l++) llenos[l].style.setProperty('--fill', fill); }

@@ -123,7 +123,10 @@ la Tienda (Gift Cards) y la rama no.
 - **Portada de Anatomía**: el dueño pidió que la palabra grande diga **MOCA / CCINO** (partida en
   "MOCA / CHINO" se leía "chino"). Son paths SVG, no texto: Fraunces opsz 144 wght 900, tracking
   -40, coordenadas truncadas a enteros, centrada como la original (`translate(160 1700)`). El
-  resto de textos sigue diciendo "mocachino"; Pop sigue diciendo MOCACHINO en su hero.
+  resto de textos sigue diciendo "mocachino".
+- **Hero de Pop**: la palabra gigante también dice **MOCACCINO** (pedido del dueño). Ahí sí es
+  texto (`.palabra .hueco` y `.lleno`, en la escena y en `#tinte`), así que basta cambiar el texto:
+  el tamaño sale del viewport y el relleno es un porcentaje del ancho.
 - **Selector de versión** (`.vsel`, en las dos páginas): en el hero, un enlace integrado en el
   diseño (esquina inferior derecha del marco en Anatomía, inicio de la cinta en Pop); tras el hero,
   una pastilla fija abajo a la izquierda que aparece junto con la barra de WhatsApp (#sticky-wa.ve),
