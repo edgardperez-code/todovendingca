@@ -306,8 +306,7 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Serve /cafe-oriente static HTML page (diseno original, mismo archivo,
-  // solo con URLs internas actualizadas a /cafe-oriente). Debe registrarse
+  // Serve /cafe-oriente static HTML page (diseno "Pop", el de entrada). Debe registrarse
   // antes del catch-all SSR para que gane la ruta.
   const cafeOrienteHandler = (req: any, res: any) => {
     const isDev = process.env.NODE_ENV !== "production";
@@ -319,18 +318,26 @@ export async function registerRoutes(
   app.get("/cafe-oriente", cafeOrienteHandler);
   app.get("/cafe-oriente/", cafeOrienteHandler);
 
-  // /cafe-oriente/pop: la misma pagina con el diseno "Pop premium". El selector
-  // de version de ambas paginas enlaza entre /cafe-oriente y /cafe-oriente/pop;
-  // su canonical apunta a /cafe-oriente, asi que no compite en buscadores.
-  const cafeOrientePopHandler = (req: any, res: any) => {
+  // /cafe-oriente/anatomia: la misma pagina con el diseno "Anatomia". /cafe-oriente
+  // (arriba) sirve el diseno "Pop", que es el de entrada; el selector de diseno de
+  // ambas paginas enlaza entre las dos. Su canonical apunta a /cafe-oriente, asi
+  // que no compite en buscadores.
+  const cafeOrienteAnatomiaHandler = (req: any, res: any) => {
     const isDev = process.env.NODE_ENV !== "production";
     const filePath = isDev
-      ? path.resolve(process.cwd(), "client", "public", "cafe-oriente", "pop", "index.html")
-      : path.resolve(__dirname, "public", "cafe-oriente", "pop", "index.html");
+      ? path.resolve(process.cwd(), "client", "public", "cafe-oriente", "anatomia", "index.html")
+      : path.resolve(__dirname, "public", "cafe-oriente", "anatomia", "index.html");
     res.sendFile(filePath);
   };
-  app.get("/cafe-oriente/pop", cafeOrientePopHandler);
-  app.get("/cafe-oriente/pop/", cafeOrientePopHandler);
+  app.get("/cafe-oriente/anatomia", cafeOrienteAnatomiaHandler);
+  app.get("/cafe-oriente/anatomia/", cafeOrienteAnatomiaHandler);
+
+  // /cafe-oriente/pop era la direccion de Pop hasta nov-2026: ahora Pop es
+  // /cafe-oriente, asi que los enlaces viejos redirigen (conservando ?utm...).
+  app.get(["/cafe-oriente/pop", "/cafe-oriente/pop/"], (req, res) => {
+    const q = req.originalUrl.indexOf("?");
+    res.redirect(301, "/cafe-oriente" + (q >= 0 ? req.originalUrl.slice(q) : ""));
+  });
 
   // /cafeoriente (URL antigua, sin guion) -> 301 a /cafe-oriente. Consolida
   // el canonical en una sola URL y evita contenido duplicado.

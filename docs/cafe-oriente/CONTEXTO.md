@@ -137,3 +137,24 @@ la Tienda (Gift Cards) y la rama no.
   abre Anatomía). No está en el sitemap. Ruta en `server/routes.ts` (`cafeOrientePopHandler`).
 - **Enlaces**: main no tiene `/vending-para-clinicas` ni `/preguntas-frecuentes`; en las dos páginas
   se quitaron o apuntan a `/#faq`. Favicon: `/favicon.png`.
+
+## Pop pasa a ser el diseño de entrada (10/11/2026)
+
+Pedido del dueño: que `/cafe-oriente` muestre **Pop** por defecto y que cambiar de diseño sea más
+accesible arriba.
+
+- `/cafe-oriente` sirve `client/public/cafe-oriente/index.html` (**Pop**). **Anatomía** se mudó a
+  `/cafe-oriente/anatomia` (`client/public/cafe-oriente/anatomia/index.html`). La dirección vieja
+  `/cafe-oriente/pop` redirige con 301 a `/cafe-oriente`, conservando `?utm...`.
+- Canonical y og:url de las dos siguen apuntando a `/cafe-oriente`.
+- **Selector en la barra superior** (`.vtop`, segmentado «Pop | Anatomía», `aria-current` en el
+  actual), visible en todos los anchos, además del enlace del hero, la pastilla tras el hero y el
+  enlace del menú ☰. Para que quepa:
+  - La etiqueta «Diseño» solo se ve en Pop a más de 1440 px (en Anatomía nunca: su barra va dentro
+    de `.wrap` y no crece).
+  - «Todo Vending CA ↗» se oculta en la barra entre 961 y 1366 px (sigue en el pie y en el ☰).
+  - Entre 961 y 1180 px se oculta «por Todo Vending CA» bajo el nombre y se aprietan los enlaces;
+    entre 961 y 1040 px aún más.
+  - En teléfono: a 560 px o menos se oculta «por Todo Vending CA»; a 400 px o menos queda solo el sol.
+  - Verificado sin desbordes en 320, 375, 401, 414, 561, 961, 1024, 1041, 1100, 1181, 1200, 1280,
+    1366, 1367, 1441 y 1920 px.
