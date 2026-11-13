@@ -1,10 +1,13 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Zap, ShieldCheck } from "lucide-react";
-// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
-import { motion } from "@/lib/movimiento";
+import { Ola } from "@/components/vitrina/ola";
+import { CabeceraSeccion } from "@/components/vitrina/etiqueta";
+import {
+  EstilosSubpagina,
+  BandejaSubpagina,
+  ListaConCuenta,
+  type SeleccionBandeja,
+} from "@/components/vitrina/subpagina";
 import { SubpageHero } from "@/components/subpage-hero";
 import { SubpageFAQ } from "@/components/subpage-faq";
 import { SubpageCTA } from "@/components/subpage-cta";
@@ -13,35 +16,35 @@ import { SITE_URL, organizationSchema, breadcrumbSchema, faqSchema } from "@/lib
 
 const faqs = [
   {
-    question: "Cuanto cuesta poner una maquina expendedora en mi negocio en Lecheria?",
+    question: "¿Cuánto cuesta poner una máquina expendedora en mi negocio en Lechería?",
     answer:
-      "Nada. Todo Vending CA instala, abastece y da mantenimiento a la maquina sin ningun costo para el local. El modelo de negocio se sostiene con la venta de los productos, no con un cobro al establecimiento anfitrion.",
+      "Nada. Todo Vending CA instala, abastece y da mantenimiento a la máquina sin ningún costo para el local. El modelo de negocio se sostiene con la venta de los productos, no con un cobro al establecimiento anfitrión.",
   },
   {
-    question: "Que necesito para instalar una maquina de vending en Lecheria?",
+    question: "¿Qué necesito para instalar una máquina de vending en Lechería?",
     answer:
-      "Solo un espacio de aproximadamente 1,5 m x 1 m con acceso a una toma electrica. El equipo de Todo Vending CA evalua el lugar y recomienda el tipo de maquina mas adecuado segun el flujo de personas.",
+      "Solo un espacio de aproximadamente 1,5 m x 1 m con acceso a una toma eléctrica. El equipo de Todo Vending CA evalúa el lugar y recomienda el tipo de máquina más adecuado según el flujo de personas.",
   },
   {
-    question: "En que zonas de Lecheria y Anzoategui instalan maquinas?",
+    question: "¿En qué zonas de Lechería y Anzoátegui instalan máquinas?",
     answer:
-      "Actualmente Todo Vending CA tiene maquinas operando en Lecheria, con clientes en clinicas, centros empresariales, colegios y gimnasios, y presta servicio en toda la region: Lecheria, Puerto La Cruz y Barcelona.",
+      "Actualmente Todo Vending CA tiene máquinas operando en Lechería, con clientes en clínicas, centros empresariales, colegios y gimnasios, y presta servicio en toda la región: Lechería, Puerto La Cruz y Barcelona.",
   },
 ];
 
 const clientes = [
-  { nombre: "Clinica Anzoategui", tipo: "Snacks y bebidas 24 horas" },
-  { nombre: "Centro Empresarial Colon", tipo: "Oficinas" },
+  { nombre: "Clínica Anzoátegui", tipo: "Snacks y bebidas 24 horas" },
+  { nombre: "Centro Empresarial Colón", tipo: "Oficinas" },
   { nombre: "Centro Empresarial Oleus", tipo: "Oficinas" },
-  { nombre: "Colegio El Manglar", tipo: "Educacion" },
-  { nombre: "Clinica Zambrano", tipo: "Salud" },
+  { nombre: "Colegio El Manglar", tipo: "Educación" },
+  { nombre: "Clínica Zambrano", tipo: "Salud" },
   { nombre: "Lion Gym", tipo: "Vending deportivo" },
 ];
 
-const ventajas = [
-  { icon: MapPin, title: "Vending local", desc: "Con sede en el Centro Comercial Venezuela, operamos directamente en la zona: reposicion rapida y respuesta tecnica inmediata." },
-  { icon: Zap, title: "Sin intermediarios", desc: "Trato directo con nuestro equipo, sin distribuidores externos. Esa cercania mantiene las maquinas siempre abastecidas." },
-  { icon: ShieldCheck, title: "Para cada espacio", desc: "Oficinas, clinicas, colegios, gimnasios y comercios. Elegimos la maquina segun el publico de cada lugar." },
+const ventajas: SeleccionBandeja[] = [
+  { icono: "pin", titulo: "Vending local", texto: "Con sede en el Centro Comercial Venezuela, operamos directamente en la zona: reposición rápida y respuesta técnica inmediata." },
+  { icono: "rayo", titulo: "Sin intermediarios", texto: "Trato directo con nuestro equipo, sin distribuidores externos. Esa cercanía mantiene las máquinas siempre abastecidas." },
+  { icono: "escudo", titulo: "Para cada espacio", texto: "Oficinas, clínicas, colegios, gimnasios y comercios. Elegimos la máquina según el público de cada lugar." },
 ];
 
 export default function MaquinasLecheria() {
@@ -71,99 +74,58 @@ export default function MaquinasLecheria() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background v-base">
+      <EstilosSubpagina />
       <Header />
-      <main>
+      {/* v-bajo-cabecera deja libre el alto de la cabecera fija; "contenido"
+          es el destino del enlace "Saltar al contenido". */}
+      <main id="contenido" className="v-bajo-cabecera">
         <SubpageHero
-          eyebrow="Lecheria, Anzoategui"
-          titlePlain="Maquinas Expendedoras en"
-          titleAccent="Lecheria"
-          lead="Todo Vending CA instala maquinas expendedoras de snacks, bebidas y cafe en grano en oficinas, clinicas, colegios y gimnasios de Lecheria, con instalacion gratuita y mantenimiento 24/7, sin ningun costo para el negocio."
-          ctaText="Solicitar maquina en Lecheria"
+          chip="24/7"
+          eyebrow="Lechería, Anzoátegui"
+          titlePlain="Máquinas Expendedoras en"
+          titleAccent="Lechería"
+          lead="Todo Vending CA instala máquinas expendedoras de snacks, bebidas y café en grano en oficinas, clínicas, colegios y gimnasios de Lechería, con instalación gratuita y mantenimiento 24/7, sin ningún costo para el negocio."
+          ctaText="Solicitar máquina en Lechería"
         />
+        <Ola />
 
-        <section className="py-20 md:py-28">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-16"
-            >
-              <Badge className="mb-4" variant="secondary">Vending local</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="text-foreground">Vending local, sin</span>{" "}
-                <span className="text-primary">intermediarios</span>
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Instalamos en oficinas, clinicas, colegios, gimnasios y comercios de alto trafico en toda la region oriental.
-              </p>
-            </motion.div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {ventajas.map((v, i) => (
-                <motion.div
-                  key={v.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="h-full hover-elevate group">
-                    <CardContent className="pt-6">
-                      <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                        <v.icon className="w-6 h-6 text-primary" />
-                      </div>
-                      <h3 className="font-semibold text-lg text-foreground mb-2">{v.title}</h3>
-                      <p className="text-muted-foreground text-sm">{v.desc}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+        <section className="v-sec v-sec--2">
+          <div className="v-cont">
+            <CabeceraSeccion
+              etiqueta="Vending local"
+              titulo={
+                <>
+                  Vending local, sin <em className="n">intermediarios</em>
+                </>
+              }
+              lead="Instalamos en oficinas, clínicas, colegios, gimnasios y comercios de alto tráfico en toda la región oriental."
+            />
+            <BandejaSubpagina items={ventajas} etiqueta="Ventajas" />
           </div>
         </section>
 
-        <section className="py-20 md:py-28 bg-muted/30">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <Badge className="mb-4" variant="secondary">Prueba social</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="text-foreground">Clientes actuales en</span>{" "}
-                <span className="text-primary">la zona</span>
-              </h2>
-            </motion.div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-              {clientes.map((c, i) => (
-                <motion.div
-                  key={c.nombre}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="h-full hover-elevate">
-                    <CardContent className="pt-6">
-                      <h3 className="font-semibold text-foreground mb-1">{c.nombre}</h3>
-                      <p className="text-sm text-muted-foreground">{c.tipo}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+        <section className="v-sec">
+          <div className="v-cont">
+            <ListaConCuenta
+              etiqueta="Prueba social"
+              titulo={
+                <>
+                  Clientes actuales en <em>la zona</em>
+                </>
+              }
+              unidad="Clientes"
+              items={clientes}
+            />
           </div>
         </section>
 
         <SubpageFAQ items={faqs} />
 
         <SubpageCTA
-          title="Tienes un espacio en Lecheria?"
-          text="Evaluamos tu local sin compromiso y te decimos que tipo de maquina se adapta mejor."
-          ctaText="Solicitar Informacion"
+          title="¿Tienes un espacio en Lechería?"
+          text="Evaluamos tu local sin compromiso y te decimos qué tipo de máquina se adapta mejor."
+          ctaText="Solicitar información"
         />
       </main>
       <Footer />

@@ -1,158 +1,121 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Heart, 
-  Zap, 
-  Building, 
-  Shield, 
-  TrendingUp,
-  Handshake
-} from "lucide-react";
-// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
-import { motion } from "@/lib/movimiento";
+// Propuesta de valor: lista numerada a dos columnas y la cita sobre fondo de
+// gabinete con la ola de la marca al pie.
+import { Etiqueta, Icono, LogoTodoVending, Ola, type NombreIcono } from "@/components/vitrina";
 
-const valueProps = [
+const valueProps: Array<{ id: string; title: string; description: string; icon: NombreIcono }> = [
   {
     id: "1",
-    title: "Satisfaccion Garantizada",
+    title: "Satisfacción garantizada",
     description: "Ofrecemos soluciones que mejoran la comodidad y el bienestar de tus empleados, clientes o usuarios.",
-    icon: Heart,
-    highlight: true
+    icon: "corazon",
   },
   {
     id: "2",
-    title: "Eficiencia y Productividad",
-    description: "Proporcionamos acceso rapido y facil a productos esenciales, ahorrando tiempo y aumentando la productividad.",
-    icon: Zap,
-    highlight: false
+    title: "Eficiencia y productividad",
+    description:
+      "Proporcionamos acceso rápido y fácil a productos esenciales, ahorrando tiempo y aumentando la productividad.",
+    icon: "rayo",
   },
   {
     id: "3",
-    title: "Imagen Corporativa",
-    description: "Proyectamos una imagen moderna e innovadora de tu empresa o institucion con tecnologia de punta.",
-    icon: Building,
-    highlight: false
+    title: "Imagen corporativa",
+    description: "Proyectamos una imagen moderna e innovadora de tu empresa o institución con tecnología de punta.",
+    icon: "premio",
   },
   {
     id: "4",
-    title: "Tranquilidad Total",
-    description: "Nos encargamos de todo, desde la instalacion hasta el mantenimiento, permitiendote concentrarte en tu actividad principal.",
-    icon: Shield,
-    highlight: true
+    title: "Tranquilidad total",
+    description:
+      "Nos encargamos de todo, desde la instalación hasta el mantenimiento, permitiéndote concentrarte en tu actividad principal.",
+    icon: "escudo",
   },
   {
     id: "5",
-    title: "Generacion de Ingresos",
+    title: "Generación de ingresos",
     description: "Ofrecemos modelos de negocio flexibles que pueden generar ingresos adicionales para tu negocio.",
-    icon: TrendingUp,
-    highlight: false
+    icon: "sube",
   },
   {
     id: "6",
-    title: "Aliado Estrategico",
+    title: "Aliado estratégico",
     description: "Nos convertimos en un socio que entiende tus necesidades y trabaja contigo para superarlas.",
-    icon: Handshake,
-    highlight: false
-  }
+    icon: "aliado",
+  },
 ];
+
+// Estilos propios de la sección (prefijo pv-). Medidas y cortes de la maqueta.
+const ESTILOS = `
+.pv-valores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(32px,6vw,88px);margin:0;padding:0;list-style:none}
+.pv-valores>li{display:grid;grid-template-columns:38px minmax(0,1fr) 30px;gap:8px 14px;align-items:start;padding:26px 0 30px;border-top:1px solid var(--linea2)}
+.pv-valores>li:nth-child(-n+2){border-top:1.5px solid var(--tinta)}
+.pv-valores__n{padding-top:5px;font:600 12.5px/1 var(--font-mono);letter-spacing:.06em;color:var(--azul-t)}
+.pv-valores>li:nth-child(even) .pv-valores__n{color:var(--naranja-t)}
+.pv-valores h3{font-family:var(--font-display);font-weight:700;font-size:1.4rem;line-height:1.12;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.pv-valores p{grid-column:2;margin:0;font-size:15.5px;line-height:1.55;color:var(--tinta2);max-width:46ch}
+.pv-valores__ic{grid-column:3;grid-row:1/3;width:28px;height:28px;stroke-width:1.3;color:var(--tinta3);transition:color .2s,transform .3s}
+.pv-valores>li:hover .pv-valores__ic{color:var(--azul-t);transform:translateY(-2px)}
+@media (max-width:799px){
+  .pv-valores{grid-template-columns:minmax(0,1fr)}
+  .pv-valores>li:nth-child(2){border-top:1px solid var(--linea2)}
+  .pv-valores>li{padding:22px 0 24px}
+  .pv-valores h3{font-size:1.25rem}
+}
+.pv-cita{margin:clamp(40px,6vw,72px) 0 0;position:relative;background:var(--gabinete);border:1px solid var(--gabinete-borde);color:var(--sobre-gabinete);border-radius:28px;overflow:hidden;padding:clamp(36px,6vw,72px) clamp(24px,6vw,80px) calc(clamp(36px,6vw,72px) + 44px)}
+.pv-cita blockquote{margin:0;padding:0;border:0;max-width:24em;font:600 clamp(1.5rem,3.4vw,2.6rem)/1.14 var(--font-display);letter-spacing:-.025em;text-wrap:balance}
+.pv-cita figcaption{margin-top:28px;display:flex;align-items:center;gap:12px;font-size:15px;line-height:1.6;color:var(--sobre-gabinete2)}
+.pv-cita figcaption strong{display:block;color:var(--sobre-gabinete)}
+.pv-cita__logo{width:46px;height:46px;flex:none}
+.pv-cita__ola{position:absolute;left:0;right:0;bottom:0}
+@media (prefers-reduced-motion:reduce){
+  .pv-valores__ic{transition:none}
+}
+`;
 
 export function ValuePropsSection() {
   return (
-    <section
-      id="propuesta"
-      className="py-20 md:py-28"
-      data-testid="section-value-props"
-    >
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <Badge className="mb-4" variant="secondary">
-            Nuestra Propuesta
-          </Badge>
-          <h2 data-speakable className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            <span className="text-foreground">Un</span>{" "}
-            <span className="text-primary">Aliado Estrategico</span>
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            En Todo Vending CA, nos enfocamos en ser mas que un simple proveedor. 
-            Somos una solucion integral que se convierte en tu aliado estrategico.
+    <section id="propuesta" className="v-sec v-sec--2" data-testid="section-value-props">
+      <style dangerouslySetInnerHTML={{ __html: ESTILOS }} />
+      <div className="v-cont">
+        <div className="v-cab-sec">
+          <div>
+            <Etiqueta>Nuestra propuesta</Etiqueta>
+            <h2 data-speakable className="v-h2">
+              Un <em>aliado estratégico</em>
+            </h2>
+          </div>
+          <p className="v-lead">
+            En Todo Vending CA, nos enfocamos en ser más que un simple proveedor. Somos una solución integral que se
+            convierte en tu aliado estratégico.
           </p>
-        </motion.div>
-
-        {/* Value Props Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {valueProps.map((prop, index) => (
-            <motion.div
-              key={prop.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <Card 
-                className={`h-full hover-elevate group ${
-                  prop.highlight 
-                    ? "border-primary/30 bg-gradient-to-br from-primary/5 to-transparent" 
-                    : ""
-                }`}
-              >
-                <CardContent className="p-6">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
-                    prop.highlight 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-primary/10 text-primary group-hover:bg-primary/20"
-                  }`}>
-                    <prop.icon className="w-7 h-7" />
-                  </div>
-                  <h3 className="font-semibold text-lg text-foreground mb-2">
-                    {prop.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {prop.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
         </div>
 
-        {/* Quote */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16"
-        >
-          <Card className="bg-gradient-to-r from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 text-white overflow-hidden">
-            <CardContent className="py-12 px-8 md:px-16 relative">
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
-              
-              <div className="relative text-center max-w-3xl mx-auto">
-                <div className="text-5xl text-primary mb-6">"</div>
-                <p className="text-xl md:text-2xl font-medium mb-6 leading-relaxed">
-                  Podemos transformar cada uno de tus espacios en una experiencia 
-                  mas conveniente y placentera colocando una de nuestras maquinas.
-                </p>
-                <div className="flex items-center justify-center gap-3">
-                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-xl font-bold">TV</span>
-                  </div>
-                  <div className="text-left">
-                    <p className="font-semibold">Todo Vending CA</p>
-                    <p className="text-sm text-gray-400">Lecheria, Anzoategui</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <ol className="pv-valores">
+          {valueProps.map((prop, i) => (
+            <li key={prop.id} data-testid={`item-value-prop-${prop.id}`}>
+              <span className="pv-valores__n" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3>{prop.title}</h3>
+              <Icono nombre={prop.icon} className="pv-valores__ic" />
+              <p>{prop.description}</p>
+            </li>
+          ))}
+        </ol>
+
+        <figure className="pv-cita v-oscuro" data-testid="cita-propuesta">
+          <blockquote>
+            «Podemos transformar cada uno de tus espacios en una experiencia más conveniente y placentera colocando
+            una de nuestras máquinas.»
+          </blockquote>
+          <figcaption>
+            <LogoTodoVending className="pv-cita__logo" />
+            <span>
+              <strong>Todo Vending CA</strong>
+              Lechería, Anzoátegui
+            </span>
+          </figcaption>
+          <Ola alto={44} ancho={200} className="pv-cita__ola" />
+        </figure>
       </div>
     </section>
   );

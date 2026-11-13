@@ -36,7 +36,7 @@
     <meta name="geo.position" content="10.1784238;-64.691242" />
     <meta name="ICBM" content="10.1784238, -64.691242" />
     <meta name="language" content="es" />
-    <meta name="theme-color" content="#f97316" />
+    <meta name="theme-color" content="#F26A21" />
     <meta name="contact" content="todovendingca@gmail.com" />
     <meta name="reply-to" content="todovendingca@gmail.com" />
     <meta name="rating" content="general" />
@@ -45,13 +45,19 @@
 
     <!--app-head-->
 
-    <!-- Preload Hero Image for faster LCP -->
-    <link rel="preload" as="image" href="/assets/maquina_vending_hero.webp" type="image/webp" fetchpriority="high" />
-
-    <!-- Fonts -->
+    <!-- Fuentes del diseño Vitrina. No bloquean el render: se precargan como
+         estilo y se activan al llegar; sin JS las carga el <noscript>.
+         Bricolage Grotesque (títulos), Instrument Sans (texto), IBM Plex Mono
+         (etiquetas y códigos), Doto (pantallas LED). Fraunces va aparte: solo
+         la usa el avance de Café Oriente y el navegador la baja si hace falta. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Doto:wght@900&family=IBM+Plex+Mono:wght@400;600&family=Instrument+Sans:wght@400..700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Doto:wght@900&family=IBM+Plex+Mono:wght@400;600&family=Instrument+Sans:wght@400..700&display=swap">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&display=swap">
+    </noscript>
   </head>
   <body>
     <div id="root"><!--app-html--></div>

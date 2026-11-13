@@ -1,10 +1,7 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Gift, Smartphone, UserX } from "lucide-react";
-// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
-import { motion } from "@/lib/movimiento";
 import { EnlaceInterno } from "@/lib/navegacion";
 import { GiftCardVisual } from "@/components/gift-card-visual";
+import { Etiqueta } from "@/components/vitrina/etiqueta";
+import { Icono, type NombreIcono } from "@/components/vitrina/iconos";
 import { PRODUCTOS } from "@shared/catalogo";
 
 // Montos desde el catalogo para que la promocion nunca muestre otros.
@@ -21,97 +18,98 @@ const MONTOS = (() => {
   return `${montos.slice(0, -1).join(", ")} y ${montos[montos.length - 1]}`;
 })();
 
-const puntos = [
-  { icon: Smartphone, texto: "Pagas en bolívares con Débito Inmediato o Pago Móvil" },
-  { icon: UserX, texto: "Sin registrarte: solo tu nombre y correo" },
-  { icon: Gift, texto: "Recibes tus códigos en pantalla al confirmar el pago" },
+const puntos: { icono: NombreIcono; texto: string }[] = [
+  { icono: "movil", texto: "Pagas en bolívares con Débito Inmediato o Pago Móvil" },
+  { icono: "sinreg", texto: "Sin registrarte: solo tu nombre y correo" },
+  { icono: "regalo", texto: "Recibes tus códigos en pantalla al confirmar el pago" },
 ];
+
+// Colocación de cada tarjeta del abanico según cuántas haya (1 a 3). Con tres
+// son las medidas de la maqueta Vitrina. Las clases van escritas completas
+// para que Tailwind las encuentre.
+const ABANICOS: Record<number, string[]> = {
+  1: ["left-[12%] top-[19%] [transform:rotate(-3deg)]"],
+  2: [
+    "left-[4%] top-[6%] [transform:rotate(-7deg)] group-hover:[transform:rotate(-10deg)_translate(-3%,-4%)] group-focus-visible:[transform:rotate(-10deg)_translate(-3%,-4%)]",
+    "left-[20%] top-[32%] [transform:rotate(4deg)] group-hover:[transform:rotate(6deg)_translate(2%,3%)] group-focus-visible:[transform:rotate(6deg)_translate(2%,3%)]",
+  ],
+  3: [
+    "left-0 top-0 [transform:rotate(-9deg)] group-hover:[transform:rotate(-12deg)_translate(-3%,-4%)] group-focus-visible:[transform:rotate(-12deg)_translate(-3%,-4%)]",
+    "left-[11%] top-[19%] [transform:rotate(-2deg)]",
+    "left-[23%] top-[38%] [transform:rotate(6deg)] group-hover:[transform:rotate(8deg)_translate(2%,3%)] group-focus-visible:[transform:rotate(8deg)_translate(2%,3%)]",
+  ],
+};
 
 // Seccion breve del home que lleva a la pagina de la Gift Card.
 export function GiftCardPromoSection() {
   if (giftCards.length === 0) return null;
   // En el abanico: la mas baja atras a la izquierda y la mas alta al frente.
   const abanico = giftCards.slice(0, 3);
+  const colocacion = ABANICOS[abanico.length];
 
   return (
-    <section className="py-20 md:py-28 overflow-hidden" data-testid="section-gift-card-promo">
-      <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+    <section
+      id="gift-cards"
+      className="v-sec v-sec--2"
+      aria-labelledby="gift-cards-titulo"
+      data-testid="section-gift-card-promo"
+    >
+      <div className="v-cont grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-center gap-[clamp(40px,6vw,96px)] max-[899px]:grid-cols-[minmax(0,1fr)]">
+        <div>
+          <Etiqueta>Nuevo · Tarjeta de regalo</Etiqueta>
+          <h2 className="v-h2" id="gift-cards-titulo">
+            Regala <em>Todo Vending</em>
+          </h2>
+          <p className="v-lead mt-5">
+            Gift Cards de {MONTOS}, el detalle perfecto para tu equipo, tus clientes o alguien
+            especial: snacks, bebidas y café en nuestras máquinas y en Café Oriente. Se pagan en
+            bolívares a tasa BCV del día.
+          </p>
+          <ul className="mb-[34px] mt-7 border-t border-linea">
+            {puntos.map((p, i) => (
+              <li
+                key={p.texto}
+                className="flex items-center gap-3.5 border-b border-linea py-3.5 text-[15.5px] font-medium leading-[1.6] text-tinta"
+              >
+                <Icono
+                  nombre={p.icono}
+                  className={i === 1 ? "h-6 w-6 text-naranja-h" : "h-6 w-6 text-azul-t"}
+                />
+                {p.texto}
+              </li>
+            ))}
+          </ul>
+          <EnlaceInterno
+            href="/gift-card"
+            data-testid="link-gift-card-promo"
+            className="v-btn v-btn--p max-[899px]:w-full max-[899px]:max-w-[420px]"
           >
-            <Badge className="mb-4" variant="secondary">
-              Nuevo · Tarjeta de regalo
-            </Badge>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              <span className="text-foreground">Regala</span>{" "}
-              <span className="text-primary">Todo Vending</span>
-            </h2>
-            <p className="text-lg text-muted-foreground mb-6 max-w-xl">
-              Gift Cards de {MONTOS}, el detalle perfecto para tu equipo, tus clientes o alguien
-              especial: snacks, bebidas y café en nuestras máquinas y en Café Oriente. Se pagan en
-              bolívares a tasa BCV del día.
-            </p>
-            <ul className="space-y-3 mb-8">
-              {puntos.map((p) => (
-                <li key={p.texto} className="flex items-center gap-3 text-sm text-foreground">
-                  <span className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <p.icon className="w-4 h-4 text-primary" />
-                  </span>
-                  {p.texto}
-                </li>
-              ))}
-            </ul>
-            <EnlaceInterno href="/gift-card" data-testid="link-gift-card-promo">
-              <Button size="lg" className="gap-2 glow-primary">
-                Comprar Gift Cards
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </EnlaceInterno>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex justify-center"
-          >
-            <EnlaceInterno
-              href="/gift-card"
-              aria-label="Ver las Gift Cards Todo Vending"
-              className="group relative block w-full max-w-md aspect-[1.3/1]"
-            >
-              {abanico.map((producto, i) => {
-                // Posiciones del abanico segun cuantas tarjetas haya (1 a 3).
-                const giros =
-                  abanico.length === 1
-                    ? ["-rotate-3"]
-                    : abanico.length === 2
-                      ? ["-rotate-6", "rotate-3"]
-                      : ["-rotate-12", "-rotate-2", "rotate-6"];
-                const desplazamientos =
-                  abanico.length === 1
-                    ? ["left-0 top-[10%]"]
-                    : abanico.length === 2
-                      ? ["left-0 top-0", "left-[12%] top-[22%]"]
-                      : ["left-0 top-0", "left-[10%] top-[14%]", "left-[20%] top-[28%]"];
-                return (
-                  <div
-                    key={producto.id}
-                    className={`absolute w-[80%] transition-transform duration-300 group-hover:rotate-0 ${giros[i]} ${desplazamientos[i]}`}
-                    style={{ zIndex: i + 1 }}
-                  >
-                    <GiftCardVisual montoUsd={producto.precioUsd} tamano="md" />
-                  </div>
-                );
-              })}
-            </EnlaceInterno>
-          </motion.div>
+            Comprar Gift Cards
+            <Icono nombre="flecha" flecha />
+          </EnlaceInterno>
         </div>
+
+        <EnlaceInterno
+          href="/gift-card"
+          aria-label={`Ver las Gift Cards Todo Vending de ${MONTOS}`}
+          className="group relative mx-auto block aspect-[1.16/1] w-full max-w-[500px] rounded-2xl no-underline max-[899px]:max-w-[440px]"
+        >
+          {abanico.map((producto, i) => {
+            // Solo la tarjeta del frente enseña el monto grande; en las de
+            // atrás quedaría cortado por la que tienen encima.
+            const alFrente = i === abanico.length - 1;
+            return (
+              <span
+                key={producto.id}
+                aria-hidden="true"
+                className={`absolute block w-[76%] transition-transform [transition-duration:450ms] [transition-timing-function:cubic-bezier(.2,.9,.3,1)] motion-reduce:transition-none ${colocacion[i]} ${alFrente ? "" : "[&_[data-gc-monto]]:invisible"}`}
+                style={{ zIndex: i + 1 }}
+              >
+                <GiftCardVisual montoUsd={producto.precioUsd} tamano="md" />
+              </span>
+            );
+          })}
+        </EnlaceInterno>
       </div>
     </section>
   );

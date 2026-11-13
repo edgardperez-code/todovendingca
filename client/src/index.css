@@ -2,77 +2,156 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE - Modern Vending Machine inspired colors */
+/* ==========================================================================
+   REDISEÑO "VITRINA" — guía en docs/rediseno-vitrina.md
+   Claro = la maqueta aprobada (papel, tinta, naranja y azul de marca).
+   Oscuro = "tinta de gabinete": la misma marca sobre el negro de la máquina.
+   ========================================================================== */
 :root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
+  --button-outline: rgba(21,23,26, .28);
+  --badge-outline: rgba(21,23,26, .10);
 
   /* Automatic computation of border around primary / danger buttons */
   --opaque-button-border-intensity: -8; /* In terms of percentages */
 
   /* Backgrounds applied on top of other backgrounds when hovered/active */
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
+  --elevate-1: rgba(21,23,26, .04);
+  --elevate-2: rgba(21,23,26, .09);
 
-  --background: 210 20% 98%;
-  --foreground: 222 47% 11%;
-  --border: 214 20% 88%;
+  /* ---- Tokens shadcn (HSL) derivados de la paleta Vitrina ---- */
+  --background: 45 25% 94%;        /* papel  #F3F1EB */
+  --foreground: 216 11% 9%;        /* tinta  #15171A */
+  --border: 45 8% 82%;
 
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --card-border: 214 20% 90%;
+  --card-foreground: 216 11% 9%;
+  --card-border: 45 8% 84%;
 
-  --sidebar: 220 25% 10%;
-  --sidebar-foreground: 210 20% 98%;
-  --sidebar-border: 220 25% 18%;
-  --sidebar-primary: 168 84% 40%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 25% 18%;
-  --sidebar-accent-foreground: 210 20% 98%;
-  --sidebar-ring: 168 84% 40%;
+  --sidebar: 216 11% 9%;
+  --sidebar-foreground: 45 25% 94%;
+  --sidebar-border: 216 8% 18%;
+  --sidebar-primary: 21 89% 54%;
+  --sidebar-primary-foreground: 216 11% 9%;
+  --sidebar-accent: 216 8% 16%;
+  --sidebar-accent-foreground: 45 25% 94%;
+  --sidebar-ring: 214 75% 48%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --popover-border: 214 20% 88%;
+  --popover-foreground: 216 11% 9%;
+  --popover-border: 45 8% 82%;
 
-  /* Teal/Cyan - Modern Vending accent */
-  --primary: 168 84% 40%;
-  --primary-foreground: 0 0% 100%;
+  /* Naranja de marca #F26A21. Encima va tinta (blanco no llega a AA). */
+  --primary: 21 89% 54%;
+  --primary-foreground: 216 11% 9%;
+  /* Naranja para TEXTO sobre fondos claros (#B4420A, AA). Lo usa text-primary. */
+  --primary-texto: 20 89% 37%;
 
-  --secondary: 210 20% 93%;
-  --secondary-foreground: 222 47% 11%;
+  --secondary: 45 14% 89%;
+  --secondary-foreground: 216 11% 9%;
 
-  --muted: 210 20% 96%;
-  --muted-foreground: 215 16% 47%;
+  --muted: 45 18% 91%;
+  --muted-foreground: 212 7% 33%;
 
-  --accent: 220 70% 55%;
+  /* Azul de marca #1F6FD6: acento. */
+  --accent: 214 75% 48%;
   --accent-foreground: 0 0% 100%;
+  /* Azul para TEXTO (#1A57B8, AA). Lo usa text-accent. */
+  --accent-texto: 217 75% 41%;
 
-  --destructive: 0 84% 60%;
+  --destructive: 0 72% 45%;
   --destructive-foreground: 0 0% 100%;
+  /* Rojo para TEXTO (AA). Lo usa text-destructive. */
+  --destructive-texto: 0 72% 45%;
 
-  --input: 214 20% 85%;
-  --ring: 168 84% 40%;
-  --chart-1: 168 84% 40%;
-  --chart-2: 220 70% 55%;
-  --chart-3: 280 65% 60%;
+  --input: 210 3% 72%;
+  --ring: 214 75% 48%;
+  --chart-1: 21 89% 54%;
+  --chart-2: 214 75% 48%;
+  --chart-3: 220 38% 17%;
   --chart-4: 35 92% 55%;
-  --chart-5: 340 75% 55%;
+  --chart-5: 190 90% 40%;
 
-  --font-sans: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-sans: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: 'JetBrains Mono', Menlo, monospace;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --font-led: 'Doto', 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  --font-fraunces: 'Fraunces', Georgia, serif;
   --radius: .5rem;
-  --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.03);
-  --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0px 2px 4px -1px rgba(0, 0, 0, 0.06), 0px 1px 2px -1px rgba(0, 0, 0, 0.04);
-  --shadow: 0px 4px 6px -1px rgba(0, 0, 0, 0.08), 0px 2px 4px -1px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0px 6px 10px -1px rgba(0, 0, 0, 0.1), 0px 3px 6px -1px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-2xs: 0px 1px 2px 0px rgba(21, 23, 26, 0.03);
+  --shadow-xs: 0px 1px 3px 0px rgba(21, 23, 26, 0.04);
+  --shadow-sm: 0px 2px 4px -1px rgba(21, 23, 26, 0.06), 0px 1px 2px -1px rgba(21, 23, 26, 0.04);
+  --shadow: 0px 4px 6px -1px rgba(21, 23, 26, 0.08), 0px 2px 4px -1px rgba(21, 23, 26, 0.04);
+  --shadow-md: 0px 6px 10px -1px rgba(21, 23, 26, 0.1), 0px 3px 6px -1px rgba(21, 23, 26, 0.05);
+  --shadow-lg: 0px 10px 15px -3px rgba(21, 23, 26, 0.1), 0px 4px 6px -2px rgba(21, 23, 26, 0.05);
+  --shadow-xl: 0px 20px 25px -5px rgba(21, 23, 26, 0.1), 0px 10px 10px -5px rgba(21, 23, 26, 0.04);
+  --shadow-2xl: 0px 25px 50px -12px rgba(21, 23, 26, 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+
+  /* ---- Tokens Vitrina (mismos nombres que la maqueta) ----
+     Cambian con el tema: papel, tinta, líneas y los tonos de texto.
+     NO cambian: naranja, azul, plata, LED y gabinete (son la máquina). */
+  --papel: #F3F1EB;
+  --papel2: #FAF9F5;
+  --blanco: #FFFFFF;            /* superficie de tarjetas y campos */
+  --tinta: #15171A;
+  --tinta2: #474C52;
+  --tinta3: #5E646B;
+  --tinta-fuerte: #000000;      /* hover de botones de tinta */
+  --sobre-tinta: #FFFFFF;       /* texto encima de un fondo --tinta */
+  --linea: rgba(21,23,26,.13);
+  --linea2: rgba(21,23,26,.28);
+  --naranja: #F26A21;
+  --naranja-h: #DC5510;         /* naranja para títulos grandes */
+  --naranja-t: #B4420A;         /* naranja para texto pequeño */
+  --azul: #1F6FD6;
+  --azul-h: #1D62CC;            /* azul para títulos grandes */
+  --azul-t: #1A57B8;            /* azul para texto, iconos y enlaces */
+  --sobre-azul: #FFFFFF;        /* texto encima de un fondo --azul-t */
+  --azul-velo: rgba(31,111,214,.08);
+  --marino: #1B263C;
+  /* La máquina: iguales en claro y oscuro salvo un leve realce del gabinete. */
+  --gabinete: #15171A;
+  --gabinete2: #0C0D0F;
+  --gabinete-borde: transparent;
+  --sobre-gabinete: #FFFFFF;
+  --sobre-gabinete2: #B8BDC3;
+  --sobre-naranja: #15171A;
+  --sobre-plata: #15171A;
+  --plata-a: #F6F7F5;
+  --plata-b: #E3E6E4;
+  --plata-c: #CDD1CF;
+  --plata-borde: #B7BCBA;
+  --riel-a: #E4E7E5;
+  --riel-b: #D2D6D4;
+  --riel-c: #BFC4C2;
+  --riel-borde: #9BA1A0;
+  --led: #8FE9FF;
+  --led-fondo: #081217;
+  --foco: #1F6FD6;
+  --cabecera-fondo: rgba(243,241,235,.88);
+  --sombra-rgb: 21,23,26;
+
+  /* Alias de fuentes con el nombre corto de la maqueta. */
+  --f-d: var(--font-display);
+  --f-b: var(--font-sans);
+  --f-m: var(--font-mono);
+  --f-led: var(--font-led);
+
+  /* Medidas */
+  --w: 1240px;                              /* ancho útil del contenedor */
+  --pad: clamp(20px, 4.5vw, 56px);          /* margen lateral */
+  --alto-cabecera: 68px;
+
+  /* La ola de marca (4 franjas naranja/azul), lista para usar de fondo. */
+  --ola: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 56' preserveAspectRatio='none'%3E%3Cpath d='M0,7 Q60,1 120,7 T240,7 L240,17.9 Q180,23.9 120,17.9 T0,17.9Z' fill='%23F26A21'/%3E%3Cpath d='M0,17.5 Q60,11.5 120,17.5 T240,17.5 L240,28.4 Q180,34.4 120,28.4 T0,28.4Z' fill='%231F6FD6'/%3E%3Cpath d='M0,28 Q60,22 120,28 T240,28 L240,38.9 Q180,44.9 120,38.9 T0,38.9Z' fill='%23F26A21'/%3E%3Cpath d='M0,38.5 Q60,32.5 120,38.5 T240,38.5 L240,49 Q180,55 120,49 T0,49Z' fill='%231F6FD6'/%3E%3C/svg%3E");
+  /* Subrayado de ola (dos trazos), ola corta de las etiquetas, ola de la
+     marca en la columna y par de espirales de una bandeja. */
+  --ola-trazo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 14'%3E%3Cpath d='M0,4 Q20,0 40,4 T80,4' fill='none' stroke='%23F26A21' stroke-width='3'/%3E%3Cpath d='M0,10 Q20,6 40,10 T80,10' fill='none' stroke='%231F6FD6' stroke-width='3'/%3E%3C/svg%3E");
+  --ola-etiqueta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 12'%3E%3Cpath d='M1,4 Q8,0 15,4 T29,4' fill='none' stroke='%23F26A21' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M1,9 Q8,5 15,9 T29,9' fill='none' stroke='%231F6FD6' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  --ola-marca: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 8' preserveAspectRatio='none'%3E%3Cpath d='M0,5 Q25,0 50,4 T100,3 L100,7 Q75,9 50,7 T0,8Z' fill='%23F26A21'/%3E%3C/svg%3E");
+  --espiral: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 62 22'%3E%3Cg fill='none'%3E%3Cellipse cx='18.5' cy='11' rx='11' ry='8.5' stroke='%23B4B9BC' stroke-width='1.1'/%3E%3Cellipse cx='15' cy='11' rx='11' ry='8.5' stroke='%23858B90' stroke-width='1.5'/%3E%3Cellipse cx='46.5' cy='11' rx='11' ry='8.5' stroke='%23B4B9BC' stroke-width='1.1'/%3E%3Cellipse cx='43' cy='11' rx='11' ry='8.5' stroke='%23858B90' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E");
 
   /* Automatically computed borders */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
@@ -97,59 +176,62 @@
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
+/* MODO OSCURO — tinta de gabinete */
 .dark {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
+  --button-outline: rgba(255,255,255, .28);
+  --badge-outline: rgba(255,255,255, .10);
 
   --opaque-button-border-intensity: 9;
 
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
+  --elevate-1: rgba(255,255,255, .05);
+  --elevate-2: rgba(255,255,255, .10);
 
-  --background: 220 25% 8%;
-  --foreground: 210 20% 98%;
-  --border: 220 20% 18%;
+  --background: 210 13% 6%;        /* #0E1012 */
+  --foreground: 45 25% 94%;
+  --border: 216 8% 20%;
 
-  --card: 220 25% 12%;
-  --card-foreground: 210 20% 98%;
-  --card-border: 220 20% 20%;
+  --card: 218 13% 12%;             /* #1B1E23 */
+  --card-foreground: 45 25% 94%;
+  --card-border: 216 8% 22%;
 
-  --sidebar: 220 30% 6%;
-  --sidebar-foreground: 210 20% 98%;
-  --sidebar-border: 220 25% 14%;
-  --sidebar-primary: 168 84% 45%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 25% 14%;
-  --sidebar-accent-foreground: 210 20% 98%;
-  --sidebar-ring: 168 84% 45%;
+  --sidebar: 210 13% 5%;
+  --sidebar-foreground: 45 25% 94%;
+  --sidebar-border: 216 8% 16%;
+  --sidebar-primary: 21 89% 56%;
+  --sidebar-primary-foreground: 216 11% 9%;
+  --sidebar-accent: 216 8% 14%;
+  --sidebar-accent-foreground: 45 25% 94%;
+  --sidebar-ring: 214 90% 72%;
 
-  --popover: 220 25% 10%;
-  --popover-foreground: 210 20% 98%;
-  --popover-border: 220 20% 18%;
+  --popover: 218 13% 11%;
+  --popover-foreground: 45 25% 94%;
+  --popover-border: 216 8% 22%;
 
-  /* Brighter teal for dark mode */
-  --primary: 168 84% 45%;
-  --primary-foreground: 0 0% 100%;
+  --primary: 21 89% 56%;
+  --primary-foreground: 216 11% 9%;
+  --primary-texto: 23 100% 68%;    /* #FF9A5C */
 
-  --secondary: 220 20% 18%;
-  --secondary-foreground: 210 20% 98%;
+  --secondary: 216 9% 18%;
+  --secondary-foreground: 45 25% 94%;
 
-  --muted: 220 20% 15%;
-  --muted-foreground: 215 16% 60%;
+  --muted: 216 10% 14%;
+  --muted-foreground: 213 8% 70%;
 
-  --accent: 220 70% 60%;
-  --accent-foreground: 0 0% 100%;
+  --accent: 214 85% 66%;
+  --accent-foreground: 216 11% 9%;
+  --accent-texto: 214 100% 81%;    /* #9CC4FF */
 
-  --destructive: 0 72% 55%;
+  --destructive: 0 72% 48%;
   --destructive-foreground: 0 0% 100%;
+  --destructive-texto: 0 90% 72%;
 
-  --input: 220 20% 22%;
-  --ring: 168 84% 45%;
-  --chart-1: 168 84% 50%;
-  --chart-2: 220 70% 60%;
-  --chart-3: 280 65% 65%;
+  --input: 216 8% 30%;
+  --ring: 214 90% 72%;
+  --chart-1: 21 89% 58%;
+  --chart-2: 214 85% 66%;
+  --chart-3: 45 25% 80%;
   --chart-4: 35 92% 60%;
-  --chart-5: 340 75% 60%;
+  --chart-5: 190 90% 55%;
 
   --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.2);
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
@@ -159,6 +241,33 @@
   --shadow-lg: 0px 10px 15px -3px rgba(0, 0, 0, 0.4), 0px 4px 6px -2px rgba(0, 0, 0, 0.25);
   --shadow-xl: 0px 20px 25px -5px rgba(0, 0, 0, 0.45), 0px 10px 10px -5px rgba(0, 0, 0, 0.25);
   --shadow-2xl: 0px 25px 50px -12px rgba(0, 0, 0, 0.6);
+
+  --papel: #0E1012;
+  --papel2: #14161A;
+  --blanco: #1B1E23;
+  --tinta: #F3F1EB;
+  --tinta2: #C6CACF;
+  --tinta3: #A9AEB4;
+  --tinta-fuerte: #FFFFFF;
+  --sobre-tinta: #15171A;
+  --linea: rgba(255,255,255,.13);
+  --linea2: rgba(255,255,255,.28);
+  --naranja-h: #FF8A47;
+  --naranja-t: #FF9A5C;
+  --azul-h: #7FB2FF;
+  --azul-t: #9CC4FF;
+  --sobre-azul: #15171A;
+  --azul-velo: rgba(127,178,255,.12);
+  --marino: #E9EBEE;
+  --gabinete: #1A1D21;
+  --gabinete-borde: rgba(255,255,255,.12);
+  --plata-a: #E4E6E4;
+  --plata-b: #CFD3D1;
+  --plata-c: #B6BBB9;
+  --plata-borde: #8E9493;
+  --foco: #9CC4FF;
+  --cabecera-fondo: rgba(14,16,18,.88);
+  --sombra-rgb: 0,0,0;
 }
 
 @layer base {
@@ -166,22 +275,1095 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+    /* Las anclas (#servicios, etc.) quedan por debajo de la cabecera fija. */
+    scroll-padding-top: 84px;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  /* Foco visible de la maqueta. :where() = especificidad 0: las utilidades
+     de shadcn (outline-none + ring) siguen mandando en sus componentes. */
+  :where(a, button, summary, input, textarea, select, [role="button"], [tabindex="0"]):focus-visible {
+    outline: 3px solid var(--foco);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Quien pidio menos movimiento en su sistema salta directo a la seccion. */
+/* Quien pidió menos movimiento en su sistema salta directo a la sección y
+   las piezas Vitrina (clases v-*) no se animan. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+
+  [class*="v-"],
+  [class*="v-"]::before,
+  [class*="v-"]::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
+
+/* ==========================================================================
+   PIEZAS VITRINA (prefijo v-). Van en la capa "components": cualquier
+   utilidad de Tailwind puesta en el mismo elemento las puede ajustar.
+   ========================================================================== */
+@layer components {
+  /* ---------- base de página ---------- */
+  .v-base {
+    font-size: 17px;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+  .v-cont {
+    width: 100%;
+    max-width: calc(var(--w) + var(--pad) * 2);
+    margin-inline: auto;
+    padding-inline: var(--pad);
+  }
+  .v-sec {
+    padding-block: clamp(72px, 10vw, 136px);
+    overflow-x: clip;
+  }
+  .v-sec--2 {
+    background: var(--papel2);
+  }
+  /* Sección pegada a la anterior (la maqueta lo usa en Café Oriente y Contacto). */
+  .v-sec--pegada {
+    padding-top: 0;
+  }
+  /* Deja libre el alto de la cabecera fija (va en el <main> de la página). */
+  .v-bajo-cabecera {
+    padding-top: var(--alto-cabecera);
+  }
+  /* Superficie siempre oscura (pie, gaveta, cita): foco y logo en claro. */
+  .v-oscuro {
+    --foco: #9CC4FF;
+  }
+  .v-salto {
+    position: absolute;
+    left: 16px;
+    top: -60px;
+    z-index: 100;
+    background: #15171A;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  .v-salto:focus {
+    top: 12px;
+  }
+
+  /* ---------- iconos de línea ---------- */
+  .v-ic {
+    display: block;
+    width: 1.25em;
+    height: 1.25em;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .v-ic--r {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  /* ---------- títulos y textos ---------- */
+  .v-tit,
+  .v-h1,
+  .v-h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -.025em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+  .v-h1 {
+    font-size: clamp(2.7rem, 5.6vw, 4.7rem);
+    letter-spacing: -.032em;
+    line-height: .98;
+  }
+  .v-h2 {
+    font-size: clamp(2.1rem, 4.6vw, 3.5rem);
+  }
+  .v-h1 em,
+  .v-h2 em {
+    font-style: normal;
+    color: var(--azul-h);
+  }
+  .v-h1 em.n,
+  .v-h2 em.n {
+    color: var(--naranja-h);
+  }
+  .v-lead {
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+    color: var(--tinta2);
+    max-width: 56ch;
+    text-wrap: pretty;
+  }
+  /* Etiqueta sobre el título: ola corta + texto mono en mayúsculas. */
+  .v-etq {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 500 12.5px/1 var(--font-mono);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--tinta2);
+    margin-bottom: 22px;
+  }
+  .v-etq__o {
+    width: 30px;
+    height: 12px;
+    flex: none;
+    background: var(--ola-etiqueta) 0 50% / 30px 12px no-repeat;
+  }
+  /* Cabecera de sección a dos columnas: título a la izquierda, lead a la derecha. */
+  .v-cab-sec {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+    gap: clamp(20px, 5vw, 72px);
+    align-items: end;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .v-cab-sec .v-lead {
+    padding-bottom: 6px;
+  }
+  @media (max-width: 899px) {
+    .v-cab-sec {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+  /* Subrayado de ola bajo una palabra del título. */
+  .v-sub-ola {
+    display: inline-block;
+    padding-bottom: .17em;
+    background: var(--ola-trazo) 0 100% / auto .2em repeat-x;
+  }
+
+  /* ---------- botones ---------- */
+  .v-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 52px;
+    padding: 0 24px;
+    border-radius: 12px;
+    border: 1.5px solid var(--tinta);
+    background: transparent;
+    color: var(--tinta);
+    font: 600 16px/1 var(--font-sans);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .18s ease, background-color .18s ease, color .18s ease, box-shadow .18s ease;
+  }
+  .v-btn:hover {
+    transform: translateY(-2px);
+  }
+  .v-btn:disabled,
+  .v-btn[aria-disabled="true"] {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+  }
+  /* Principal: naranja con canto de tinta. */
+  .v-btn--p {
+    background: var(--naranja);
+    color: var(--sobre-naranja);
+    border-color: var(--tinta);
+    box-shadow: 0 3px 0 var(--tinta);
+  }
+  .v-btn--p:hover {
+    box-shadow: 0 5px 0 var(--tinta);
+  }
+  .v-btn--p:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 var(--tinta);
+  }
+  /* Tinta: relleno oscuro (claro en modo oscuro). */
+  .v-btn--t {
+    background: var(--tinta);
+    color: var(--sobre-tinta);
+  }
+  .v-btn--t:hover {
+    background: var(--tinta-fuerte);
+  }
+  /* Secundario: contorno azul. */
+  .v-btn--s {
+    border-color: var(--azul-t);
+    color: var(--azul-t);
+  }
+  .v-btn--s:hover {
+    background: var(--azul-t);
+    color: var(--sobre-azul);
+  }
+  /* Chico (cabecera). */
+  .v-btn--ch {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+  .v-btn .v-ic--fl {
+    transition: transform .18s ease;
+  }
+  .v-btn:hover .v-ic--fl {
+    transform: translateX(3px);
+  }
+  /* Botón de icono de 44 px (cabecera, pie). */
+  .v-icb {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    color: var(--tinta);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color .15s;
+  }
+  .v-icb:hover {
+    background: var(--elevate-2);
+  }
+  .v-icb .v-ic,
+  .v-icb > svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* ---------- la ola ---------- */
+  .v-ola {
+    height: var(--ola-alto, 56px);
+    background: var(--ola) 0 50% / var(--ola-ancho, 240px) var(--ola-alto, 56px) repeat-x;
+    animation: v-ola 22s linear infinite;
+  }
+  /* Antes del pie: mitad papel, mitad gabinete, con la ola encima. */
+  .v-ola--pie {
+    background-color: var(--gabinete);
+    background-image: var(--ola), linear-gradient(var(--ola-desde, var(--papel)) 50%, var(--gabinete) 50%);
+    background-size: var(--ola-ancho, 240px) var(--ola-alto, 56px), var(--ola-ancho, 240px) 100%;
+    background-repeat: repeat-x;
+  }
+
+  /* ---------- plata, riel, código y LED ---------- */
+  /* Acero cepillado de la columna de control. El texto encima es siempre oscuro. */
+  .v-plata {
+    background: linear-gradient(100deg, var(--plata-b), var(--plata-a) 32%, var(--plata-b) 70%, var(--plata-c));
+    border: 1px solid var(--plata-borde);
+    color: var(--sobre-plata);
+  }
+  /* Riel de precios de una bandeja: código + nombre + testigo a la derecha. */
+  .v-riel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 38px;
+    padding: 0 22px;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--riel-borde);
+    border-bottom: 1px solid var(--riel-borde);
+    border-radius: 0;
+    background: linear-gradient(180deg, var(--riel-a), var(--riel-b) 55%, var(--riel-c));
+    font: 500 11px/1 var(--font-mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--sobre-plata);
+  }
+  button.v-riel {
+    cursor: pointer;
+  }
+  button.v-riel:focus-visible {
+    outline-offset: -3px;
+  }
+  .v-riel .v-tag {
+    transition: background-color .2s, color .2s;
+  }
+  .v-riel__testigo {
+    margin-left: auto;
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+    background: #8E9493;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .35);
+    transition: background-color .2s, box-shadow .2s;
+  }
+  .v-riel--activo .v-tag {
+    background: var(--naranja);
+    color: #15171A;
+  }
+  .v-riel--activo .v-riel__testigo {
+    background: var(--azul);
+    box-shadow: 0 0 0 3px rgba(31, 111, 214, .25);
+  }
+  /* Código de selección (10, 12, 14…). Siempre negro de gabinete. */
+  .v-tag {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    min-width: 26px;
+    height: 18px;
+    padding: 0 5px;
+    background: #15171A;
+    color: #fff;
+    font: 600 11px/1 var(--font-mono);
+    letter-spacing: .04em;
+    border-radius: 3px;
+  }
+  .dark .v-tag {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .22);
+  }
+  .dark .v-plata .v-tag,
+  .dark .v-riel .v-tag {
+    box-shadow: none;
+  }
+  /* Etiqueta LED pequeña ("24/7") con punto que late. */
+  .v-ledchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--led-fondo);
+    color: var(--led);
+    font: 900 15px/1 var(--font-led);
+    letter-spacing: .06em;
+    padding: 6px 10px 5px;
+    border-radius: 6px;
+    text-shadow: 0 0 8px rgba(120, 225, 255, .55);
+    box-shadow: inset 0 0 0 1px #000, 0 0 0 1px var(--plata-borde), 0 0 0 4px var(--plata-b);
+  }
+  .v-ledchip__punto {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--led);
+    box-shadow: 0 0 8px var(--led);
+    animation: v-pulso 2.4s ease-in-out infinite;
+  }
+  /* Cifra LED grande ("100%", "24/7", "07"). */
+  .v-led {
+    display: block;
+    margin: 0;
+    background: var(--led-fondo);
+    border-radius: 8px;
+    padding: 12px 6px 9px;
+    text-align: center;
+    color: var(--led);
+    font: 900 clamp(1.5rem, 3.2vw, 2.3rem)/1 var(--font-led);
+    letter-spacing: .02em;
+    text-shadow: 0 0 10px rgba(120, 225, 255, .5);
+    box-shadow: inset 0 0 0 1px #000, inset 0 3px 10px rgba(0, 0, 0, .9);
+  }
+  /* Pantalla de la columna: rótulo, valor grande y una línea de texto. */
+  .v-pant {
+    background: var(--led-fondo);
+    border-radius: 9px;
+    padding: 11px 12px 10px;
+    color: var(--led);
+    font-family: var(--font-led);
+    text-shadow: 0 0 9px rgba(120, 225, 255, .5);
+    box-shadow: inset 0 0 0 1px #000, inset 0 3px 12px #000;
+    min-height: 92px;
+  }
+  .v-pant__rotulo {
+    display: block;
+    font: 500 10px/1 var(--font-mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    opacity: .75;
+    text-shadow: none;
+  }
+  .v-pant__valor {
+    display: block;
+    font-weight: 900;
+    font-size: 36px;
+    line-height: 1.05;
+    letter-spacing: .06em;
+    margin-top: 5px;
+  }
+  .v-pant__texto {
+    display: block;
+    font: 500 11.5px/1.25 var(--font-mono);
+    text-shadow: none;
+    min-height: 1.25em;
+  }
+  /* Par de espirales de una bandeja. */
+  .v-espiral {
+    display: block;
+    width: 68px;
+    height: 24px;
+    flex: none;
+  }
+  /* Textura de plano (cuadrícula que se desvanece) detrás de un dibujo.
+     El padre debe ser position:relative; va con aria-hidden. */
+  .v-plano {
+    position: absolute;
+    inset: -9% -16%;
+    z-index: -1;
+    pointer-events: none;
+    background-image: linear-gradient(var(--linea) 1px, transparent 1px), linear-gradient(90deg, var(--linea) 1px, transparent 1px);
+    background-size: 26px 26px;
+    -webkit-mask-image: radial-gradient(closest-side, #000 35%, transparent);
+    mask-image: radial-gradient(closest-side, #000 35%, transparent);
+    opacity: .7;
+  }
+
+  /* ---------- logo y marca ---------- */
+  .v-logo {
+    display: block;
+    flex: none;
+  }
+  .dark .v-logo {
+    --lf: var(--papel);
+  }
+  /* Logo a una tinta (naranja) para la columna plateada. */
+  .v-logo--mono,
+  .dark .v-logo--mono {
+    color: var(--naranja);
+    --l2: var(--naranja);
+    --l3: var(--naranja);
+    --l4: var(--naranja);
+    --l5: #F7B58E;
+    --lf: #F4F5F3;
+  }
+  .v-oscuro .v-logo:not(.v-logo--mono) {
+    color: #fff;
+    --lf: var(--gabinete);
+  }
+  .v-marca {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--marino);
+    font: 700 12.5px/1.14 var(--font-display);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .v-marca .v-logo {
+    width: 46px;
+    height: 46px;
+  }
+  .v-oscuro .v-marca {
+    color: #fff;
+  }
+}
+
+@layer components {
+  /* ---------- cabecera ---------- */
+  .v-cabecera {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: var(--cabecera-fondo);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .v-cabecera--baja {
+    border-bottom-color: var(--linea);
+    box-shadow: 0 10px 30px -22px rgba(var(--sombra-rgb), .5);
+  }
+  .v-cabecera__fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: var(--alto-cabecera);
+  }
+  .v-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .v-nav a {
+    white-space: nowrap;
+    padding: 10px 11px;
+    border-radius: 8px;
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.6;
+    text-decoration: none;
+    color: var(--tinta2);
+    transition: color .15s, background-color .15s;
+  }
+  .v-nav a:hover {
+    color: var(--azul-t);
+    background: var(--azul-velo);
+  }
+  .v-acc {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .v-acc__grupo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .v-acc .v-btn {
+    margin-left: 8px;
+  }
+  .v-acc__grupo--movil,
+  .v-menu-btn {
+    display: none;
+  }
+  /* Contador del carrito. */
+  .v-icb__cuenta {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--naranja);
+    color: var(--sobre-naranja);
+    font: 600 11px/19px var(--font-mono);
+    text-align: center;
+    box-shadow: 0 0 0 2px var(--papel);
+  }
+  /* Menú móvil (se pinta solo cuando está abierto). */
+  .v-nav-movil {
+    display: none;
+  }
+  @media (max-width: 1439px) {
+    .v-acc .v-red {
+      display: none;
+    }
+  }
+  @media (max-width: 1239px) {
+    html.v-menu-abierto {
+      overflow: hidden;
+    }
+    .v-nav,
+    .v-acc__grupo--escritorio {
+      display: none;
+    }
+    .v-acc__grupo--movil {
+      display: flex;
+    }
+    .v-menu-btn {
+      display: grid;
+    }
+    .v-nav-movil {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      background: var(--papel);
+      border-bottom: 1px solid var(--linea2);
+      padding: 8px var(--pad) 20px;
+      box-shadow: 0 30px 40px -30px rgba(var(--sombra-rgb), .4);
+      max-height: calc(100vh - var(--alto-cabecera));
+      max-height: calc(100dvh - var(--alto-cabecera));
+      overflow: auto;
+    }
+    .v-nav-movil > a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 4px;
+      font-size: 17px;
+      font-weight: 500;
+      line-height: 1.6;
+      text-decoration: none;
+      color: var(--tinta);
+      border-bottom: 1px solid var(--linea);
+    }
+    .v-nav-movil > a::after {
+      content: "";
+      margin-left: auto;
+      width: 8px;
+      height: 8px;
+      border-top: 1.5px solid var(--azul-t);
+      border-right: 1.5px solid var(--azul-t);
+      transform: rotate(45deg);
+    }
+    .v-nav-movil__redes {
+      display: flex;
+      gap: 10px;
+      padding-top: 18px;
+    }
+    .v-nav-movil__redes a {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 48px;
+      padding: 0 12px;
+      border: 1px solid var(--linea2);
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--tinta);
+    }
+    .v-nav-movil__redes .v-ic {
+      width: 18px;
+      height: 18px;
+    }
+  }
+  @media (max-width: 560px) {
+    .v-acc .v-btn span {
+      display: none;
+    }
+    .v-acc .v-btn {
+      padding: 0;
+      width: 44px;
+      margin-left: 2px;
+    }
+    .v-cabecera .v-marca {
+      font-size: 11.5px;
+      gap: 8px;
+    }
+    .v-cabecera .v-marca .v-logo {
+      width: 42px;
+      height: 42px;
+    }
+  }
+  @media (max-width: 419px) {
+    .v-cabecera__fila {
+      gap: 8px;
+    }
+  }
+  /* Sin sitio para el nombre junto a los cuatro botones: queda solo el logo. */
+  @media (max-width: 389px) {
+    .v-acc,
+    .v-acc__grupo {
+      gap: 0;
+    }
+  }
+  /* El nombre de la marca solo se oculta en los móviles más estrechos. */
+  @media (max-width: 359px) {
+    .v-cabecera .v-marca span {
+      display: none;
+    }
+  }
+
+  /* ---------- la máquina de la portada (MaquinaWittern) ---------- */
+  .v-boceto {
+    position: relative;
+    width: 100%;
+    max-width: 470px;
+    margin: 0 auto;
+    /* contexto propio: la cuadrícula (.v-plano, z-index -1) queda detrás del dibujo y no del fondo de la página */
+    isolation: isolate;
+    --maq-borde: #15171A;
+  }
+  .dark .v-boceto {
+    --maq-borde: #6B7178;
+  }
+  .v-boceto__d {
+    position: relative;
+  }
+  .v-maquina {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .v-m-led {
+    animation: v-pulso 2.4s ease-in-out infinite;
+  }
+  .v-m-guias,
+  .v-notas {
+    display: none;
+  }
+  .v-notas {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .v-boceto figcaption {
+    margin-top: 14px;
+    font: 400 12px/1.5 var(--font-mono);
+    color: var(--tinta3);
+    text-align: center;
+    letter-spacing: .02em;
+  }
+  @media (min-width: 700px) and (max-width: 999px), (min-width: 1280px) {
+    .v-boceto--notas {
+      max-width: 640px;
+      padding-right: 162px;
+    }
+    .v-boceto--notas .v-m-guias,
+    .v-boceto--notas .v-notas {
+      display: block;
+    }
+    .v-notas li {
+      position: absolute;
+      left: 100%;
+      margin-top: -8px;
+      width: 162px;
+      padding-left: 9px;
+      font: 400 11.5px/1.35 var(--font-mono);
+      color: var(--tinta2);
+    }
+    .v-notas b {
+      display: block;
+      font-weight: 600;
+      color: var(--tinta);
+      letter-spacing: .02em;
+    }
+    .v-boceto--notas figcaption {
+      text-align: left;
+      padding-left: 7%;
+    }
+  }
+  @media (min-width: 1280px) {
+    .v-boceto--notas {
+      max-width: none;
+      margin: 0;
+    }
+  }
+  @media (max-width: 699px) {
+    .v-boceto {
+      max-width: 400px;
+    }
+  }
+  @media (max-width: 560px) {
+    .v-boceto {
+      max-width: 330px;
+    }
+    .v-m-num {
+      display: none;
+    }
+  }
+
+  /* ---------- columna plateada de control (ColumnaControl) ---------- */
+  .v-columna {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 18px 0;
+    border-radius: 28px;
+    overflow: hidden;
+    background: linear-gradient(90deg, var(--plata-c), var(--plata-a) 28%, var(--plata-b) 68%, var(--plata-c));
+    border: 1px solid var(--plata-borde);
+    color: var(--sobre-plata);
+    box-shadow: inset 0 1px 0 #fff, 0 50px 70px -50px rgba(var(--sombra-rgb), .5);
+    /* Sobre la plata el texto no cambia con el tema. */
+    --tinta: #15171A;
+    --tinta2: #474C52;
+    --tinta3: #5E646B;
+    --tinta-fuerte: #000;
+    --sobre-tinta: #fff;
+    --azul-t: #1A57B8;
+    --azul-h: #1D62CC;
+    --sobre-azul: #fff;
+    --naranja-t: #B4420A;
+    --foco: #1F6FD6;
+  }
+  .v-columna__marca {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+  .v-columna__marca .v-logo {
+    width: 46px;
+    height: 46px;
+  }
+  .v-columna__marca span {
+    padding: 0 4px 5px 0;
+    font: 800 12px/1.08 var(--font-display);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: #1A57B8;
+    background: var(--ola-marca) 0 100% / 100% 7px no-repeat;
+  }
+  .v-teclado {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+    padding: 0 10px;
+  }
+  .v-teclado button {
+    aspect-ratio: 1;
+    min-width: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--azul);
+    background: #1A1D21;
+    color: #D7E6FF;
+    font: 600 16px/1 var(--font-mono);
+    cursor: pointer;
+    box-shadow: 0 0 0 0 rgba(31, 111, 214, .5), inset 0 -3px 0 rgba(0, 0, 0, .4);
+    transition: box-shadow .2s, transform .1s, background-color .2s;
+  }
+  .v-teclado button:hover {
+    box-shadow: 0 0 0 4px rgba(31, 111, 214, .25), inset 0 -3px 0 rgba(0, 0, 0, .4);
+  }
+  .v-teclado button:active {
+    transform: translateY(1px);
+    background: #000;
+  }
+  .v-columna__ayuda {
+    font: 400 11.5px/1.45 var(--font-mono);
+    color: var(--tinta2);
+    text-align: center;
+    margin: 0;
+  }
+  .v-columna__cta {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid rgba(21, 23, 26, .18);
+  }
+  .v-columna__cta h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -.015em;
+  }
+  .v-columna__cta p {
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--tinta2);
+    margin: 8px 0 14px;
+  }
+  .v-columna__cta .v-btn {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 12px;
+    font-size: 15px;
+  }
+  .v-columna > .v-ola {
+    margin: 4px -18px 0;
+    --ola-alto: 62px;
+    --ola-ancho: 236px;
+  }
+  @media (max-width: 1199px) {
+    .v-columna {
+      display: grid;
+      grid-template-columns: minmax(0, 230px) minmax(0, 1fr);
+      gap: 18px 28px;
+      padding: 20px 22px 0;
+      align-items: start;
+    }
+    .v-columna__marca {
+      grid-column: 1 / -1;
+    }
+    .v-columna .v-teclado,
+    .v-columna__ayuda {
+      display: none;
+    }
+    .v-columna__cta {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    .v-columna__cta .v-btn {
+      width: auto;
+      padding: 0 22px;
+    }
+    .v-columna > .v-ola {
+      grid-column: 1 / -1;
+      margin: 0 -22px;
+    }
+  }
+  @media (max-width: 640px) {
+    .v-columna {
+      grid-template-columns: minmax(0, 1fr);
+      border-radius: 22px;
+    }
+    .v-columna__cta .v-btn {
+      width: 100%;
+    }
+  }
+
+  /* ---------- pie ---------- */
+  .v-pie {
+    background: var(--gabinete);
+    color: var(--sobre-gabinete2);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .v-pie__g {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr 1.2fr;
+    gap: clamp(28px, 4vw, 64px);
+    padding-block: clamp(48px, 6vw, 80px);
+  }
+  .v-pie .v-marca {
+    margin-bottom: 18px;
+    width: fit-content;
+  }
+  .v-pie__tit {
+    font: 500 11.5px/1 var(--font-mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 18px;
+  }
+  .v-pie li + li {
+    margin-top: 9px;
+  }
+  .v-pie a {
+    text-decoration: none;
+    transition: color .15s;
+  }
+  .v-pie a:hover {
+    color: #fff;
+  }
+  .v-pie__redes {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .v-pie__redes a {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 10px;
+    color: #fff;
+  }
+  .v-pie__redes a:hover {
+    background: #fff;
+    color: #15171A;
+  }
+  .v-pie__redes .v-ic {
+    width: 18px;
+    height: 18px;
+  }
+  .v-pie__c li {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+  .v-pie__c .v-ic {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    color: #FF9A5C;
+  }
+  .v-pie__c a {
+    overflow-wrap: anywhere;
+  }
+  .v-pie__b {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 22px;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+    font-size: 14px;
+    color: #A9AEB4;
+  }
+  .v-pie__b .v-icb {
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .22);
+  }
+  .v-pie__b .v-icb:hover {
+    background: #fff;
+    color: #15171A;
+  }
+  .v-pie__tw {
+    display: flex;
+    justify-content: center;
+    padding: 6px 0 26px;
+  }
+  @media (max-width: 999px) {
+    .v-pie__g {
+      grid-template-columns: 1fr 1fr;
+    }
+    .v-pie__tit {
+      margin-bottom: 10px;
+    }
+    .v-pie nav li + li {
+      margin-top: 0;
+    }
+    .v-pie nav a {
+      display: block;
+      padding: 10px 0;
+    }
+    .v-pie__c li + li {
+      margin-top: 0;
+    }
+    .v-pie__c li {
+      align-items: center;
+    }
+    .v-pie__c .v-ic {
+      margin-top: 0;
+    }
+    .v-pie__c a {
+      display: block;
+      padding: 10px 0;
+    }
+  }
+  @media (max-width: 560px) {
+    .v-pie__g {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  /* Pantallas táctiles anchas (tableta en horizontal): enlaces del pie de 44 px. */
+  @media (pointer: coarse) {
+    .v-pie nav li + li,
+    .v-pie__c li + li {
+      margin-top: 0;
+    }
+    .v-pie nav a,
+    .v-pie__c a {
+      display: block;
+      padding: 10px 0;
+    }
+    .v-pie__c li {
+      align-items: center;
+    }
+    .v-pie__c .v-ic {
+      margin-top: 0;
+    }
+  }
+}
+
+@keyframes v-ola {
+  to {
+    background-position-x: calc(var(--ola-ancho, 240px) * -1);
+  }
+}
+
+@keyframes v-pulso {
+  50% {
+    opacity: .35;
+  }
+}
+
+/* ---- Clases anteriores al rediseño: siguen para las páginas que aún las
+   usan (Tienda y subpáginas), ya con la paleta nueva. ---- */
 
 /* Custom gradient animations */
 @keyframes gradient-shift {
@@ -219,11 +1401,11 @@ html {
 
 /* Glow effect for buttons */
 .glow-primary {
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 20px rgba(242, 106, 33, 0.3);
 }
 
 .glow-primary:hover {
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+  box-shadow: 0 0 30px rgba(242, 106, 33, 0.45);
 }
 
 /* Glass morphism effect */
@@ -240,16 +1422,10 @@ html {
 
 /* Vending machine grid pattern */
 .vending-grid {
-  background-image: 
-    linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+  background-image:
+    linear-gradient(var(--linea) 1px, transparent 1px),
+    linear-gradient(90deg, var(--linea) 1px, transparent 1px);
   background-size: 60px 60px;
-}
-
-.dark .vending-grid {
-  background-image: 
-    linear-gradient(rgba(16, 185, 129, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 185, 129, 0.06) 1px, transparent 1px);
 }
 
 /**
@@ -324,5 +1500,24 @@ html {
   .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
+  }
+}
+
+/* ---------- Tienda: ajustes de aspecto sin tocar sus páginas ---------- */
+/* La insignia "Sin stock" baja a la esquina inferior derecha de la tarjeta
+   para no tapar el logo ni el nombre de la marca. */
+span:has(> [data-testid$="-sin-stock"]) {
+  top: auto;
+  left: auto;
+  right: .75rem;
+  bottom: .75rem;
+}
+/* Objetivos táctiles de 40 px en el carrito y la Tienda. */
+@media (pointer: coarse) {
+  [data-testid="page-carrito"] button,
+  [data-testid="page-carrito"] input,
+  [data-testid="page-gift-card"] a[href*="wa.me"] {
+    min-height: 40px;
+    min-width: 40px;
   }
 }

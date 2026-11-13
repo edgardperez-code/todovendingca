@@ -1,48 +1,50 @@
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
+import { LogoTrazos } from "@/components/vitrina/logo";
+import { PRODUCTOS } from "@shared/catalogo";
 
 type Tamano = "sm" | "md" | "lg";
+type Acabado = "plata" | "azul" | "tinta";
 
-// Tamanos de texto por variante: la tarjeta mantiene la proporcion de una
-// tarjeta fisica (85,6 x 54 mm) y el contenido escala con ella.
-const estilos: Record<
-  Tamano,
-  { padding: string; logo: string; logoTexto: string; marca: string; etiqueta: string; monto: string; pie: string; chip: string }
-> = {
-  sm: {
-    padding: "p-2",
-    logo: "w-4 h-4 rounded-[3px]",
-    logoTexto: "text-[6px]",
-    marca: "hidden",
-    etiqueta: "text-[6px] tracking-[0.15em]",
-    monto: "text-lg",
-    pie: "hidden",
-    // En miniatura no cabe el chip: se oculta para que no se encime al monto.
-    chip: "hidden",
+// Acabados de la maqueta Vitrina, en el orden del abanico del inicio: la
+// primera Gift Card del catálogo es plateada, la segunda azul y la tercera
+// tinta de gabinete. Así cada monto se ve igual en el inicio y en la Tienda.
+const ACABADOS: Acabado[] = ["plata", "azul", "tinta"];
+const MONTOS_CATALOGO: number[] = PRODUCTOS.filter((p) => p.esGiftCard).map((p) => p.precioUsd);
+
+function acabadoDe(montoUsd: number): Acabado {
+  const posicion = MONTOS_CATALOGO.indexOf(montoUsd);
+  return posicion === -1 ? "tinta" : ACABADOS[posicion % ACABADOS.length];
+}
+
+// Colores fijos de "máquina": no cambian con el tema (sobre plata el texto es
+// siempre marino). --lf / --l3 / --l5 son los rellenos del logo (ver vitrina/logo).
+const caras: Record<Acabado, CSSProperties> = {
+  plata: {
+    background: "linear-gradient(120deg, var(--plata-b), var(--plata-a) 40%, var(--plata-c))",
+    color: "#1B263C",
+    border: "1px solid var(--plata-borde)",
+    ["--lf" as string]: "#fff",
   },
-  md: {
-    padding: "p-5",
-    logo: "w-8 h-8 rounded-md",
-    logoTexto: "text-xs",
-    marca: "text-sm",
-    etiqueta: "text-[10px] tracking-[0.25em]",
-    monto: "text-5xl",
-    pie: "text-[10px]",
-    chip: "w-9 h-7 rounded-md",
+  azul: {
+    background: "#1B5FC0",
+    color: "#fff",
+    ["--lf" as string]: "#1B5FC0",
+    ["--l3" as string]: "#A9CCFF",
+    ["--l5" as string]: "#A9CCFF",
   },
-  lg: {
-    padding: "p-6 md:p-8",
-    logo: "w-10 h-10 rounded-md",
-    logoTexto: "text-sm",
-    marca: "text-base md:text-lg",
-    etiqueta: "text-xs tracking-[0.3em]",
-    monto: "text-6xl md:text-7xl",
-    pie: "text-xs",
-    chip: "w-11 h-8 rounded-md",
+  tinta: {
+    background: "var(--gabinete)",
+    color: "#fff",
+    border: "1px solid var(--gabinete-borde)",
+    ["--lf" as string]: "var(--gabinete)",
   },
 };
 
-// Dibujo de la Gift Card con los colores de la marca (primario a acento). Es
-// solo decorativo: el precio que vale siempre sale del catalogo.
+// Dibujo de la Gift Card (maqueta Vitrina): marca arriba, monto grande y la ola
+// de marca al pie. Es solo decorativo: el precio que vale siempre sale del
+// catálogo. Todo se mide en cqw (ancho de la propia tarjeta), así que mantiene
+// la proporción de una tarjeta física (85,6 x 54 mm) a cualquier tamaño.
 export function GiftCardVisual({
   montoUsd,
   tamano = "md",
@@ -52,66 +54,88 @@ export function GiftCardVisual({
   tamano?: Tamano;
   className?: string;
 }) {
-  const e = estilos[tamano];
   const monto = Number.isInteger(montoUsd) ? String(montoUsd) : montoUsd.toFixed(2);
+  // En miniatura (carrito) solo caben el logo y el monto.
+  const mini = tamano === "sm";
 
   return (
     <div
       role="img"
       aria-label={`Gift Card Todo Vending de $${monto}`}
-      className={cn(
-        "relative aspect-[1.586/1] w-full overflow-hidden rounded-2xl text-white shadow-2xl select-none",
-        "bg-gradient-to-br from-primary via-primary to-accent",
-        tamano === "sm" && "rounded-md shadow-md",
-        className,
-      )}
+      className={cn("relative aspect-[1.586/1] w-full select-none", className)}
+      style={{ containerType: "inline-size" }}
     >
-      {/* Brillos y trama decorativa */}
-      <div className="absolute -top-1/3 -right-1/4 w-3/4 aspect-square rounded-full bg-white/15 blur-2xl" />
-      <div className="absolute -bottom-1/2 -left-1/4 w-3/4 aspect-square rounded-full bg-accent/40 blur-2xl" />
       <div
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 flex flex-col justify-between overflow-hidden"
         style={{
-          backgroundImage: "radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1px)",
-          backgroundSize: tamano === "sm" ? "6px 6px" : "14px 14px",
+          ...caras[acabadoDe(montoUsd)],
+          borderRadius: "5.26cqw",
+          padding: "6.84cqw 7.37cqw",
+          boxShadow: mini
+            ? "0 6px 12px -8px rgba(var(--sombra-rgb), .6)"
+            : "0 30px 50px -28px rgba(var(--sombra-rgb), .6)",
         }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10" />
-
-      <div className={cn("relative h-full flex flex-col justify-between", e.padding)}>
-        {/* Marca y etiqueta */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className={cn("bg-white flex items-center justify-center shadow-sm", e.logo)}>
-              <span className={cn("font-bold text-primary leading-none", e.logoTexto)}>TV</span>
-            </div>
-            <span className={cn("font-semibold leading-tight", e.marca)}>
-              Todo Vending <span className="text-white/80">CA</span>
-            </span>
-          </div>
-          <span className={cn("font-semibold uppercase text-white/90", e.etiqueta)}>Gift Card</span>
-        </div>
-
-        {/* Chip */}
+      >
+        {/* Marca y monto pequeño */}
         <div
-          className={cn(
-            "bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 shadow-inner border border-amber-100/60",
-            e.chip,
+          className="flex items-center whitespace-nowrap font-display font-bold uppercase"
+          style={{ gap: "2.63cqw", fontSize: "3.29cqw", lineHeight: 1.12, letterSpacing: ".1em" }}
+        >
+          <svg
+            viewBox="0 0 96 96"
+            aria-hidden="true"
+            focusable="false"
+            className="flex-none"
+            style={{ width: mini ? "14cqw" : "11.05cqw", height: mini ? "14cqw" : "11.05cqw" }}
+          >
+            <LogoTrazos />
+          </svg>
+          {!mini && (
+            <>
+              <span>
+                Todo
+                <br />
+                Vending CA
+              </span>
+              <span
+                className="ml-auto font-mono font-semibold"
+                style={{ fontSize: "4.74cqw", lineHeight: 1, letterSpacing: ".02em" }}
+              >
+                ${monto}
+              </span>
+            </>
           )}
-        />
-
-        {/* Monto y pie */}
-        <div className="flex items-end justify-between gap-2">
-          <p className={cn("font-extrabold leading-none tracking-tight drop-shadow-md", e.monto)}>
-            <span className="align-top text-[0.55em] mr-0.5">$</span>
-            {monto}
-          </p>
-          <p className={cn("text-right text-white/85 leading-snug", e.pie)}>
-            Snacks · Bebidas · Café
-            <br />
-            Todo Vending y Café Oriente
-          </p>
         </div>
+
+        {/* Monto grande. data-gc-monto permite ocultarlo en las tarjetas
+            traseras del abanico del inicio, como en la maqueta. */}
+        <div
+          data-gc-monto=""
+          className="font-display font-bold"
+          style={{
+            fontSize: mini ? "22cqw" : "17.76cqw",
+            lineHeight: 1,
+            letterSpacing: "-.04em",
+            marginBottom: mini ? "9cqw" : "11.08cqw",
+          }}
+        >
+          {!mini && (
+            <span
+              className="block font-mono font-normal uppercase"
+              style={{ fontSize: "3.03cqw", lineHeight: 1, letterSpacing: ".22em", marginBottom: "2.1cqw" }}
+            >
+              Gift Card
+            </span>
+          )}
+          ${monto}
+        </div>
+
+        {/* Ola de marca al pie */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0"
+          style={{ height: "23%", background: "var(--ola) 0 50% / 55.3cqw 100% repeat-x" }}
+        />
       </div>
     </div>
   );

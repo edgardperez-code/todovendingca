@@ -1,33 +1,36 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
-import { motion } from "@/lib/movimiento";
+import { Icono } from "@/components/vitrina/iconos";
+import { Ola } from "@/components/vitrina/ola";
+import { BocaGaveta } from "@/components/vitrina/subpagina";
 
-// CTA final de subpagina, identico al bloque inferior de la seccion Servicios.
+// Llamada final de subpágina: la gaveta de retiro de la máquina (el bloque de
+// Contacto de la maqueta Vitrina) con el título, el texto y el WhatsApp.
+// Necesita <EstilosSubpagina /> en la página (clases vs-*).
 export function SubpageCTA({ title, text, ctaText }: { title: string; text: string; ctaText: string }) {
   return (
-    <section className="py-20 md:py-28">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <Card className="bg-gradient-to-r from-primary/5 via-primary/10 to-accent/5 border-primary/20 max-w-4xl mx-auto">
-            <CardContent className="py-8 px-6 md:px-12 text-center">
-              <h2 className="text-xl md:text-2xl font-bold mb-2 text-foreground">{title}</h2>
-              <p className="text-muted-foreground mb-6 max-w-xl mx-auto">{text}</p>
+    <section className="v-sec">
+      <div className="v-cont">
+        <div className="vs-gaveta v-oscuro">
+          <div className="vs-gaveta__in">
+            <BocaGaveta />
+            <div className="vs-gaveta__g">
+              <div>
+                <h2 className="v-tit">{title}</h2>
+                <p>{text}</p>
+              </div>
               <a
+                className="v-btn v-btn--p"
                 href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Contactar por WhatsApp"
               >
-                <Badge className="text-base py-2 px-6 cursor-pointer">{ctaText}</Badge>
+                <Icono nombre="whatsapp" />
+                {ctaText}
               </a>
-            </CardContent>
-          </Card>
-        </motion.div>
+            </div>
+            <Ola alto={44} ancho={200} />
+          </div>
+        </div>
       </div>
     </section>
   );

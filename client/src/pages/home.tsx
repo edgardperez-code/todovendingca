@@ -9,6 +9,7 @@ import { ValuePropsSection } from "@/components/value-props-section";
 import { FAQSection } from "@/components/faq-section";
 import { ContactSection } from "@/components/contact-section";
 import { Footer } from "@/components/footer";
+import { Ola } from "@/components/vitrina/ola";
 import { useSEO } from "@/lib/seo";
 import {
   websiteSchema,
@@ -40,10 +41,14 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-background" data-testid="page-home">
+    <div className="min-h-screen bg-background v-base" data-testid="page-home">
       <Header />
-      <main>
+      {/* v-bajo-cabecera deja libre el alto de la cabecera fija; "contenido"
+          es el destino del enlace "Saltar al contenido". */}
+      <main id="contenido" className="v-bajo-cabecera">
         <HeroSection />
+        {/* La ola de marca separa la portada del resto (maqueta Vitrina). */}
+        <Ola />
         <AboutSection />
         <ServicesSection />
         <CafeOrienteSection />

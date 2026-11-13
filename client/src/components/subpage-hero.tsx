@@ -1,69 +1,60 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { SiWhatsapp } from "react-icons/si";
-import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
 import { EnlaceInterno } from "@/lib/navegacion";
+import { Icono } from "@/components/vitrina/iconos";
+import { ChipLed } from "@/components/vitrina/pantalla-led";
+import { MaquinaWittern } from "@/components/vitrina/maquina-wittern";
 
-// Hero compacto para subpaginas, con el mismo estilo visual del home:
-// gradiente sutil, badge "eyebrow", h1 en dos colores y CTA de WhatsApp.
+// Portada compacta de subpágina con el lenguaje de la portada del inicio
+// (diseño Vitrina): rótulo mono, h1 en dos colores, lead, WhatsApp y, en
+// pantallas anchas, el boceto de la Wittern 3535.
+// Necesita <EstilosSubpagina /> en la página (clases vs-*).
 export function SubpageHero({
   eyebrow,
   titlePlain,
   titleAccent,
   lead,
   ctaText,
+  chip,
 }: {
   eyebrow: string;
   titlePlain: string;
   titleAccent: string;
   lead: string;
   ctaText: string;
+  /** Texto de la etiqueta LED junto al rótulo (p. ej. "24/7"). Sin él va la ola corta. */
+  chip?: string;
 }) {
   return (
-    <section className="relative pt-32 md:pt-40 pb-16 md:pb-20 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Sin animacion de entrada: es la primera pantalla y debe salir
+    <section className="vs-hero">
+      <div className="v-cont vs-hero__grid">
+        {/* Sin animación de entrada: es la primera pantalla y debe salir
             pintada desde el servidor. */}
-        <div className="max-w-3xl">
-          <Badge className="mb-6" variant="secondary">
+        <div>
+          <p className="vs-lugar">
+            {chip ? <ChipLed>{chip}</ChipLed> : <i className="v-etq__o" aria-hidden="true" />}
             {eyebrow}
-          </Badge>
-          <h1 data-speakable className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            <span className="text-foreground">{titlePlain}</span>{" "}
-            <span className="text-primary">{titleAccent}</span>
-          </h1>
-          <p className="speakable text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl">
-            {lead}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <h1 data-speakable className="v-h1 vs-h1">
+            {titlePlain} <em className="n">{titleAccent}</em>
+          </h1>
+          <p className="speakable v-lead">{lead}</p>
+          <div className="vs-hero__cta">
             <a
+              className="v-btn v-btn--p"
               href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Contactar por WhatsApp"
             >
-              <Button size="lg" className="w-full sm:w-auto gap-2 glow-primary">
-                <SiWhatsapp className="h-5 w-5" />
-                {ctaText}
-              </Button>
+              <Icono nombre="whatsapp" />
+              {ctaText}
             </a>
-            <EnlaceInterno href="/#servicios">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto gap-2">
-                Ver Servicios
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+            <EnlaceInterno className="v-btn v-btn--s" href="/#servicios">
+              Ver servicios
+              <Icono nombre="flecha" flecha />
             </EnlaceInterno>
           </div>
         </div>
+        <MaquinaWittern className="vs-hero__fig" notas={false} />
       </div>
     </section>
   );

@@ -1,8 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { Phone, Mail, MapPin, ArrowUp } from "lucide-react";
-import { SiWhatsapp, SiInstagram, SiTiktok } from "react-icons/si";
-import { EnlaceInterno } from "@/lib/navegacion";
+import { EnlaceInterno, prefiereMenosMovimiento } from "@/lib/navegacion";
 import { TodoWebBadge } from "./todoweb-badge";
+import { Icono } from "@/components/vitrina/iconos";
+import { MarcaContenido } from "@/components/vitrina/logo";
+import { Ola } from "@/components/vitrina/ola";
+
+// Pie del diseño Vitrina (docs/rediseno-vitrina.md): la ola de marca y debajo
+// el gabinete oscuro. Es oscuro en los dos temas, por eso la insignia de
+// TodoWeb Digital va siempre en su versión "oscuro".
 
 const navLinks = [
   { href: "/#inicio", label: "Inicio" },
@@ -19,35 +23,41 @@ const navLinks = [
   { href: "/gift-card", label: "Gift Cards Todo Vending" },
 ];
 
-export function Footer() {
+interface FooterProps {
+  /** Color de fondo de lo último que hay antes del pie (por defecto, papel):
+      es la mitad de arriba de la ola. Ej.: "var(--papel2)". */
+  desde?: string;
+}
+
+export function Footer({ desde }: FooterProps = {}) {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: prefiereMenosMovimiento() ? "auto" : "smooth" });
   };
 
   return (
-    <footer className="bg-slate-900 dark:bg-slate-950 text-white" data-testid="footer">
-      <div className="container mx-auto px-4">
-        {/* Main Footer */}
-        <div className="py-12 md:py-16">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-            {/* Brand */}
-            <div className="lg:col-span-1">
+    <>
+      <Ola variante="pie" desde={desde} />
+      <footer className="v-pie v-oscuro" data-testid="footer">
+        <h2 className="sr-only">Pie de página</h2>
+        <div className="v-cont">
+          {/* Pie principal */}
+          <div className="v-pie__g">
+            {/* Marca */}
+            <div>
               {/* Igual que el logo del header: "/" funciona desde cualquier pagina
                   ("#inicio" solo servia estando ya en el home). */}
-              <EnlaceInterno href="/" className="flex items-center gap-2 mb-4" data-testid="link-footer-logo">
-                <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-lg">TV</span>
-                </div>
-                <div>
-                  <span className="font-bold text-lg text-white">Todo Vending</span>
-                  <span className="text-primary font-semibold ml-1">CA</span>
-                </div>
+              <EnlaceInterno
+                href="/"
+                className="v-marca"
+                aria-label="Todo Vending CA, inicio"
+                data-testid="link-footer-logo"
+              >
+                <MarcaContenido />
               </EnlaceInterno>
-              <p className="text-slate-400 text-sm mb-4">
-                Tu solucion integral en maquinas expendedoras. Tecnologia, 
-                servicio y conveniencia en un solo lugar.
+              <p>
+                Tu solución integral en máquinas expendedoras. Tecnología, servicio y conveniencia en un solo lugar.
               </p>
-              <div className="flex gap-2">
+              <div className="v-pie__redes">
                 <a
                   href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
                   target="_blank"
@@ -55,126 +65,103 @@ export function Footer() {
                   aria-label="Escribir por WhatsApp"
                   data-testid="link-footer-whatsapp"
                 >
-                  <Button variant="outline" size="icon" className="border-slate-700 bg-slate-800/50">
-                    <SiWhatsapp className="h-4 w-4" />
-                  </Button>
+                  <Icono nombre="whatsapp" />
                 </a>
                 <a
                   href="https://instagram.com/todovendingca"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Instagram"
                   data-testid="link-footer-instagram"
                 >
-                  <Button variant="outline" size="icon" className="border-slate-700 bg-slate-800/50">
-                    <SiInstagram className="h-4 w-4" />
-                  </Button>
+                  <Icono nombre="instagram" />
                 </a>
                 <a
                   href="https://tiktok.com/@todo.vending"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="TikTok"
                   data-testid="link-footer-tiktok"
                 >
-                  <Button variant="outline" size="icon" className="border-slate-700 bg-slate-800/50">
-                    <SiTiktok className="h-4 w-4" />
-                  </Button>
+                  <Icono nombre="tiktok" />
                 </a>
               </div>
             </div>
 
-            {/* Quick Links */}
-            <div>
-              <h4 className="font-semibold text-white mb-4">Enlaces</h4>
-              <ul className="space-y-2">
+            {/* Enlaces */}
+            <nav aria-label="Enlaces del pie">
+              <h3 className="v-pie__tit">Enlaces</h3>
+              <ul>
                 {navLinks.map((link) => {
                   const Enlace = "external" in link && link.external ? "a" : EnlaceInterno;
                   return (
                     <li key={link.href}>
-                      <Enlace
-                        href={link.href}
-                        className="text-slate-400 text-sm transition-colors hover-elevate"
-                        data-testid={`link-footer-${link.label.toLowerCase()}`}
-                      >
+                      <Enlace href={link.href} data-testid={`link-footer-${link.label.toLowerCase()}`}>
                         {link.label}
                       </Enlace>
                     </li>
                   );
                 })}
               </ul>
-            </div>
+            </nav>
 
-            {/* Services */}
+            {/* Servicios */}
             <div>
-              <h4 className="font-semibold text-white mb-4">Servicios</h4>
-              <ul className="space-y-2 text-sm text-slate-400">
-                <li>Maquinas de Snacks</li>
-                <li>Maquinas de Bebidas</li>
-                <li>Maquinas de Cafe</li>
-                <li>Instalacion Gratuita</li>
-                <li>Mantenimiento Tecnico</li>
-                <li>Reposicion de Inventario</li>
+              <h3 className="v-pie__tit">Servicios</h3>
+              <ul>
+                <li>Máquinas de Snacks</li>
+                <li>Máquinas de Bebidas</li>
+                <li>Máquinas de Café</li>
+                <li>Instalación Gratuita</li>
+                <li>Mantenimiento Técnico</li>
+                <li>Reposición de Inventario</li>
               </ul>
             </div>
 
-            {/* Contact */}
+            {/* Contacto */}
             <div>
-              <h4 className="font-semibold text-white mb-4">Contacto</h4>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-sm">
-                  <Phone className="h-4 w-4 text-primary" />
-                  <a 
-                    href="tel:+584146164177" 
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    +58 414-616-4177
-                  </a>
+              <h3 className="v-pie__tit">Contacto</h3>
+              <ul className="v-pie__c">
+                <li>
+                  <Icono nombre="tel" />
+                  <a href="tel:+584146164177">+58 414-616-4177</a>
                 </li>
-                <li className="flex items-center gap-3 text-sm">
-                  <Mail className="h-4 w-4 text-primary" />
-                  <a 
-                    href="mailto:todovendingca@gmail.com" 
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    todovendingca@gmail.com
-                  </a>
+                <li>
+                  <Icono nombre="correo" />
+                  <a href="mailto:todovendingca@gmail.com">todovendingca@gmail.com</a>
                 </li>
-                <li className="flex items-start gap-3 text-sm">
-                  <MapPin className="h-4 w-4 text-primary mt-0.5" />
-                  <a
-                    href="https://maps.app.goo.gl/JuHxKWCBBZS8tYwS9"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-slate-400 hover:text-white transition-colors"
-                  >
-                    Centro Comercial Venezuela, Local 11<br />Calle Nueva Esparta, Lechería, Anzoátegui
+                <li>
+                  <Icono nombre="pin" />
+                  <a href="https://maps.app.goo.gl/JuHxKWCBBZS8tYwS9" target="_blank" rel="noopener noreferrer">
+                    Centro Comercial Venezuela, Local 11
+                    <br />
+                    Calle Nueva Esparta, Lechería, Anzoátegui
                   </a>
                 </li>
               </ul>
             </div>
           </div>
-        </div>
 
-        {/* Bottom Footer */}
-        <div className="py-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} Todo Vending, C.A. Todos los derechos reservados.
-          </p>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={scrollToTop}
-            className="border-slate-700 bg-slate-800/50"
-            data-testid="button-scroll-top"
-          >
-            <ArrowUp className="h-4 w-4" />
-          </Button>
-        </div>
+          {/* Franja inferior */}
+          <div className="v-pie__b">
+            <p>© {new Date().getFullYear()} Todo Vending, C.A. Todos los derechos reservados.</p>
+            <button
+              type="button"
+              className="v-icb"
+              onClick={scrollToTop}
+              aria-label="Volver arriba"
+              data-testid="button-scroll-top"
+            >
+              <Icono nombre="arriba" />
+            </button>
+          </div>
 
-        {/* Insignia TodoWeb Digital */}
-        <div style={{ display: "flex", justifyContent: "center", padding: "16px 0" }}>
-          <TodoWebBadge tema="oscuro" />
+          {/* Insignia TodoWeb Digital */}
+          <div className="v-pie__tw">
+            <TodoWebBadge tema="oscuro" />
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }

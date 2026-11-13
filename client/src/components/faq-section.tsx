@@ -1,132 +1,116 @@
-import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
-import { motion } from "@/lib/movimiento";
+// Preguntas frecuentes (diseño Vitrina): título fijo a la izquierda y la lista
+// de preguntas a la derecha. Usa <details> nativo: se abre y se cierra sin
+// JavaScript, y el atributo name hace que solo quede una abierta a la vez.
+import { Etiqueta, Icono } from "@/components/vitrina";
 import type { FAQItem } from "@shared/schema";
 
 const faqs: FAQItem[] = [
   {
     id: "1",
-    question: "Tiene algun costo la instalacion?",
-    answer: "No, Todo Vending CA cubre todos los gastos de instalacion en tu ubicacion. La instalacion es completamente gratuita y sin compromisos para ti."
+    question: "¿Tiene algún costo la instalación?",
+    answer: "No, Todo Vending CA cubre todos los gastos de instalación en tu ubicación. La instalación es completamente gratuita y sin compromisos para ti."
   },
   {
     id: "2",
-    question: "Quien abastece las maquinas con productos?",
-    answer: "Nosotros nos encargamos de la reposicion completa del inventario, asegurando que las maquinas esten siempre abastecidas con productos frescos y variados segun tus preferencias."
+    question: "¿Quién abastece las máquinas con productos?",
+    answer: "Nosotros nos encargamos de la reposición completa del inventario, asegurando que las máquinas estén siempre abastecidas con productos frescos y variados según tus preferencias."
   },
   {
     id: "3",
-    question: "Quien repara o realiza el mantenimiento de las maquinas?",
-    answer: "Nuestro equipo tecnico realiza monitoreo constante y se encarga de cualquier reparacion o mantenimiento necesario. El servicio de mantenimiento esta incluido sin costo adicional."
+    question: "¿Quién repara o realiza el mantenimiento de las máquinas?",
+    answer: "Nuestro equipo técnico realiza monitoreo constante y se encarga de cualquier reparación o mantenimiento necesario. El servicio de mantenimiento está incluido sin costo adicional."
   },
   {
     id: "4",
-    question: "Que tipos de productos pueden vender las maquinas?",
-    answer: "Ofrecemos una amplia variedad: snacks, galletas, chocolates, bebidas frias, refrescos, jugos, agua, cafe gourmet, cappuccino, chocolate caliente, y opciones saludables. Adaptamos el inventario segun tus necesidades."
+    question: "¿Qué tipos de productos pueden vender las máquinas?",
+    answer: "Ofrecemos una amplia variedad: snacks, galletas, chocolates, bebidas frías, refrescos, jugos, agua, café gourmet, cappuccino, chocolate caliente y opciones saludables. Adaptamos el inventario según tus necesidades."
   },
   {
     id: "5",
-    question: "Que formas de pago aceptan las maquinas?",
-    answer: "Nuestras maquinas cuentan con sistemas de pago modernos que aceptan efectivo, tarjetas de debito y credito, y pago movil para mayor comodidad de los usuarios."
+    question: "¿Qué formas de pago aceptan las máquinas?",
+    answer: "Nuestras máquinas cuentan con sistemas de pago modernos que aceptan efectivo, tarjetas de débito y crédito, y pago móvil para mayor comodidad de los usuarios."
   },
   {
     id: "6",
-    question: "Cuanto espacio necesito para instalar una maquina?",
-    answer: "El espacio requerido depende del tipo de maquina. Generalmente necesitas un area de aproximadamente 1.5m x 1m con acceso a toma electrica. Nuestro equipo evalua tu espacio para recomendarte la mejor opcion."
+    question: "¿Cuánto espacio necesito para instalar una máquina?",
+    answer: "El espacio requerido depende del tipo de máquina. Generalmente necesitas un área de aproximadamente 1.5 m x 1 m con acceso a toma eléctrica. Nuestro equipo evalúa tu espacio para recomendarte la mejor opción."
   },
   {
     id: "7",
-    question: "Puedo elegir los productos que se venden en la maquina?",
-    answer: "Absolutamente. Trabajamos contigo para personalizar la seleccion de productos segun las preferencias de tus empleados, clientes o usuarios. Escuchamos tus sugerencias y las implementamos."
+    question: "¿Puedo elegir los productos que se venden en la máquina?",
+    answer: "Absolutamente. Trabajamos contigo para personalizar la selección de productos según las preferencias de tus empleados, clientes o usuarios. Escuchamos tus sugerencias y las implementamos."
   },
   {
     id: "8",
-    question: "Como solicito una maquina para mi negocio?",
-    answer: "Es muy sencillo. Puedes contactarnos via WhatsApp al +58 414-616-4177 o llenar el formulario de contacto en nuestra pagina. Nuestro equipo se comunicara contigo para evaluar tu espacio y coordinar la instalacion."
+    question: "¿Cómo solicito una máquina para mi negocio?",
+    answer: "Es muy sencillo. Puedes contactarnos vía WhatsApp al +58 414-616-4177 o llenar el formulario de contacto en nuestra página. Nuestro equipo se comunicará contigo para evaluar tu espacio y coordinar la instalación."
   }
 ];
 
+// Estilos propios de la sección (medidas y cortes de la maqueta).
+const ESTILOS = `
+.faq-g{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(32px,6vw,96px);align-items:start}
+.faq-izq{position:sticky;top:104px}
+.faq-izq .v-lead{margin:20px 0 28px}
+.faq-izq small{display:block;margin-bottom:12px;font-size:15px;color:var(--tinta2)}
+.faq-preg{border-top:1.5px solid var(--tinta)}
+.faq-preg details{border-bottom:1px solid var(--linea2)}
+.faq-preg summary{display:grid;grid-template-columns:minmax(0,1fr) 28px;gap:18px;align-items:center;padding:20px 0;cursor:pointer;list-style:none;font:600 1.15rem/1.25 var(--font-display);letter-spacing:-.015em;color:var(--tinta)}
+.faq-preg summary h3{font:inherit;letter-spacing:inherit;color:inherit;margin:0;text-wrap:wrap}
+.faq-preg summary::-webkit-details-marker{display:none}
+.faq-preg summary::after{content:"";width:28px;height:28px;border-radius:50%;border:1.5px solid var(--tinta);background:linear-gradient(var(--tinta),var(--tinta)) 50%/12px 1.5px no-repeat,linear-gradient(var(--tinta),var(--tinta)) 50%/1.5px 12px no-repeat;transition:transform .25s,background-color .2s}
+.faq-preg details[open] summary::after{transform:rotate(45deg);border-color:#15171A;background:linear-gradient(#15171A,#15171A) 50%/12px 1.5px no-repeat,linear-gradient(#15171A,#15171A) 50%/1.5px 12px no-repeat;background-color:var(--naranja)}
+.faq-preg summary:hover{color:var(--azul-t)}
+.faq-preg details[open] summary{color:var(--azul-t)}
+.faq-preg p{padding:0 46px 24px 0;color:var(--tinta2);max-width:68ch}
+@media (max-width:899px){
+  .faq-g{grid-template-columns:minmax(0,1fr)}
+  .faq-izq{position:static}
+  .faq-preg p{padding:0 0 22px}
+}
+@media (max-width:420px){
+  .faq-preg summary{font-size:1.04rem;gap:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .faq-preg summary::after{transition:none}
+}
+`;
+
 export function FAQSection() {
   return (
-    <section
-      id="faq"
-      className="py-20 md:py-28 bg-muted/30"
-      data-testid="section-faq"
-    >
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
+    <section id="faq" className="v-sec" data-testid="section-faq">
+      <style dangerouslySetInnerHTML={{ __html: ESTILOS }} />
+      <div className="v-cont faq-g">
+        {/* Título y llamada a WhatsApp */}
+        <div className="faq-izq">
+          <Etiqueta>Preguntas frecuentes</Etiqueta>
+          <h2 data-speakable className="v-h2">
+            Resolvemos tus <em className="n">dudas</em>
+          </h2>
+          <p className="v-lead">
+            Descubre todo lo que necesitas saber sobre nuestros servicios de vending.
+          </p>
+          <small>¿Tienes más preguntas? Estamos aquí para ayudarte.</small>
+          <a
+            className="v-btn v-btn--s"
+            href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Contactar por WhatsApp"
           >
-            <Badge className="mb-4" variant="secondary">
-              Preguntas Frecuentes
-            </Badge>
-            <h2 data-speakable className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="text-foreground">Resolvemos tus</span>{" "}
-              <span className="text-primary">Dudas</span>
-            </h2>
-            <p className="text-muted-foreground">
-              Descubre todo lo que necesitas saber sobre nuestros servicios de vending.
-            </p>
-          </motion.div>
+            <Icono nombre="whatsapp" />
+            Contactar por WhatsApp
+          </a>
+        </div>
 
-          {/* FAQ Accordion */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-          >
-            <Accordion type="single" collapsible className="w-full space-y-3">
-              {faqs.map((faq, index) => (
-                <AccordionItem
-                  key={faq.id}
-                  value={faq.id}
-                  className="bg-background rounded-xl border px-6 data-[state=open]:border-primary/30"
-                  data-testid={`faq-item-${index}`}
-                >
-                  <AccordionTrigger className="text-left hover:no-underline py-5 text-foreground font-medium">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-5">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </motion.div>
-
-          {/* Bottom CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center"
-          >
-            <p className="text-muted-foreground mb-4">
-              Tienes mas preguntas? Estamos aqui para ayudarte.
-            </p>
-            <a
-              href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Contactar por WhatsApp"
-            >
-              <Badge className="text-base py-2 px-6 cursor-pointer">
-                Contactar por WhatsApp
-              </Badge>
-            </a>
-          </motion.div>
+        {/* Preguntas */}
+        <div className="faq-preg">
+          {faqs.map((faq, index) => (
+            <details key={faq.id} name="faq" open={index === 0} data-testid={`faq-item-${index}`}>
+              <summary><h3>{faq.question}</h3></summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
         </div>
       </div>
     </section>

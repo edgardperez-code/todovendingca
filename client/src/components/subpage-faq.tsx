@@ -1,83 +1,40 @@
-import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-// motion propio: el contenido sale visible desde el servidor (ver lib/movimiento).
-import { motion } from "@/lib/movimiento";
+import { Icono } from "@/components/vitrina/iconos";
+import { Etiqueta } from "@/components/vitrina/etiqueta";
 
 export type SubpageFAQItem = { question: string; answer: string };
 
-// Bloque de Preguntas Frecuentes con el MISMO diseño que la seccion FAQ del
-// home (acordeon, badges, animaciones). Se reutiliza en todas las subpaginas
-// para mantener el diseño consistente.
+// Preguntas frecuentes de subpágina con el MISMO diseño que la sección FAQ del
+// inicio (maqueta Vitrina): título fijo a la izquierda y preguntas a la
+// derecha. Son <details> nativos: se abren sin JavaScript y, al compartir
+// name, solo queda una abierta. Necesita <EstilosSubpagina /> en la página.
 export function SubpageFAQ({ items }: { items: SubpageFAQItem[] }) {
   return (
-    <section id="faq" className="py-20 md:py-28 bg-muted/30" data-testid="section-faq">
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
+    <section id="faq" className="v-sec v-sec--2" data-testid="section-faq">
+      <div className="v-cont vs-faq">
+        <div className="vs-faq__izq">
+          <Etiqueta>Preguntas frecuentes</Etiqueta>
+          <h2 data-speakable className="v-h2">
+            Resolvemos tus <em className="n">dudas</em>
+          </h2>
+          <small>¿Tienes más preguntas? Estamos aquí para ayudarte.</small>
+          <a
+            className="v-btn v-btn--s"
+            href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Contactar por WhatsApp"
           >
-            <Badge className="mb-4" variant="secondary">
-              Preguntas Frecuentes
-            </Badge>
-            <h2 data-speakable className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="text-foreground">Resolvemos tus</span>{" "}
-              <span className="text-primary">Dudas</span>
-            </h2>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-          >
-            <Accordion type="single" collapsible className="w-full space-y-3">
-              {items.map((faq, index) => (
-                <AccordionItem
-                  key={index}
-                  value={String(index)}
-                  className="bg-background rounded-xl border px-6 data-[state=open]:border-primary/30"
-                  data-testid={`faq-item-${index}`}
-                >
-                  <AccordionTrigger className="text-left hover:no-underline py-5 text-foreground font-medium">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-5">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center"
-          >
-            <p className="text-muted-foreground mb-4">
-              Tienes mas preguntas? Estamos aqui para ayudarte.
-            </p>
-            <a
-              href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Contactar por WhatsApp"
-            >
-              <Badge className="text-base py-2 px-6 cursor-pointer">
-                Contactar por WhatsApp
-              </Badge>
-            </a>
-          </motion.div>
+            <Icono nombre="whatsapp" />
+            Contactar por WhatsApp
+          </a>
+        </div>
+        <div className="vs-preg">
+          {items.map((faq, index) => (
+            <details key={index} name="faq-subpagina" open={index === 0} data-testid={`faq-item-${index}`}>
+              <summary><h3>{faq.question}</h3></summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
         </div>
       </div>
     </section>

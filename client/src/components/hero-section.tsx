@@ -1,168 +1,86 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Zap, Shield, Clock } from "lucide-react";
-import { SiWhatsapp } from "react-icons/si";
-import { motion } from "framer-motion";
-// Ruta pública estable (client/public/assets/): debe coincidir con el <link rel="preload"> de index.html
-const vendingMachineImage = "/assets/maquina_vending_hero.webp";
+// Portada del diseño "Vitrina": mensaje y llamadas a la acción a la izquierda,
+// dibujo a línea de la Wittern 3535 con sus anotaciones a la derecha.
+// Sin animaciones de entrada: es lo primero que se ve y sale pintado desde el
+// servidor. Los cortes (1099, 999 y 560 px) son los de la maqueta aprobada.
+import { ChipLed, Icono, MaquinaWittern, OlaSubrayado } from "@/components/vitrina";
 
+const ENLACE_WHATSAPP =
+  "https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio";
+
+// Lo que nos distingue, presentado como un riel de precios con sus códigos.
 const features = [
-  { icon: Zap, text: "Tecnologia de Punta" },
-  { icon: Shield, text: "Servicio Garantizado" },
-  { icon: Clock, text: "Disponible 24/7" },
+  { text: "Tecnología de punta" },
+  { text: "Servicio garantizado" },
+  { text: "Disponible 24/7" },
 ];
+
+// Códigos de selección como en la bandeja de la máquina: 10, 12, 14…
+const codigoDe = (indice: number) => String(10 + indice * 2);
 
 export function HeroSection() {
   return (
     <section
       id="inicio"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden vending-grid"
+      className="relative overflow-clip pt-[clamp(36px,6vw,80px)] pb-[clamp(56px,7vw,104px)] max-[560px]:pt-7"
       data-testid="section-hero"
     >
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
-      
-      {/* Mobile background image with animation - only visible on mobile */}
-      <div className="absolute inset-0 lg:hidden overflow-hidden flex items-center justify-center pointer-events-none">
-        <motion.img
-          src={vendingMachineImage}
-          alt=""
-          className="absolute w-auto h-[70%] max-h-[500px] object-contain opacity-20 dark:opacity-15 z-0"
-          animate={{ scale: [1, 1.08, 1] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
-      
-      {/* Animated background shapes */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.5, 0.3, 0.5],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
+      <div className="v-cont grid grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] items-center gap-[clamp(32px,4vw,64px)] max-[999px]:grid-cols-1 max-[560px]:gap-[26px]">
+        <div>
+          <p className="mb-[26px] flex flex-wrap items-center gap-3 font-mono text-[12.5px] font-medium uppercase leading-[1.3] tracking-[.12em] text-tinta-2 max-[560px]:mb-5">
+            <ChipLed>24/7</ChipLed> Lechería, Anzoátegui
+          </p>
 
-      <div className="container mx-auto px-4 py-20 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left content. Sin animacion de entrada: es lo primero que se ve y
-              debe salir pintado desde el servidor, sin "aparecer" despues. */}
-          <div className="text-center lg:text-left">
-            <Badge className="mb-6" variant="secondary">
-              Lecheria, Anzoategui
-            </Badge>
-            
-            <h1 data-speakable className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-              <span className="text-foreground">Tu Solucion</span>
-              <br />
-              <span className="text-primary">Integral</span>
-              <span className="text-foreground"> en</span>
-              <br />
-              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Maquinas Vending
-              </span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0">
-              Tecnologia, servicio y conveniencia. Transformamos tus espacios con soluciones 
-              de vending personalizadas y de ultima generacion.
-            </p>
+          <h1 data-speakable className="v-h1">
+            Tu solución integral en máquinas <OlaSubrayado>vending</OlaSubrayado>
+          </h1>
 
-            {/* Feature badges */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8">
-              {features.map((feature) => (
-                <Badge key={feature.text} variant="outline" className="py-2 px-4 gap-2">
-                  <feature.icon className="h-4 w-4 text-primary" />
-                  {feature.text}
-                </Badge>
-              ))}
-            </div>
+          <p className="v-lead mt-[26px] text-[clamp(1.08rem,1.45vw,1.28rem)] max-[560px]:mt-5">
+            Tecnología, servicio y conveniencia. Transformamos tus espacios con soluciones de vending
+            personalizadas y de última generación.
+          </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <a
-                href="https://wa.me/584146164177?text=Hola%2C%20quiero%20una%20m%C3%A1quina%20expendedora%20para%20mi%20negocio"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Contactar por WhatsApp"
-                data-testid="link-hero-whatsapp"
+          <div className="mt-[34px] flex flex-wrap gap-3.5 max-[560px]:mt-[26px] max-[560px]:gap-3">
+            <a
+              className="v-btn v-btn--p max-[560px]:w-full"
+              href={ENLACE_WHATSAPP}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Contáctanos ahora por WhatsApp"
+              data-testid="link-hero-whatsapp"
+            >
+              <Icono nombre="whatsapp" />
+              <span data-testid="button-hero-contact">Contáctanos ahora</span>
+            </a>
+            <a className="v-btn v-btn--s max-[560px]:w-full" href="#servicios" data-testid="link-hero-services">
+              <span data-testid="button-hero-services">Ver servicios</span>
+              <Icono nombre="flecha" flecha />
+            </a>
+          </div>
+
+          <ul
+            className="v-plata m-0 mt-11 grid max-w-[620px] list-none grid-cols-3 overflow-hidden rounded-xl p-0 max-[560px]:mt-6"
+            aria-label="Lo que nos distingue"
+            data-testid="list-hero-features"
+          >
+            {features.map((feature, indice) => (
+              <li
+                key={feature.text}
+                className="flex items-center gap-2.5 border-r border-[rgba(21,23,26,.16)] px-3.5 py-[13px] text-[14.5px] font-semibold leading-[1.2] last:border-r-0 max-[1099px]:flex-col max-[1099px]:items-start max-[1099px]:gap-2 max-[999px]:flex-row max-[999px]:items-center max-[999px]:gap-2.5 max-[560px]:flex-col max-[560px]:items-start max-[560px]:gap-[7px] max-[560px]:px-2.5 max-[560px]:pb-3 max-[560px]:pt-[11px] max-[560px]:text-[13px] max-[560px]:[overflow-wrap:anywhere] max-[339px]:px-2 max-[339px]:text-[12px]"
               >
-                <Button size="lg" className="w-full sm:w-auto gap-2 glow-primary" data-testid="button-hero-contact">
-                  <SiWhatsapp className="h-5 w-5" />
-                  Contactanos Ahora
-                </Button>
-              </a>
-              <a href="#servicios" data-testid="link-hero-services">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto gap-2" data-testid="button-hero-services">
-                  Ver Servicios
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </a>
-            </div>
-          </div>
+                <span className="v-tag" aria-hidden="true">
+                  {codigoDe(indice)}
+                </span>
+                {feature.text}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          {/* Right content - Vending Machine Illustration */}
-          <div className="relative hidden lg:flex justify-center">
-            <div className="relative">
-              {/* Vending Machine Image - Optimized for fast loading */}
-              <motion.img 
-                src={vendingMachineImage} 
-                alt="Maquinas expendedoras Todo Vending CA - Snacks y bebidas"
-                className="w-auto h-[625px] object-contain drop-shadow-2xl"
-                data-testid="img-hero-vending"
-                loading="eager"
-                decoding="async"
-                fetchPriority="high"
-                animate={{ scale: [1, 1.03, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              />
-
-              {/* Decorative elements */}
-              <motion.div
-                className="absolute -top-4 -right-4 w-20 h-20 bg-primary/20 rounded-full blur-xl"
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              />
-              <motion.div
-                className="absolute -bottom-4 -left-4 w-24 h-24 bg-accent/20 rounded-full blur-xl"
-                animate={{ scale: [1.3, 1, 1.3] }}
-                transition={{ duration: 5, repeat: Infinity }}
-              />
-            </div>
-          </div>
+        {/* El dibujo lleva su propio título y descripción accesibles (SVG). */}
+        <div className="min-w-0" data-testid="img-hero-vending">
+          <MaquinaWittern />
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <a href="#nosotros" className="text-muted-foreground hover:text-foreground transition-colors">
-          <div className="w-6 h-10 border-2 border-current rounded-full flex justify-center pt-2">
-            <div className="w-1 h-2 bg-current rounded-full" />
-          </div>
-        </a>
-      </motion.div>
     </section>
   );
 }

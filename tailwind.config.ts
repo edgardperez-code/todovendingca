@@ -75,6 +75,18 @@ export default {
           foreground: "hsl(var(--sidebar-accent-foreground) / <alpha-value>)",
           border: "var(--sidebar-accent-border)"
         },
+        // Paleta Vitrina (ver docs/rediseno-vitrina.md). Son variables CSS
+        // directas: NO admiten modificador de opacidad (bg-tinta/50 no existe).
+        papel: { DEFAULT: "var(--papel)", "2": "var(--papel2)" },
+        superficie: "var(--blanco)",
+        tinta: { DEFAULT: "var(--tinta)", "2": "var(--tinta2)", "3": "var(--tinta3)" },
+        linea: { DEFAULT: "var(--linea)", "2": "var(--linea2)" },
+        naranja: { DEFAULT: "var(--naranja)", h: "var(--naranja-h)", t: "var(--naranja-t)" },
+        azul: { DEFAULT: "var(--azul)", h: "var(--azul-h)", t: "var(--azul-t)" },
+        marino: "var(--marino)",
+        gabinete: { DEFAULT: "var(--gabinete)", "2": "var(--gabinete2)", borde: "var(--gabinete-borde)" },
+        plata: { a: "var(--plata-a)", b: "var(--plata-b)", c: "var(--plata-c)", borde: "var(--plata-borde)" },
+        led: { DEFAULT: "var(--led)", fondo: "var(--led-fondo)" },
         status: {
           online: "rgb(34 197 94)",
           away: "rgb(245 158 11)",
@@ -82,10 +94,27 @@ export default {
           offline: "rgb(156 163 175)",
         },
       },
+      // text-primary y text-accent usan el tono de TEXTO (contraste AA sobre
+      // papel); bg-primary / bg-accent siguen siendo el naranja y el azul de marca.
+      textColor: {
+        primary: { DEFAULT: "hsl(var(--primary-texto) / <alpha-value>)" },
+        accent: { DEFAULT: "hsl(var(--accent-texto) / <alpha-value>)" },
+        destructive: { DEFAULT: "hsl(var(--destructive-texto) / <alpha-value>)" },
+      },
       fontFamily: {
         sans: ["var(--font-sans)"],
+        display: ["var(--font-display)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
+        led: ["var(--font-led)"],
+        fraunces: ["var(--font-fraunces)"],
+      },
+      maxWidth: {
+        vitrina: "var(--w)",
+      },
+      spacing: {
+        cabecera: "var(--alto-cabecera)",
+        "pad-vitrina": "var(--pad)",
       },
       keyframes: {
         "accordion-down": {
