@@ -49,13 +49,29 @@ async function pedirConfigTienda(): Promise<ConfigTienda> {
 // Gift Cards como "prueba" y el canje las rechaza. Con entorno "desconocido"
 // tampoco se muestra: ahi el checkout esta cerrado y no se sabe si los pagos
 // serian reales, asi que decir "los pagos no son reales" seria falso.
-export function useModoPrueba(): boolean {
-  const { data } = useQuery({
+function useConfigTienda() {
+  return useQuery({
     queryKey: ["/api/tienda/config"],
     queryFn: pedirConfigTienda,
     // Cambia solo con un despliegue: basta con revisarlo cada pocos minutos.
     staleTime: 5 * 60_000,
     retry: 2,
   });
+}
+
+export function useModoPrueba(): boolean {
+  const { data } = useConfigTienda();
   return data?.modoPrueba === true && data.entorno !== "desconocido";
+}
+
+// Skylink Pay: si el servidor ofrece pagar con el y si esos pagos son de
+// prueba. Mientras carga (y en el SSR, o con un servidor viejo sin el campo)
+// devuelve no disponible: el boton de Skylink aparece cuando llega la config.
+export function useSkylink(): { disponible: boolean; modoPrueba: boolean } {
+  const { data } = useConfigTienda();
+  const s = data?.skylink;
+  return {
+    disponible: typeof s === "object" && s !== null && s.disponible === true,
+    modoPrueba: typeof s === "object" && s !== null && s.modoPrueba === true,
+  };
 }

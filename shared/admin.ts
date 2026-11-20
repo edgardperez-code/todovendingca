@@ -42,6 +42,8 @@ export interface PedidoAdmin {
   estado: string;
   // true si es un pedido de prueba (numero TVP-): no entro dinero real.
   modoPrueba: boolean;
+  // "spidi" | "skylink" (Pasarela en shared/tienda.ts), como texto.
+  pasarela: string;
   creadoEn: string; // ISO 8601
   pagadoEn: string | null;
   totalUsd: number;

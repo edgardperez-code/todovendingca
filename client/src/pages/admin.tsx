@@ -190,6 +190,11 @@ const ETIQUETA_GIFT_CARD: Record<string, string> = {
   prueba: "Prueba",
 };
 
+// Pedidos cobrados con Skylink Pay (los demas son de SPIDI).
+function SkylinkBadge() {
+  return <Badge variant="secondary">Skylink</Badge>;
+}
+
 function PruebaBadge() {
   return (
     <Badge
@@ -742,6 +747,7 @@ function Ventas() {
                       <div className="flex items-center gap-2">
                         {pedido.numero}
                         {pedido.modoPrueba && <PruebaBadge />}
+                        {pedido.pasarela === "skylink" && <SkylinkBadge />}
                       </div>
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-sm">{formatoFechaHora(pedido.creadoEn)}</TableCell>
@@ -919,6 +925,7 @@ function DetallePedido({
                 {pedido.numero}
                 <EstadoPedidoBadge estado={pedido.estado} />
                 {pedido.modoPrueba && <PruebaBadge />}
+                {pedido.pasarela === "skylink" && <SkylinkBadge />}
               </DialogTitle>
               <DialogDescription>
                 Creado el {formatoFechaHora(pedido.creadoEn)}

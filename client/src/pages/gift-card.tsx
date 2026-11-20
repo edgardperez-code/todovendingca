@@ -77,7 +77,7 @@ function faqsDe(productos: readonly Producto[]) {
     {
       question: "¿Cómo pago?",
       answer:
-        "Con Débito Inmediato o Pago Móvil desde tu banco, en la página segura de SPIDI, nuestra pasarela de pago. No necesitas registrarte en SPIDI.",
+        "Con Débito Inmediato o Pago Móvil desde tu banco. Al pagar eliges la pasarela: SPIDI o Skylink Pay. En las dos pagas en su página segura y no necesitas registrarte.",
     },
     {
       question: "¿Cuándo recibo mi Gift Card?",
@@ -110,7 +110,7 @@ const pasos = [
     icon: Smartphone,
     titulo: "Paga en bolívares",
     texto:
-      "En la página segura de SPIDI, con Débito Inmediato o Pago Móvil desde tu banco, a tasa BCV del día. Sin registrarte.",
+      "Con SPIDI o Skylink Pay, por Débito Inmediato o Pago Móvil desde tu banco, a tasa BCV del día. Sin registrarte.",
   },
   {
     icon: Zap,

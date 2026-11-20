@@ -31,6 +31,13 @@
 //   de pasar a produccion hay que quitar esa variable y anular esos codigos.
 //   Si el entorno es desconocido (ni produccion confirmada ni un host de prueba
 //   conocido), el checkout se cierra siempre: el pago podria ser real.
+// - Skylink Pay (server/skylink.ts) es la segunda pasarela: el comprador elige
+//   en /carrito. El pedido guarda su `pasarela`, y todo lo de arriba vale igual
+//   (reservas, entrega del inventario, correos, modo prueba), con dos
+//   diferencias: el modo prueba de un pedido de Skylink lo decide el entorno de
+//   Skylink (simulador o monto de prueba), no el de SPIDI; y un pago de Skylink
+//   solo vale si la CONSULTA por token dice "authorized" y coinciden el monto en
+//   Bs y el buyOrder. Su aviso (webhook) firmado solo dispara esa consulta.
 import { randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import type { IncomingHttpHeaders } from "node:http";
 import { setTimeout as esperar } from "node:timers/promises";
@@ -48,6 +55,8 @@ import {
   type CodigoError,
   type ConfigTienda,
   type EstadoPedido,
+  type Pasarela,
+  type PedidoPorTokenSkylink,
   type PedidoPublico,
   type StockTienda,
 } from "@shared/tienda";
@@ -74,6 +83,7 @@ import {
   unidadesGiftCard,
   type CodigoInventarioConPedido,
   type CursorAdmin,
+  type CobroSkylink,
   type DatosPagoSpidi,
   type EntregaPago,
   type NuevaGiftCard,
@@ -102,6 +112,23 @@ import {
   type EstadoSesionSpidi,
   type EventoSpidi,
 } from "./spidi";
+import {
+  consultarCobro as consultarCobroSkylink,
+  crearCobro as crearCobroSkylink,
+  duracionCobroMinutos as duracionCobroSkylinkMinutos,
+  entornoSkylink,
+  montoPruebaVesCentavos as montoPruebaSkylink,
+  revisarEntornoSkylink,
+  skylinkBloqueado,
+  skylinkConfigurado,
+  SkylinkError,
+  skylinkModoPrueba,
+  SkylinkNoConfigurado,
+  tasaBcv as tasaBcvSkylink,
+  textosDelAviso,
+  verificarFirmaAviso,
+  type ConsultaCobro,
+} from "./skylink";
 import { sendGiftCardsComprador, sendNotificacionVenta, type DatosCorreoVenta } from "./email";
 
 // Error con codigo HTTP: las rutas responden {ok:false, error: message, codigo}
@@ -164,6 +191,9 @@ function describirError(error: unknown): string {
   if (error instanceof SpidiError) {
     return `${error.message} (status ${error.status}${error.code ? `, code ${error.code}` : ""})`;
   }
+  if (error instanceof SkylinkError) {
+    return `${error.message}${error.status !== null ? ` (status ${error.status})` : ""}`;
+  }
   return error instanceof Error ? error.message : String(error);
 }
 
@@ -215,6 +245,23 @@ function esPedidoDePrueba(pedido: Pedido, giftCards: GiftCard[]): boolean {
   return esNumeroPedidoDePrueba(pedido.numero) || giftCards.some((g) => g.estado === ESTADO_GIFT_CARD_PRUEBA);
 }
 
+// Pasarela del pedido. Un valor raro en la base (escrito a mano) cuenta como
+// SPIDI, que es como nacieron todos los pedidos anteriores a Skylink.
+function pasarelaDe(pedido: Pedido): Pasarela {
+  return pedido.pasarela === "skylink" ? "skylink" : "spidi";
+}
+
+// true si la pasarela del pedido esta AHORA en modo prueba (o apagada, o con
+// entorno desconocido): un pago real de ese pedido no se puede entregar con
+// codigos de prueba, asi que queda pendiente (ver prepararEntrega).
+function pasarelaEnPrueba(pedido: Pedido): boolean {
+  return pasarelaDe(pedido) === "skylink" ? skylinkModoPrueba() : modoPrueba();
+}
+
+function describirEntorno(pedido: Pedido): string {
+  return pasarelaDe(pedido) === "skylink" ? `Skylink ${entornoSkylink()}` : `SPIDI ${entornoSpidi()}`;
+}
+
 // TIENDA_PRUEBA_ENTREGA_INVENTARIO=1: ensayo "como en produccion" (ver arriba).
 // Solo vale con el servidor en modo prueba.
 function ensayoComoProduccion(): boolean {
@@ -227,7 +274,11 @@ function ensayoComoProduccion(): boolean {
 export function configTienda(): ConfigTienda {
   // Se lee una sola vez para que los dos campos digan lo mismo.
   const entorno = entornoSpidi();
-  return { modoPrueba: entorno !== "produccion" && !ensayoComoProduccion(), entorno };
+  return {
+    modoPrueba: entorno !== "produccion" && !ensayoComoProduccion(),
+    entorno,
+    skylink: { disponible: !skylinkBloqueado(), modoPrueba: skylinkModoPrueba() },
+  };
 }
 
 // === Checkout ===
@@ -353,6 +404,16 @@ function huellaItems(items: PedidoItem[]): string {
     .join(",");
 }
 
+// Enlace de pago del pedido en su pasarela (null si aun no tiene).
+function enlaceDePago(pedido: Pedido): string | null {
+  return pasarelaDe(pedido) === "skylink" ? pedido.skylinkPaymentUrl : pedido.spidiPaymentUrl;
+}
+
+// Minutos que vive el enlace de pago de esa pasarela.
+function duracionEnlaceMinutos(pasarela: Pasarela): number {
+  return pasarela === "skylink" ? duracionCobroSkylinkMinutos() : duracionSesionMinutos();
+}
+
 function rutaResultado(pedido: Pedido): string {
   return `/pago/resultado?pedido=${encodeURIComponent(pedido.id)}&k=${encodeURIComponent(pedido.claveAcceso)}`;
 }
@@ -372,6 +433,7 @@ async function reutilizarPorIdempotencia(
   email: string,
   carrito: CarritoValidado,
   pedidoDePrueba: boolean,
+  pasarela: Pasarela,
 ): Promise<{ respuesta: CheckoutResponse | null; usarClave: boolean }> {
   const previo = await storage.obtenerPedidoPorClaveIdempotencia(claveIdempotencia);
   if (!previo) return { respuesta: null, usarClave: true };
@@ -387,8 +449,16 @@ async function reutilizarPorIdempotencia(
     );
   }
 
+  // Mismo carrito pero otra pasarela (el comprador eligio la otra): pedido
+  // nuevo, sin la clave. El navegador ya manda una clave distinta en ese caso;
+  // esto es la red de seguridad.
+  if (previo.estado !== "pagado" && pasarelaDe(previo) !== pasarela) {
+    return { respuesta: null, usarClave: false };
+  }
+
   if (previo.estado === "pendiente") {
-    if (!previo.spidiPaymentUrl) {
+    const enlacePrevio = enlaceDePago(previo);
+    if (!enlacePrevio) {
       const edadMs = Date.now() - new Date(previo.creadoEn).getTime();
       if (edadMs < CHECKOUT_HUERFANO_MS) {
         // La primera peticion aun esta creando la sesion en SPIDI. "EN_PROCESO"
@@ -419,14 +489,14 @@ async function reutilizarPorIdempotencia(
     // pedido TV- (ni uno en produccion el enlace de sandbox de un TVP-).
     const mismoModo = esNumeroPedidoDePrueba(previo.numero) === pedidoDePrueba;
     const vigenteHasta =
-      new Date(previo.creadoEn).getTime() + (duracionSesionMinutos() - 1) * 60_000;
+      new Date(previo.creadoEn).getTime() + (duracionEnlaceMinutos(pasarela) - 1) * 60_000;
     if (mismoModo && Date.now() < vigenteHasta) {
       return {
         respuesta: {
           ok: true,
           pedidoId: previo.id,
           clave: previo.claveAcceso,
-          paymentUrl: previo.spidiPaymentUrl,
+          paymentUrl: enlacePrevio,
         },
         usarClave: false,
       };
@@ -480,6 +550,59 @@ async function guardarPedidoNuevo(
   }
 }
 
+// Crea el pedido (con sus reservas) respetando el tope de unidades apartadas
+// por correo e IP y el limite de checkouts por IP. Comun a las dos pasarelas.
+async function crearPedidoConCupo(p: {
+  comprador: CheckoutRequest["comprador"];
+  carrito: CarritoValidado;
+  reservas: ReservaStock[];
+  claveParaPedido: string | null;
+  pedidoDePrueba: boolean;
+  ipCliente: string;
+  pasarela: Pasarela;
+}): Promise<Pedido> {
+  // Tope de unidades apartadas a la vez por correo y por IP (409 "LIMITE").
+  // Queda apartado aqui mismo, antes de crear el pedido, para que dos
+  // checkouts simultaneos no pasen juntos el tope.
+  const cupoReservas = await apartarCupoDeReservas(
+    p.comprador.email,
+    p.ipCliente,
+    p.reservas.reduce((suma, r) => suma + r.cantidad, 0),
+  );
+
+  // El pedido se guarda ANTES de hablar con la pasarela, para tener su id y
+  // su numero en las URLs de vuelta y en el identificador del cobro.
+  let pedido: Pedido;
+  try {
+    // Recien aqui se cuenta el intento para el limite por IP: los reintentos
+    // con una clave que ya tiene pedido vivo (devuelven ese pedido o
+    // EN_PROCESO) no abren sesion nueva y no deben gastar el limite. Si no
+    // queda cupo, lanza 429 "LIMITE" sin crear nada.
+    limitarCheckout(p.ipCliente);
+    pedido = await guardarPedidoNuevo(
+      {
+        claveAcceso: randomBytes(24).toString("base64url"),
+        claveIdempotencia: p.claveParaPedido,
+        items: p.carrito.items,
+        totalUsdCentavos: p.carrito.totalUsdCentavos,
+        compradorNombre: p.comprador.nombre,
+        compradorEmail: p.comprador.email,
+        compradorTelefono: p.comprador.telefono ? p.comprador.telefono : null,
+        pasarela: p.pasarela,
+      },
+      p.pedidoDePrueba,
+      p.reservas,
+    );
+  } catch (error) {
+    cupoReservas.cancelar();
+    throw error;
+  }
+  // Desde aqui el cupo queda atado al pedido: deja de contar cuando el pedido
+  // sale de "pendiente" (pagado, fallido, error...) o cuando vence su reserva.
+  cupoReservas.confirmar(pedido.id);
+  return pedido;
+}
+
 // `ipCliente` es para el limitador por IP (limitarCheckout), que solo se aplica
 // cuando de verdad se va a crear un pedido nuevo (y con el, una sesion de pago).
 export async function crearCheckout(
@@ -497,6 +620,9 @@ export async function crearCheckout(
   if (!storage.persistente && process.env.NODE_ENV === "production") {
     console.error("[tienda] Checkout rechazado: sin DATABASE_URL los pedidos se perderian");
     throw new ErrorTienda(503, MENSAJE_PAGOS_NO_DISPONIBLES);
+  }
+  if (datos.pasarela === "skylink") {
+    return crearCheckoutSkylink(datos, claveIdempotencia, ipCliente);
   }
   if (!spidiConfigurado()) {
     console.error("[tienda] Checkout rechazado: faltan variables de entorno de SPIDI");
@@ -531,6 +657,7 @@ export async function crearCheckout(
       comprador.email,
       carrito,
       pedidoDePrueba,
+      "spidi",
     );
     if (respuesta) return respuesta;
     claveParaPedido = usarClave ? claveIdempotencia : null;
@@ -546,44 +673,17 @@ export async function crearCheckout(
   // Sin stock se avisa antes de contar el intento para el limite por IP.
   await revisarStock(reservas);
 
-  // Tope de unidades apartadas a la vez por correo y por IP (409 "LIMITE").
-  // Queda apartado aqui mismo, antes de crear el pedido, para que dos
-  // checkouts simultaneos no pasen juntos el tope.
-  const cupoReservas = await apartarCupoDeReservas(
-    comprador.email,
-    ipCliente,
-    reservas.reduce((suma, r) => suma + r.cantidad, 0),
-  );
-
   // 1) El pedido se guarda ANTES de hablar con SPIDI, para tener su id y su
   //    numero en las URLs de vuelta y en el identificador de la sesion.
-  let pedido: Pedido;
-  try {
-    // Recien aqui se cuenta el intento para el limite por IP: los reintentos
-    // con una clave que ya tiene pedido vivo (devuelven ese pedido o
-    // EN_PROCESO) no abren sesion nueva y no deben gastar el limite. Si no
-    // queda cupo, lanza 429 "LIMITE" sin crear nada.
-    limitarCheckout(ipCliente);
-    pedido = await guardarPedidoNuevo(
-      {
-        claveAcceso: randomBytes(24).toString("base64url"),
-        claveIdempotencia: claveParaPedido,
-        items: carrito.items,
-        totalUsdCentavos: carrito.totalUsdCentavos,
-        compradorNombre: comprador.nombre,
-        compradorEmail: comprador.email,
-        compradorTelefono: comprador.telefono ? comprador.telefono : null,
-      },
-      pedidoDePrueba,
-      reservas,
-    );
-  } catch (error) {
-    cupoReservas.cancelar();
-    throw error;
-  }
-  // Desde aqui el cupo queda atado al pedido: deja de contar cuando el pedido
-  // sale de "pendiente" (pagado, fallido, error...) o cuando vence su reserva.
-  cupoReservas.confirmar(pedido.id);
+  const pedido = await crearPedidoConCupo({
+    comprador,
+    carrito,
+    reservas,
+    claveParaPedido,
+    pedidoDePrueba,
+    ipCliente,
+    pasarela: "spidi",
+  });
 
   // 2) La sesion de pago (Boton) se crea solo en el servidor; el navegador
   //    unicamente recibe payment_url.
@@ -662,6 +762,113 @@ export async function crearCheckout(
   };
 }
 
+// Checkout con Skylink Pay. Mismo orden que con SPIDI: validar, reservar y
+// guardar el pedido, y recien entonces crear el cobro. El monto en Bs se
+// calcula aqui con la tasa BCV de Skylink y queda congelado en el pedido.
+async function crearCheckoutSkylink(
+  datos: CheckoutRequest,
+  claveIdempotencia: string | null,
+  ipCliente: string,
+): Promise<CheckoutResponse> {
+  if (skylinkBloqueado()) {
+    console.error(
+      skylinkConfigurado()
+        ? `[tienda] Checkout con Skylink rechazado: NODE_ENV=production y Skylink no esta en produccion (${entornoSkylink()}); SKYLINK_PERMITIR_PRUEBAS=1 lo abre en un staging`
+        : "[tienda] Checkout con Skylink rechazado: Skylink no esta configurado (ver el arranque)",
+    );
+    throw new ErrorTienda(503, MENSAJE_PAGOS_NO_DISPONIBLES, "NO_DISPONIBLE");
+  }
+  // Prueba o real se congela en el numero del pedido, igual que con SPIDI.
+  const pedidoDePrueba = skylinkModoPrueba();
+  const carrito = validarCarrito(datos.items, pedidoDePrueba);
+  const reservas = reservasDelCarrito(carrito.items);
+  const comprador = datos.comprador;
+
+  let claveParaPedido: string | null = null;
+  if (claveIdempotencia) {
+    const { respuesta, usarClave } = await reutilizarPorIdempotencia(
+      claveIdempotencia,
+      comprador.email,
+      carrito,
+      pedidoDePrueba,
+      "skylink",
+    );
+    if (respuesta) return respuesta;
+    claveParaPedido = usarClave ? claveIdempotencia : null;
+  }
+
+  // Sin tasa no se puede saber cuanto cobrar en Bs: se avisa antes de crear nada.
+  const tasa = await tasaBcvSkylink();
+  if (!tasa) throw new ErrorTienda(503, MENSAJE_PAGOS_NO_DISPONIBLES, "NO_DISPONIBLE");
+  // Con SKYLINK_MONTO_PRUEBA_VES se cobra solo ese monto (y el pedido es de
+  // prueba: skylinkModoPrueba). Si no, el total en centimos de USD por la tasa
+  // da centimos de Bs.
+  const montoVesCentavos = montoPruebaSkylink() ?? Math.round(carrito.totalUsdCentavos * tasa);
+
+  await revisarStock(reservas);
+  const pedido = await crearPedidoConCupo({
+    comprador,
+    carrito,
+    reservas,
+    claveParaPedido,
+    pedidoDePrueba,
+    ipCliente,
+    pasarela: "skylink",
+  });
+
+  let cobro: CobroSkylink;
+  try {
+    const creado = await crearCobroSkylink({
+      buyOrder: pedido.numero,
+      sessionId: pedido.id,
+      montoVesCentavos,
+      urlBase: urlPublica("/").replace(/\/+$/, ""),
+    });
+    // Defensa: si Skylink dice que registro otro monto, no se manda a pagar.
+    if (Number.isFinite(creado.montoCentavos) && creado.montoCentavos !== montoVesCentavos) {
+      throw new SkylinkError(`Skylink registro ${creado.montoCentavos} y se pidieron ${montoVesCentavos} centimos`);
+    }
+    cobro = { token: creado.token, paymentUrl: creado.paymentUrl, montoVesCentavos, tasaBcv: tasa };
+  } catch (error) {
+    console.error(`[tienda] No se pudo crear el cobro de Skylink del pedido ${pedido.numero}:`, describirError(error));
+    const motivo =
+      error instanceof SkylinkError && error.status !== null
+        ? `Skylink respondio ${error.status}`
+        : "No se pudo crear el cobro en Skylink";
+    await storage
+      .marcarPedidoError(pedido.id, motivo)
+      .catch((e) => console.error(`[tienda] No se pudo marcar con error el pedido ${pedido.numero}:`, describirError(e)));
+    if (error instanceof SkylinkNoConfigurado) {
+      throw new ErrorTienda(503, MENSAJE_PAGOS_NO_DISPONIBLES, "NO_DISPONIBLE");
+    }
+    throw new ErrorTienda(502, "No pudimos conectar con la plataforma de pago. Intenta de nuevo en unos minutos.");
+  }
+
+  // Sin el token no se podria consultar ni casar la vuelta del pagador: se
+  // intenta dos veces y, si falla, el token queda en el log (no es un secreto
+  // por si solo: consultarlo exige la API Key) para recuperarlo a mano.
+  let guardado: Pedido | undefined;
+  let ultimoError: unknown = null;
+  for (let intento = 1; intento <= 2 && !guardado; intento++) {
+    try {
+      guardado = await storage.asignarCobroSkylink(pedido.id, cobro);
+      if (!guardado) ultimoError = new Error("el pedido no existe");
+    } catch (error) {
+      ultimoError = error;
+    }
+  }
+  if (!guardado) {
+    console.error(
+      `[tienda] COBRO SKYLINK SIN GUARDAR: pedido ${pedido.numero} (id ${pedido.id}), token ${cobro.token}:`,
+      describirError(ultimoError),
+    );
+    await storage.marcarPedidoError(pedido.id, "No se pudo guardar el cobro de Skylink").catch(() => undefined);
+    throw new ErrorTienda(500, "No pudimos registrar tu pedido. Intenta de nuevo en unos minutos.");
+  }
+
+  return { ok: true, pedidoId: pedido.id, clave: pedido.claveAcceso, paymentUrl: cobro.paymentUrl };
+}
+
 // === Pago y Gift Cards ===
 
 // Un pago real que llega con el servidor en modo prueba (o con entorno
@@ -681,8 +888,10 @@ function avisarPagoRealEnModoPrueba(pedido: Pedido): void {
   ultimoAvisoPagoRealEnPrueba.set(pedido.id, ahora);
   podarMapa(ultimoAvisoPagoRealEnPrueba, (t) => ahora - t > REPETIR_AVISO_PAGO_REAL_MS, 1000);
   console.error(
-    `[tienda] PAGO REAL SIN ENTREGAR: el pedido ${pedido.numero} se creo en produccion, pero el servidor esta en modo prueba (${entornoSpidi()}). ` +
-      "No se emiten codigos de prueba para un pago real: queda pendiente y se entregara cuando SPIDI_ENTORNO y SPIDI_BASE_URL vuelvan a produccion " +
+    `[tienda] PAGO REAL SIN ENTREGAR: el pedido ${pedido.numero} se creo en produccion, pero el servidor esta en modo prueba (${describirEntorno(pedido)}). ` +
+      (pasarelaDe(pedido) === "skylink"
+        ? "No se emiten codigos de prueba para un pago real: queda pendiente y se entregara cuando Skylink vuelva a produccion (SKYLINK_MODO=real sin SKYLINK_MONTO_PRUEBA_VES) "
+        : "No se emiten codigos de prueba para un pago real: queda pendiente y se entregara cuando SPIDI_ENTORNO y SPIDI_BASE_URL vuelvan a produccion ") +
       "(el barrido lo revisa hasta 7 dias despues de creado; pasado eso, hay que entregarlo a mano).",
   );
 }
@@ -715,10 +924,10 @@ function avisarPagoRealEnModoPrueba(pedido: Pedido): void {
 //   dias despues de creado) hasta que el servidor vuelva a produccion.
 function prepararEntrega(pedido: Pedido): EntregaPago {
   const prueba = esNumeroPedidoDePrueba(pedido.numero);
-  if (!prueba && modoPrueba()) {
+  if (!prueba && pasarelaEnPrueba(pedido)) {
     avisarPagoRealEnModoPrueba(pedido);
     throw new Error(
-      `Pedido ${pedido.numero}: es un pedido real (creado en produccion) pero el servidor esta en modo prueba (${entornoSpidi()}); no se entregan codigos para un pago real`,
+      `Pedido ${pedido.numero}: es un pedido real (creado en produccion) pero el servidor esta en modo prueba (${describirEntorno(pedido)}); no se entregan codigos para un pago real`,
     );
   }
   const unidades = unidadesDelPedido(pedido);
@@ -803,6 +1012,7 @@ function datosCorreo(pedido: Pedido, giftCards: GiftCard[]): DatosCorreoVenta {
     // el pedido, no el modo actual del servidor: asi tambien el reenvio desde
     // admin y los reintentos del barrido rotulan bien un pago real.
     esPrueba: esPedidoDePrueba(pedido, giftCards) && !ensayoComoProduccion(),
+    pasarela: pasarelaDe(pedido),
   };
 }
 
@@ -954,6 +1164,143 @@ export async function aplicarEstadoSpidi(
     actual = acreditado ?? actual;
   }
   return actual;
+}
+
+// === Skylink Pay ===
+
+const MOTIVO_SKYLINK_RECHAZADO = "El banco no autorizó el pago";
+const MOTIVO_SKYLINK_EXPIRADO = "El tiempo para pagar se agotó";
+const MOTIVO_SKYLINK_DESCUADRE =
+  "Recibimos un pago que no coincide exactamente con el pedido. Lo revisamos a mano: escríbenos por WhatsApp con tu número de pedido.";
+
+// Aplica al pedido lo que dice la CONSULTA por token (nunca el aviso ni la
+// vuelta del navegador). Un "authorized" solo entrega si el buyOrder es el
+// numero del pedido y el monto es exactamente el que se cobro; si no, el
+// pedido pasa a fallido para revision a mano (y se registra DESCUADRE).
+export async function aplicarEstadoSkylink(pedido: Pedido, consulta: ConsultaCobro): Promise<Pedido> {
+  if (consulta.estado === "pagado") {
+    if (pedido.estado === "pagado") return pedido;
+    const esperado = pedido.skylinkMontoVesCentavos;
+    const cuadra =
+      consulta.buyOrder === pedido.numero &&
+      esperado !== null &&
+      Number.isInteger(consulta.montoCentavos) &&
+      consulta.montoCentavos === Number(esperado);
+    if (!cuadra) {
+      console.error(
+        `[tienda] DESCUADRE SKYLINK: el pedido ${pedido.numero} figura autorizado en Skylink pero no cuadra ` +
+          `(monto esperado ${esperado ?? "?"} centimos, recibido ${Number.isNaN(consulta.montoCentavos) ? "?" : consulta.montoCentavos}; ` +
+          `buyOrder ${consulta.buyOrder === null ? "ausente" : consulta.buyOrder === pedido.numero ? "coincide" : "distinto"}). Revisar a mano.`,
+      );
+      if (pedido.estado !== "pendiente") return pedido;
+      return (await storage.marcarPedidoTerminado(pedido.id, "fallido", MOTIVO_SKYLINK_DESCUADRE)) ?? pedido;
+    }
+    return pagarPedido(pedido, {
+      metodo: consulta.pago.metodo,
+      banco: consulta.pago.banco,
+      referencia: consulta.pago.referencia,
+      montoVes: Number(esperado) / 100,
+      tasaBcv: pedido.skylinkTasaBcv,
+      spidiTransaccionId: null,
+      comprobanteUrl: null,
+      pagadoEn: new Date(),
+    });
+  }
+  if ((consulta.estado === "fallido" || consulta.estado === "expirado") && pedido.estado === "pendiente") {
+    return (
+      (await storage.marcarPedidoTerminado(
+        pedido.id,
+        consulta.estado,
+        consulta.estado === "fallido" ? MOTIVO_SKYLINK_RECHAZADO : MOTIVO_SKYLINK_EXPIRADO,
+      )) ?? pedido
+    );
+  }
+  return pedido;
+}
+
+// Consulta el cobro en Skylink y aplica el resultado; para la pagina publica.
+// Si falla se registra y se devuelve el pedido como este guardado.
+async function refrescarDesdeSkylink(pedido: Pedido): Promise<Pedido> {
+  if (!pedido.skylinkToken || !skylinkConfigurado()) return pedido;
+  try {
+    return await aplicarEstadoSkylink(pedido, await consultarCobroSkylink(pedido.skylinkToken));
+  } catch (error) {
+    console.error(`[tienda] No se pudo consultar en Skylink el pedido ${pedido.numero}:`, describirError(error));
+    return (await storage.obtenerPedido(pedido.id).catch(() => undefined)) ?? pedido;
+  }
+}
+
+// Avisos de Skylink: 120 por minuto por IP (cada uno puede terminar en una
+// consulta a Skylink).
+const limitarAvisoSkylink = crearLimitador(60_000, 120, "Demasiados avisos");
+
+// POST /api/webhooks/skylink. Se verifica la firma (x-signature) y, aun
+// firmado, el aviso solo sirve para saber que cobro reconsultar: el pago lo
+// decide la consulta por token (aplicarEstadoSkylink). Responde 200 tambien si
+// el aviso no corresponde a ningun pedido (no sirve que Skylink lo reintente);
+// lanza 500 si la consulta falla, para que Skylink reintente.
+export async function procesarAvisoSkylink(
+  rawBody: Buffer | undefined,
+  cabeceras: IncomingHttpHeaders,
+  ip: string,
+): Promise<{ pedido: string | null }> {
+  limitarAvisoSkylink(ip);
+  if (!rawBody || rawBody.length === 0) throw new ErrorTienda(400, "Aviso sin cuerpo");
+  if (!skylinkConfigurado() || entornoSkylink() === "simulador") {
+    console.error("[tienda] Aviso de Skylink rechazado: Skylink no esta en modo real");
+    throw new ErrorTienda(503, "Aviso no configurado");
+  }
+  if (!verificarFirmaAviso(rawBody, leerCabecera(cabeceras, "x-signature"))) {
+    console.warn("[tienda] Aviso de Skylink rechazado: firma invalida o ausente");
+    throw new ErrorTienda(401, "Firma inválida");
+  }
+  let cuerpo: unknown;
+  try {
+    cuerpo = JSON.parse(rawBody.toString("utf8"));
+  } catch {
+    throw new ErrorTienda(400, "JSON inválido");
+  }
+  const evento =
+    cuerpo && typeof cuerpo === "object" ? String((cuerpo as Record<string, unknown>).eventType ?? "?").slice(0, 60) : "?";
+
+  let pedido: Pedido | undefined;
+  try {
+    pedido = await storage.buscarPedidoSkylinkPorTextos(textosDelAviso(cuerpo));
+  } catch (error) {
+    console.error("[tienda] Error buscando el pedido de un aviso de Skylink:", describirError(error));
+    throw new ErrorTienda(500, "Error procesando el aviso");
+  }
+  if (!pedido || !pedido.skylinkToken) {
+    console.warn(`[tienda] Aviso de Skylink (${evento}) que no corresponde a ningun pedido: ignorado`);
+    return { pedido: null };
+  }
+  if (pedido.estado === "pagado") return { pedido: pedido.numero };
+
+  try {
+    ultimaConsultaSpidi.set(pedido.id, Date.now());
+    const actualizado = await aplicarEstadoSkylink(pedido, await consultarCobroSkylink(pedido.skylinkToken));
+    if (actualizado.estado !== pedido.estado) {
+      console.log(`[tienda] Aviso de Skylink (${evento}): pedido ${pedido.numero} ${pedido.estado} -> ${actualizado.estado}`);
+    }
+    return { pedido: pedido.numero };
+  } catch (error) {
+    console.error(
+      `[tienda] Error procesando un aviso de Skylink del pedido ${pedido.numero} (se espera el reintento):`,
+      describirError(error),
+    );
+    throw new ErrorTienda(500, "Error procesando el aviso");
+  }
+}
+
+// GET /api/pedidos/skylink/:token — la vuelta del pagador (?token_ws=). El
+// token abre el pedido como su clave: devuelve el id y la clave para que la
+// pagina de resultado consulte como siempre. Mismo 404 si no existe.
+const TOKEN_SKYLINK_VALIDO = /^[A-Za-z0-9_.:-]{8,200}$/;
+
+export async function pedidoPorTokenSkylink(token: string): Promise<PedidoPorTokenSkylink> {
+  const pedido = TOKEN_SKYLINK_VALIDO.test(token) ? await storage.obtenerPedidoPorTokenSkylink(token) : undefined;
+  if (!pedido || pasarelaDe(pedido) !== "skylink") throw new ErrorTienda(404, "Pedido no encontrado");
+  return { ok: true, pedidoId: pedido.id, clave: pedido.claveAcceso };
 }
 
 // Con el cupo de consultas agotado cada pagina abierta fallaria en cada
@@ -1181,6 +1528,7 @@ function aPedidoPublico(pedido: Pedido, giftCards: GiftCard[]): PedidoPublico {
     id: pedido.id,
     numero: pedido.numero,
     estado,
+    pasarela: pasarelaDe(pedido),
     creadoEn: new Date(pedido.creadoEn).toISOString(),
     items: pedido.items.map((i) => ({
       productoId: i.productoId,
@@ -1230,7 +1578,13 @@ export async function consultarPedidoPublico(id: string, clave: string): Promise
   }
 
   let pedido = leido;
-  if (pedido.spidiSessionId) {
+  if (pasarelaDe(pedido) === "skylink") {
+    // Skylink no tiene fase de acreditacion: solo se consulta mientras esta
+    // pendiente, con la misma espera progresiva que SPIDI.
+    if (pedido.skylinkToken && pedido.estado === "pendiente" && tocaConsultarSpidi(pedido.id, esperaSiPendiente(pedido))) {
+      pedido = await refrescarDesdeSkylink(pedido);
+    }
+  } else if (pedido.spidiSessionId) {
     const espera =
       pedido.estado === "pendiente"
         ? esperaSiPendiente(pedido)
@@ -1301,7 +1655,8 @@ const limitarCheckout = crearLimitador(
 const MARGEN_RESERVA_MS = 30 * 60_000;
 
 function vidaMaximaReservaMs(): number {
-  return duracionSesionMinutos() * 60_000 + MARGEN_RESERVA_MS;
+  // La mas larga de las dos pasarelas: el barrido libera con un solo corte.
+  return Math.max(duracionSesionMinutos(), duracionCobroSkylinkMinutos()) * 60_000 + MARGEN_RESERVA_MS;
 }
 
 interface ReservaDeIp {
@@ -1470,7 +1825,8 @@ export interface ResultadoBarrido {
   correos: number;
 }
 
-// Pasa a "error" los pedidos "pendiente" que siguen sin sesion de SPIDI tras
+// Pasa a "error" los pedidos "pendiente" que siguen sin sesion de SPIDI (ni
+// cobro de Skylink) tras
 // CHECKOUT_HUERFANO_BARRIDO_MS: su checkout murio a mitad y nadie volvio a
 // intentar con su clave. No se pueden pagar (no tienen enlace).
 async function cerrarCheckoutsInterrumpidos(resultado: ResultadoBarrido): Promise<void> {
@@ -1504,19 +1860,51 @@ async function liberarReservasVencidas(resultado: ResultadoBarrido): Promise<voi
   }
 }
 
+// Un pedido de Skylink pendiente: se consulta el cobro por token y se aplica.
+async function conciliarPedidoSkylink(pedido: Pedido, resultado: ResultadoBarrido): Promise<void> {
+  if (!pedido.skylinkToken) return;
+  try {
+    const actualizado = await aplicarEstadoSkylink(pedido, await consultarCobroSkylink(pedido.skylinkToken));
+    resultado.consultados++;
+    if (actualizado.estado !== pedido.estado) {
+      resultado.actualizados++;
+      console.log(`[tienda] Conciliacion: pedido ${pedido.numero} (Skylink) ${pedido.estado} -> ${actualizado.estado}`);
+    }
+  } catch (error) {
+    resultado.fallidos++;
+    registrarErrorConciliacion(pedido, error);
+  }
+}
+
 async function conciliarPedidos(resultado: ResultadoBarrido): Promise<void> {
   const candidatos = await storage.listarPedidosParaConciliar(MAX_PEDIDOS_POR_BARRIDO);
+  const conSpidi = spidiConfigurado();
+  const conSkylink = skylinkConfigurado();
+  // Si SPIDI pide esperar, se dejan sus pedidos para el proximo barrido, pero
+  // los de Skylink (otro limite) se siguen revisando.
+  let spidiSinCupo = false;
   let consultasHechas = 0;
   for (const pedido of candidatos) {
-    if (!pedido.spidiSessionId) continue;
+    const esSkylink = pasarelaDe(pedido) === "skylink";
+    if (esSkylink ? !conSkylink || !pedido.skylinkToken : !conSpidi || spidiSinCupo || !pedido.spidiSessionId) continue;
     const ultima = ultimaConsultaSpidi.get(pedido.id);
     if (ultima !== undefined && Date.now() - ultima < RECIEN_CONSULTADO_MS) continue;
 
     if (consultasHechas > 0) await esperar(PAUSA_ENTRE_CONSULTAS_MS);
+    if (esSkylink) {
+      consultasHechas++;
+      const ahora = Date.now();
+      ultimaConsultaSpidi.set(pedido.id, ahora);
+      podarMapa(ultimaConsultaSpidi, (t) => ahora - t > 10 * 60_000, 1000);
+      await conciliarPedidoSkylink(pedido, resultado);
+      continue;
+    }
+    if (!pedido.spidiSessionId) continue;
     const reservadoParaPaginas = Math.min(CUPO_RESERVADO_PARA_PAGINAS, cupoDisponible("consulta_publica"));
     if (cupoDisponible("consulta") <= reservadoParaPaginas) {
       avisarLimiteDeConsultas("conciliacion; sigue en el proximo barrido");
-      return;
+      spidiSinCupo = true;
+      continue;
     }
 
     consultasHechas++;
@@ -1538,9 +1926,11 @@ async function conciliarPedidos(resultado: ResultadoBarrido): Promise<void> {
       }
     } catch (error) {
       if (esLimiteDeLlamadas(error)) {
-        // Sin cupo o SPIDI pidio esperar: seguir solo empeoraria el limite.
+        // Sin cupo o SPIDI pidio esperar: seguir con SPIDI solo empeoraria el
+        // limite (los de Skylink siguen).
         avisarLimiteDeConsultas("conciliacion; sigue en el proximo barrido");
-        return;
+        spidiSinCupo = true;
+        continue;
       }
       resultado.fallidos++;
       registrarErrorConciliacion(pedido, error);
@@ -1590,7 +1980,7 @@ export async function ejecutarBarrido(): Promise<ResultadoBarrido | null> {
     } catch (error) {
       console.error("[tienda] Conciliacion: no se pudieron liberar las reservas vencidas:", describirError(error));
     }
-    if (spidiConfigurado()) {
+    if (spidiConfigurado() || skylinkConfigurado()) {
       try {
         await conciliarPedidos(resultado);
       } catch (error) {
@@ -1615,7 +2005,7 @@ export function iniciarConciliacion(): void {
   if (conciliacionIniciada) return;
   // Los errores de configuracion del entorno se registran aunque SPIDI aun no
   // este completo: quien configura debe verlos en el primer arranque.
-  for (const { grave, mensaje } of revisarEntornoSpidi()) {
+  for (const { grave, mensaje } of revisarEntornoSpidi().concat(revisarEntornoSkylink())) {
     if (grave) console.error(`[tienda] ${mensaje}`);
     else console.warn(`[tienda] ${mensaje}`);
   }
@@ -1672,6 +2062,7 @@ function aPedidoAdmin(pedido: Pedido, giftCards: GiftCard[]): PedidoAdmin {
     numero: pedido.numero,
     estado: pedido.estado,
     modoPrueba: esPedidoDePrueba(pedido, giftCards) && !ensayoComoProduccion(),
+    pasarela: pasarelaDe(pedido),
     creadoEn: new Date(pedido.creadoEn).toISOString(),
     pagadoEn: aIso(pedido.pagadoEn),
     totalUsd: pedido.totalUsdCentavos / 100,
@@ -2121,6 +2512,12 @@ export async function expirarPedidoAdmin(pedidoId: string): Promise<ExpirarPedid
   const pedido = await pedidoParaAdmin(pedidoId);
   if (pedido.estado !== "pendiente") {
     throw new ErrorTienda(409, `Solo se puede expirar un pedido pendiente (este está ${pedido.estado}).`);
+  }
+  if (pasarelaDe(pedido) === "skylink") {
+    throw new ErrorTienda(
+      409,
+      "Los cobros de Skylink no se pueden cerrar desde aquí: el pedido se cierra solo cuando Skylink lo da por vencido, y sus códigos se liberan solos.",
+    );
   }
   if (!pedido.spidiSessionId) {
     throw new ErrorTienda(409, "El pedido no tiene enlace de pago que expirar.");

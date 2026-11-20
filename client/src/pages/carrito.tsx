@@ -25,6 +25,7 @@ import { SpidiAtribucion } from "@/components/spidi-atribucion";
 import { useToast } from "@/hooks/use-toast";
 import { useCarrito } from "@/lib/carrito";
 import { useStock } from "@/lib/stock-tienda";
+import { useSkylink } from "@/lib/config-tienda";
 import { formatoUsd, textoUnidades } from "@/lib/formato";
 import { useSEO } from "@/lib/seo";
 import {
@@ -42,6 +43,7 @@ import {
   type CodigoError,
   type Comprador,
   type ErrorResponse,
+  type Pasarela,
 } from "@shared/tienda";
 import {
   AlertTriangle,
@@ -49,10 +51,12 @@ import {
   Banknote,
   CheckCircle2,
   Clock,
+  FlaskConical,
   Gift,
   Loader2,
   Lock,
   ShieldCheck,
+  Smartphone,
   ShoppingCart,
   Trash2,
 } from "lucide-react";
@@ -233,6 +237,9 @@ export default function CarritoPage() {
   const { stockDe, recargar: recargarStock } = useStock();
   const { toast } = useToast();
   const [estadoEnvio, setEstadoEnvio] = useState<EstadoEnvio>("listo");
+  // Con que pasarela se esta pagando (para el spinner del boton que se toco).
+  const [pasarelaEnVuelo, setPasarelaEnVuelo] = useState<Pasarela>("spidi");
+  const skylink = useSkylink();
   const [avisoPedido, setAvisoPedido] = useState<AvisoPedido | null>(null);
   // Candado sincronico: setState no es inmediato y un doble clic rapido podria
   // mandar dos peticiones antes de que el boton se vea deshabilitado.
@@ -298,7 +305,7 @@ export default function CarritoPage() {
     }
   };
 
-  const onSubmit = async (comprador: Comprador) => {
+  const onSubmit = async (comprador: Comprador, pasarela: Pasarela) => {
     if (enVueloRef.current || items.length === 0) return;
     if (hayExcedidas) {
       toast({
@@ -309,6 +316,7 @@ export default function CarritoPage() {
       return;
     }
     enVueloRef.current = true;
+    setPasarelaEnVuelo(pasarela);
     setEstadoEnvio("enviando");
 
     const datos: CheckoutRequest = {
@@ -318,6 +326,8 @@ export default function CarritoPage() {
         email: comprador.email,
         telefono: comprador.telefono ? comprador.telefono : undefined,
       },
+      // Va en la huella: cambiar de pasarela es otro intento, con otra clave.
+      pasarela,
     };
     const huella = JSON.stringify(datos);
     const anterior = intentoRef.current;
@@ -533,7 +543,11 @@ export default function CarritoPage() {
                     </CardHeader>
                     <CardContent>
                       <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>
+                        <form
+                          onSubmit={form.handleSubmit((c) => onSubmit(c, "spidi"))}
+                          className="space-y-4"
+                          noValidate
+                        >
                           <FormField
                             control={form.control}
                             name="nombre"
@@ -640,23 +654,18 @@ export default function CarritoPage() {
                             size="lg"
                             className="w-full gap-2 glow-primary"
                             disabled={bloqueado || hayExcedidas}
-                            aria-busy={bloqueado}
+                            aria-busy={bloqueado && pasarelaEnVuelo === "spidi"}
                             data-testid="button-pagar"
                           >
-                            {estadoEnvio === "enviando" ? (
+                            {bloqueado && pasarelaEnVuelo === "spidi" ? (
                               <>
                                 <Loader2 className="animate-spin" />
-                                Preparando tu pago...
-                              </>
-                            ) : estadoEnvio === "redirigiendo" ? (
-                              <>
-                                <Loader2 className="animate-spin" />
-                                Abriendo la página de pago...
+                                {estadoEnvio === "enviando" ? "Preparando tu pago..." : "Abriendo la página de pago..."}
                               </>
                             ) : (
                               <>
                                 <Lock />
-                                Pagar con Bs
+                                Pagar con SPIDI
                               </>
                             )}
                           </Button>
@@ -666,6 +675,50 @@ export default function CarritoPage() {
                             sin registrarte.
                           </p>
                           <SpidiAtribucion className="pt-1" />
+
+                          {skylink.disponible && (
+                            <div className="space-y-3 pt-2" data-testid="opcion-skylink">
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                <Separator className="flex-1" />o<Separator className="flex-1" />
+                              </div>
+                              <Button
+                                type="button"
+                                size="lg"
+                                variant="outline"
+                                className="w-full gap-2"
+                                disabled={bloqueado || hayExcedidas}
+                                aria-busy={bloqueado && pasarelaEnVuelo === "skylink"}
+                                onClick={form.handleSubmit((c) => onSubmit(c, "skylink"))}
+                                data-testid="button-pagar-skylink"
+                              >
+                                {bloqueado && pasarelaEnVuelo === "skylink" ? (
+                                  <>
+                                    <Loader2 className="animate-spin" />
+                                    {estadoEnvio === "enviando" ? "Preparando tu pago..." : "Abriendo la página de pago..."}
+                                  </>
+                                ) : (
+                                  <>
+                                    <Smartphone />
+                                    Pagar con Skylink (Pago Móvil)
+                                  </>
+                                )}
+                              </Button>
+                              <p className="flex items-start gap-2 text-xs text-muted-foreground">
+                                <ShieldCheck className="h-4 w-4 text-primary flex-shrink-0" />
+                                Pagas en la página segura de Skylink Pay con Pago Móvil o Débito Inmediato; el pago se
+                                verifica solo, sin enviar capturas.
+                              </p>
+                              {skylink.modoPrueba && (
+                                <p
+                                  className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200"
+                                  data-testid="aviso-skylink-prueba"
+                                >
+                                  <FlaskConical className="h-4 w-4 flex-shrink-0" />
+                                  Skylink está en modo de prueba: las Gift Cards que se emitan no sirven para canjear.
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </form>
                       </Form>
                     </CardContent>

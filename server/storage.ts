@@ -1,6 +1,6 @@
 import { type User, type InsertUser, type ContactMessage, type InsertContactMessage, type EncuestaVasos, type InsertEncuestaVasos, type Pedido, type PedidoItem, type GiftCard, type CodigoInventario } from "@shared/schema";
 import { users, contactMessages, encuestaVasos, pedidos, giftCards, spidiEventos, codigosInventario } from "@shared/schema";
-import { esNumeroPedidoDePrueba, PREFIJO_PEDIDO_PRUEBA, type EstadoGiftCard } from "@shared/tienda";
+import { esNumeroPedidoDePrueba, PREFIJO_PEDIDO_PRUEBA, type EstadoGiftCard, type Pasarela } from "@shared/tienda";
 import type { ConteoInventario, EstadoCodigoInventario } from "@shared/admin";
 import { buscarProducto, PRODUCTOS } from "@shared/catalogo";
 import { randomUUID } from "crypto";
@@ -95,6 +95,15 @@ export interface NuevoPedido {
   compradorNombre: string;
   compradorEmail: string;
   compradorTelefono: string | null;
+  pasarela: Pasarela;
+}
+
+// Cobro de Skylink Pay recien creado (ver asignarCobroSkylink).
+export interface CobroSkylink {
+  token: string;
+  paymentUrl: string;
+  montoVesCentavos: number;
+  tasaBcv: number;
 }
 
 // Fase 1 (pago), tal como la reporta SPIDI (webhook payment_session.paid o
@@ -354,8 +363,16 @@ export interface IStorage {
   obtenerPedidoPorSesionSpidi(sessionId: string): Promise<Pedido | undefined>;
   obtenerPedidoPorClaveIdempotencia(clave: string): Promise<Pedido | undefined>;
   asignarSesionSpidi(pedidoId: string, sessionId: string, paymentUrl: string): Promise<Pedido | undefined>;
+  // Skylink Pay: guarda el token, el enlace de pago y el monto en Bs y la tasa
+  // con que se creo el cobro (el pago solo vale si Skylink reporta ese monto).
+  asignarCobroSkylink(pedidoId: string, cobro: CobroSkylink): Promise<Pedido | undefined>;
+  obtenerPedidoPorTokenSkylink(token: string): Promise<Pedido | undefined>;
+  // Para el aviso de Skylink, cuyo formato no esta publicado: el pedido de
+  // Skylink cuyo token o numero sea alguno de estos textos (el mas nuevo).
+  buscarPedidoSkylinkPorTextos(textos: string[]): Promise<Pedido | undefined>;
   // pendiente (sin sesion) -> error, cuando no se pudo crear la sesion en SPIDI
-  // o el checkout se interrumpio. Si el pedido ya tiene sesion no se toca: su
+  // (o el cobro en Skylink) o el checkout se interrumpio. "Sin sesion" quiere
+  // decir sin spidiSessionId NI skylinkToken. Si el pedido ya tiene sesion no se toca: su
   // enlace podria pagarse y la conciliacion solo revisa los "pendiente".
   // Al pasar a error, sus reservas vuelven a "disponible" (igual en
   // marcarCheckoutsInterrumpidos y marcarPedidoTerminado).
@@ -561,6 +578,11 @@ export class MemStorage implements IStorage {
       compradorTelefono: nuevo.compradorTelefono,
       spidiSessionId: null,
       spidiPaymentUrl: null,
+      pasarela: nuevo.pasarela,
+      skylinkToken: null,
+      skylinkPaymentUrl: null,
+      skylinkMontoVesCentavos: null,
+      skylinkTasaBcv: null,
       motivo: null,
       pagoMetodo: null,
       pagoBanco: null,
@@ -620,9 +642,43 @@ export class MemStorage implements IStorage {
     return copiar(actualizado);
   }
 
+  async asignarCobroSkylink(pedidoId: string, cobro: CobroSkylink): Promise<Pedido | undefined> {
+    const actual = this.pedidos.get(pedidoId);
+    if (!actual) return undefined;
+    const otro = Array.from(this.pedidos.values()).find((p) => p.id !== pedidoId && p.skylinkToken === cobro.token);
+    if (otro) throw errorDeUnicidad("pedidos_skylink_token_unique");
+    const actualizado: Pedido = {
+      ...actual,
+      skylinkToken: cobro.token,
+      skylinkPaymentUrl: cobro.paymentUrl,
+      skylinkMontoVesCentavos: cobro.montoVesCentavos,
+      skylinkTasaBcv: cobro.tasaBcv,
+      actualizadoEn: new Date(),
+    };
+    this.pedidos.set(pedidoId, actualizado);
+    return copiar(actualizado);
+  }
+
+  async obtenerPedidoPorTokenSkylink(token: string): Promise<Pedido | undefined> {
+    const pedido = Array.from(this.pedidos.values()).find((p) => p.skylinkToken === token);
+    return pedido ? copiar(pedido) : undefined;
+  }
+
+  async buscarPedidoSkylinkPorTextos(textos: string[]): Promise<Pedido | undefined> {
+    const buscados = new Set(textos);
+    const pedido = Array.from(this.pedidos.values())
+      .filter(
+        (p) =>
+          p.pasarela === "skylink" &&
+          ((p.skylinkToken !== null && buscados.has(p.skylinkToken)) || buscados.has(p.numero)),
+      )
+      .sort((a, b) => b.creadoEn.getTime() - a.creadoEn.getTime())[0];
+    return pedido ? copiar(pedido) : undefined;
+  }
+
   async marcarPedidoError(pedidoId: string, motivo: string): Promise<void> {
     const actual = this.pedidos.get(pedidoId);
-    if (!actual || actual.estado !== "pendiente" || actual.spidiSessionId !== null) return;
+    if (!actual || actual.estado !== "pendiente" || actual.spidiSessionId !== null || actual.skylinkToken !== null) return;
     this.pedidos.set(pedidoId, { ...actual, estado: "error", motivo, actualizadoEn: new Date() });
     this.liberarReservasDe(pedidoId);
   }
@@ -632,7 +688,7 @@ export class MemStorage implements IStorage {
     const ahora = new Date();
     let marcados = 0;
     for (const actual of Array.from(this.pedidos.values())) {
-      if (actual.estado !== "pendiente" || actual.spidiSessionId !== null) continue;
+      if (actual.estado !== "pendiente" || actual.spidiSessionId !== null || actual.skylinkToken !== null) continue;
       if (actual.creadoEn.getTime() >= limite) continue;
       this.pedidos.set(actual.id, { ...actual, estado: "error", motivo, actualizadoEn: ahora });
       this.liberarReservasDe(actual.id);
@@ -764,7 +820,7 @@ export class MemStorage implements IStorage {
       .filter(
         (p) =>
           p.estado === "pendiente" &&
-          p.spidiSessionId !== null &&
+          (p.spidiSessionId !== null || p.skylinkToken !== null) &&
           pendienteEnVentana(p.numero, p.creadoEn.getTime(), ahora),
       )
       .sort((a, b) => b.creadoEn.getTime() - a.creadoEn.getTime() || compararTexto(a.id, b.id));
@@ -772,6 +828,8 @@ export class MemStorage implements IStorage {
       .filter(
         (p) =>
           p.estado === "pagado" &&
+          // Solo SPIDI tiene fase de acreditacion.
+          p.pasarela === "spidi" &&
           p.acreditadoEn === null &&
           p.pagadoEn !== null &&
           p.pagadoEn.getTime() >= ahora - VENTANA_CONCILIAR_ACREDITACION_MS,
@@ -1142,6 +1200,7 @@ export class DbStorage implements IStorage {
   // vuelve fila, nada cambio y se lee el pedido como esta para devolverlo.
 
   private async pedidoPorId(id: string): Promise<Pedido | undefined> {
+    await this.asegurarInventario();
     const filas = await this.db.select().from(pedidos).where(eq(pedidos.id, id)).limit(1);
     return filas[0];
   }
@@ -1238,6 +1297,29 @@ export class DbStorage implements IStorage {
           await tx.execute(
             sql.raw(`CREATE INDEX IF NOT EXISTS "codigos_inventario_pedido_idx" ON "codigos_inventario" USING btree ("pedido_id")`),
           );
+          // Skylink Pay (nov-2026): columnas nuevas de pedidos para una tabla que
+          // ya existia. ADD COLUMN IF NOT EXISTS no toca las que ya estan; con un
+          // default constante Postgres no reescribe la tabla. Los pedidos
+          // anteriores quedan con pasarela 'spidi'.
+          await tx.execute(
+            sql.raw(`
+            ALTER TABLE "pedidos"
+              ADD COLUMN IF NOT EXISTS "pasarela" text DEFAULT 'spidi' NOT NULL,
+              ADD COLUMN IF NOT EXISTS "skylink_token" text,
+              ADD COLUMN IF NOT EXISTS "skylink_payment_url" text,
+              ADD COLUMN IF NOT EXISTS "skylink_monto_ves_centavos" bigint,
+              ADD COLUMN IF NOT EXISTS "skylink_tasa_bcv" double precision`),
+          );
+          // Mismo nombre de restriccion que generaria drizzle-kit para .unique().
+          await tx.execute(
+            sql.raw(`
+            DO $$
+            BEGIN
+              IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'pedidos_skylink_token_unique') THEN
+                ALTER TABLE "pedidos" ADD CONSTRAINT "pedidos_skylink_token_unique" UNIQUE("skylink_token");
+              END IF;
+            END $$`),
+          );
         })
         .catch((error) => {
           this.inventarioListo = null;
@@ -1266,7 +1348,8 @@ export class DbStorage implements IStorage {
 
   async crearPedido(nuevo: NuevoPedido, reservas: ReservaStock[] = []): Promise<Pedido> {
     const porProducto = agruparReservas(reservas);
-    if (porProducto.length > 0) await this.asegurarInventario();
+    // Siempre: el insert devuelve todas las columnas, tambien las de Skylink.
+    await this.asegurarInventario();
     // Una sola transaccion: el pedido nace con sus codigos reservados o no nace.
     // Si numero o claveIdempotencia ya existen, Postgres lanza el error 23505
     // (ver esViolacionDeUnicidad) y el llamador decide si reintenta.
@@ -1283,6 +1366,7 @@ export class DbStorage implements IStorage {
           compradorNombre: nuevo.compradorNombre,
           compradorEmail: nuevo.compradorEmail,
           compradorTelefono: nuevo.compradorTelefono,
+          pasarela: nuevo.pasarela,
         })
         .returning();
       const pedido = filas[0];
@@ -1313,21 +1397,64 @@ export class DbStorage implements IStorage {
   }
 
   async obtenerPedidoPorSesionSpidi(sessionId: string): Promise<Pedido | undefined> {
+    await this.asegurarInventario();
     const filas = await this.db.select().from(pedidos).where(eq(pedidos.spidiSessionId, sessionId)).limit(1);
     return filas[0];
   }
 
   async obtenerPedidoPorClaveIdempotencia(clave: string): Promise<Pedido | undefined> {
+    await this.asegurarInventario();
     const filas = await this.db.select().from(pedidos).where(eq(pedidos.claveIdempotencia, clave)).limit(1);
     return filas[0];
   }
 
   async asignarSesionSpidi(pedidoId: string, sessionId: string, paymentUrl: string): Promise<Pedido | undefined> {
+    await this.asegurarInventario();
     const filas = await this.db
       .update(pedidos)
       .set({ spidiSessionId: sessionId, spidiPaymentUrl: paymentUrl, actualizadoEn: new Date() })
       .where(eq(pedidos.id, pedidoId))
       .returning();
+    return filas[0];
+  }
+
+  async asignarCobroSkylink(pedidoId: string, cobro: CobroSkylink): Promise<Pedido | undefined> {
+    await this.asegurarInventario();
+    const filas = await this.db
+      .update(pedidos)
+      .set({
+        skylinkToken: cobro.token,
+        skylinkPaymentUrl: cobro.paymentUrl,
+        skylinkMontoVesCentavos: cobro.montoVesCentavos,
+        skylinkTasaBcv: cobro.tasaBcv,
+        actualizadoEn: new Date(),
+      })
+      .where(eq(pedidos.id, pedidoId))
+      .returning();
+    return filas[0];
+  }
+
+  async obtenerPedidoPorTokenSkylink(token: string): Promise<Pedido | undefined> {
+    await this.asegurarInventario();
+    const filas = await this.db.select().from(pedidos).where(eq(pedidos.skylinkToken, token)).limit(1);
+    return filas[0];
+  }
+
+  async buscarPedidoSkylinkPorTextos(textos: string[]): Promise<Pedido | undefined> {
+    const buscados = Array.from(new Set(textos)).slice(0, 200);
+    if (buscados.length === 0) return undefined;
+    await this.asegurarInventario();
+    const filas = await this.db
+      .select()
+      .from(pedidos)
+      .where(
+        and(
+          eq(pedidos.pasarela, "skylink"),
+          or(inArray(pedidos.skylinkToken, buscados), inArray(pedidos.numero, buscados)),
+        ),
+      )
+      .orderBy(desc(pedidos.creadoEn))
+      .limit(1);
     return filas[0];
   }
 
@@ -1339,7 +1466,14 @@ export class DbStorage implements IStorage {
       await tx
         .update(pedidos)
         .set({ estado: "error", motivo, actualizadoEn: new Date() })
-        .where(and(eq(pedidos.id, pedidoId), eq(pedidos.estado, "pendiente"), isNull(pedidos.spidiSessionId)));
+        .where(
+          and(
+            eq(pedidos.id, pedidoId),
+            eq(pedidos.estado, "pendiente"),
+            isNull(pedidos.spidiSessionId),
+            isNull(pedidos.skylinkToken),
+          ),
+        );
       await this.liberarReservasDe(tx, pedidoId);
     });
   }
@@ -1356,6 +1490,7 @@ export class DbStorage implements IStorage {
           and(
             eq(pedidos.estado, "pendiente"),
             isNull(pedidos.spidiSessionId),
+            isNull(pedidos.skylinkToken),
             lt(pedidos.creadoEn, creadosAntesDe),
           ),
         )
@@ -1495,6 +1630,7 @@ export class DbStorage implements IStorage {
     pedidoId: string,
     datos: DatosAcreditacionSpidi,
   ): Promise<{ pedido: Pedido | undefined; recienAcreditado: boolean }> {
+    await this.asegurarInventario();
     const filas = await this.db
       .update(pedidos)
       .set({
@@ -1511,6 +1647,7 @@ export class DbStorage implements IStorage {
   }
 
   async marcarAcreditacionFallida(pedidoId: string): Promise<void> {
+    await this.asegurarInventario();
     await this.db
       .update(pedidos)
       .set({ acreditacionFallida: true, actualizadoEn: new Date() })
@@ -1518,6 +1655,7 @@ export class DbStorage implements IStorage {
   }
 
   async listarPedidosParaConciliar(limite: number): Promise<Pedido[]> {
+    await this.asegurarInventario();
     if (limite <= 0) return [];
     const ahora = Date.now();
     // Misma regla que pendienteEnVentana: cualquier pendiente de las ultimas
@@ -1529,7 +1667,7 @@ export class DbStorage implements IStorage {
       .where(
         and(
           eq(pedidos.estado, "pendiente"),
-          isNotNull(pedidos.spidiSessionId),
+          or(isNotNull(pedidos.spidiSessionId), isNotNull(pedidos.skylinkToken)),
           or(
             gte(pedidos.creadoEn, new Date(ahora - VENTANA_CONCILIAR_PENDIENTES_MS)),
             and(
@@ -1550,6 +1688,8 @@ export class DbStorage implements IStorage {
       .where(
         and(
           eq(pedidos.estado, "pagado"),
+          // Solo SPIDI tiene fase de acreditacion.
+          eq(pedidos.pasarela, "spidi"),
           isNull(pedidos.acreditadoEn),
           gte(pedidos.pagadoEn, new Date(ahora - VENTANA_CONCILIAR_ACREDITACION_MS)),
         ),
@@ -1560,6 +1700,7 @@ export class DbStorage implements IStorage {
   }
 
   async listarPedidosConCorreoPendiente(limite: number): Promise<Pedido[]> {
+    await this.asegurarInventario();
     if (limite <= 0) return [];
     const ahora = Date.now();
     // "Ya le toca": una condicion por fila de ESPERA_REINTENTO_CORREO_MS
@@ -1597,6 +1738,7 @@ export class DbStorage implements IStorage {
   }
 
   async reservarIntentoCorreo(pedidoId: string, opciones?: { sinTope?: boolean }): Promise<Pedido | undefined> {
+    await this.asegurarInventario();
     // UPDATE condicional: el contador sube dentro de la base y Postgres revalida
     // el tope con la fila bloqueada, asi que dos envios simultaneos (o dos
     // instancias) nunca pasan juntos del tope. Sin fila de vuelta, no se envia.
@@ -1613,6 +1755,7 @@ export class DbStorage implements IStorage {
   }
 
   async anotarCorreosEnviados(pedidoId: string, enviados: CorreosEnviados): Promise<void> {
+    await this.asegurarInventario();
     if (!enviados.comprador && !enviados.venta) return;
     const ahora = new Date();
     // Solo las horas: el intento ya se conto al reservarlo. coalesce conserva
@@ -1637,6 +1780,7 @@ export class DbStorage implements IStorage {
   }
 
   async buscarPedidos(termino: string, limite: number): Promise<Pedido[]> {
+    await this.asegurarInventario();
     if (limite <= 0) return [];
     const { numero, email } = normalizarBusqueda(termino);
     return this.db
@@ -1899,6 +2043,7 @@ export class DbStorage implements IStorage {
   // === Administracion ===
 
   async listarPedidosAdmin(filtro: FiltroPedidosAdmin): Promise<Pedido[]> {
+    await this.asegurarInventario();
     if (filtro.limite <= 0) return [];
     const condiciones: SQL[] = [];
     if (filtro.estado) condiciones.push(eq(pedidos.estado, filtro.estado));
@@ -1916,6 +2061,7 @@ export class DbStorage implements IStorage {
   }
 
   async resumenVentas(p: { desdeHoy: Date; desdeMes: Date; incluirPrueba: boolean }): Promise<ResumenVentasStorage> {
+    await this.asegurarInventario();
     const soloReales = p.incluirPrueba ? undefined : notIlike(pedidos.numero, PATRON_NUMERO_PRUEBA);
     const pagadosDesde = async (desde: Date) => {
       const filas = await this.db

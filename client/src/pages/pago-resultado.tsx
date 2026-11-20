@@ -90,6 +90,23 @@ function esErrorResponse(cuerpo: unknown): cuerpo is ErrorResponse {
   return r.ok === false && typeof r.error === "string" && r.error.length > 0;
 }
 
+// La vuelta desde Skylink llega a la URL fija del panel con ?token_ws=<token>
+// y sin el id ni la clave del pedido: el servidor los devuelve a cambio del
+// token. null si el token no corresponde a ningun pedido.
+async function referenciaPorTokenSkylink(token: string): Promise<Parametros | null> {
+  const respuesta = await fetch(`/api/pedidos/skylink/${encodeURIComponent(token)}`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+  if ([400, 404].includes(respuesta.status)) return null;
+  const cuerpo: unknown = await respuesta.json().catch(() => null);
+  const r = (typeof cuerpo === "object" && cuerpo !== null ? cuerpo : {}) as Record<string, unknown>;
+  if (respuesta.ok && r.ok === true && typeof r.pedidoId === "string" && typeof r.clave === "string") {
+    return { pedidoId: r.pedidoId, clave: r.clave };
+  }
+  throw new Error("No pudimos consultar tu pedido.");
+}
+
 // El servidor confirma el estado con SPIDI antes de responder: esta pagina
 // nunca da un pago por bueno solo porque SPIDI redirigio hasta aqui.
 async function consultarPedido({ pedidoId, clave }: Parametros): Promise<PedidoPublico> {
@@ -169,13 +186,36 @@ export default function PagoResultadoPage() {
     }
     // Sin datos en la URL se usa el ultimo pedido de este navegador, y se deja
     // en la URL para que recargar o guardar el enlace funcione.
-    const ultimo = leerUltimoPedido();
-    if (ultimo) {
-      window.history.replaceState(window.history.state, "", urlResultadoPedido(ultimo));
-      setParametros({ pedidoId: ultimo.pedidoId, clave: ultimo.clave });
-    } else {
-      setParametros(null);
+    const usarUltimo = () => {
+      const ultimo = leerUltimoPedido();
+      if (ultimo) {
+        window.history.replaceState(window.history.state, "", urlResultadoPedido(ultimo));
+        setParametros({ pedidoId: ultimo.pedidoId, clave: ultimo.clave });
+      } else {
+        setParametros(null);
+      }
+    };
+    // Vuelta desde Skylink: el token dice que pedido es (aunque se pague en
+    // otro navegador que el de la compra). Si falla la consulta, el ultimo
+    // pedido de este navegador.
+    const tokenSkylink = query.get("token_ws");
+    if (tokenSkylink) {
+      let vigente = true;
+      referenciaPorTokenSkylink(tokenSkylink)
+        .then((ref) => {
+          if (!vigente) return;
+          if (!ref) return usarUltimo();
+          window.history.replaceState(window.history.state, "", urlResultadoPedido(ref));
+          setParametros(ref);
+        })
+        .catch(() => {
+          if (vigente) usarUltimo();
+        });
+      return () => {
+        vigente = false;
+      };
     }
+    usarUltimo();
   }, []);
 
   const consulta = useQuery({
@@ -285,7 +325,7 @@ export default function PagoResultadoPage() {
                 mientras carga o si la consulta falla). */}
             <AvisoModoPrueba delPedido={pedido ? pedido.modoPrueba : false} className="mb-8" />
             {contenido}
-            <SpidiAtribucion className="mt-10" />
+            {pedido?.pasarela !== "skylink" && <SpidiAtribucion className="mt-10" />}
           </div>
         </div>
       </main>

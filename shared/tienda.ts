@@ -24,10 +24,16 @@ export const compradorSchema = z.object({
 });
 export type Comprador = z.infer<typeof compradorSchema>;
 
-// POST /api/checkout
+// Pasarelas de pago. "spidi" es la original; "skylink" es Skylink Pay (Pago
+// Movil y debito inmediato). El comprador elige en /carrito.
+export const PASARELAS = ["spidi", "skylink"] as const;
+export type Pasarela = (typeof PASARELAS)[number];
+
+// POST /api/checkout. Sin `pasarela` se cobra con SPIDI (como antes de Skylink).
 export const checkoutRequestSchema = z.object({
   items: z.array(itemCarritoSchema).min(1).max(20),
   comprador: compradorSchema,
+  pasarela: z.enum(PASARELAS).optional(),
 });
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
@@ -108,8 +114,23 @@ export const PREFIJO_CODIGO_PRUEBA = "PRUEBA-";
 export interface ConfigTienda {
   // true en todo lo que no sea "produccion", incluido "desconocido" (ahi
   // ademas el checkout esta cerrado): nada de lo que se emita vale como real.
+  // Es el modo de SPIDI.
   modoPrueba: boolean;
   entorno: EntornoSpidi;
+  // Skylink Pay: si se ofrece el boton y si lo que se cobre con el es de prueba
+  // (simulador o monto de prueba). Un servidor viejo no manda el campo: el
+  // cliente lo trata como no disponible.
+  skylink?: { disponible: boolean; modoPrueba: boolean };
+}
+
+// GET /api/pedidos/skylink/:token — la vuelta del pagador desde Skylink llega
+// a la URL fija del panel con ?token_ws=<token>, sin el id ni la clave del
+// pedido. El token (que solo conocen Skylink y el navegador del pagador) abre
+// el pedido igual que la clave.
+export interface PedidoPorTokenSkylink {
+  ok: true;
+  pedidoId: string;
+  clave: string;
 }
 
 // GET /api/pedidos/:id?k=<clave>  — vista publica del pedido para la pagina de
@@ -119,6 +140,8 @@ export interface PedidoPublico {
   id: string;
   numero: string;
   estado: EstadoPedido;
+  // Con que pasarela se cobro. Un servidor viejo no lo manda: es SPIDI.
+  pasarela?: Pasarela;
   creadoEn: string; // ISO 8601
   items: Array<{
     productoId: string;

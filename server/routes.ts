@@ -19,6 +19,8 @@ import {
   expirarPedidoAdmin,
   limitarConsultaPedido,
   listarCodigosAdmin,
+  pedidoPorTokenSkylink,
+  procesarAvisoSkylink,
   listarVentasAdmin,
   procesarWebhook,
   reenviarCorreoComprador,
@@ -26,6 +28,8 @@ import {
   stockTienda,
   type ParametrosLista,
 } from "./tienda";
+import { paginaSimulador, resolverCobroSimulado, simuladorActivo } from "./skylink";
+import { urlPublica } from "./spidi";
 import path from "path";
 
 // === Ayudantes de la tienda ===
@@ -586,6 +590,19 @@ export async function registerRoutes(
     }
   });
 
+  // Vuelta del pagador desde Skylink (?token_ws=<token> en la URL fija del
+  // panel): con el token se recupera el id y la clave del pedido. Mismo 404 si
+  // no existe, y el mismo limitador por IP que la consulta del pedido.
+  app.get("/api/pedidos/skylink/:token", async (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    try {
+      limitarConsultaPedido(req.ip || req.socket.remoteAddress || "desconocida");
+      res.status(200).json(await pedidoPorTokenSkylink(req.params.token));
+    } catch (error) {
+      responderErrorTienda(res, error, "GET /api/pedidos/skylink/:token");
+    }
+  });
+
   // Vista publica de un pedido para /pago/resultado. Sin la clave correcta
   // responde 404. Aqui es donde el servidor confirma el pago con SPIDI: la sola
   // vuelta del cliente desde la pagina de pago no prueba nada.
@@ -625,6 +642,51 @@ export async function registerRoutes(
       }
     },
   );
+
+  // Avisos de Skylink Pay (URL de notificaciones del panel). La firma
+  // (x-signature) se verifica sobre el cuerpo; aun firmado, el aviso solo hace
+  // que se reconsulte el cobro por token.
+  app.post(
+    "/api/webhooks/skylink",
+    express.raw({ type: () => true, limit: "1mb" }),
+    async (req, res) => {
+      const crudo = Buffer.isBuffer(req.rawBody)
+        ? req.rawBody
+        : Buffer.isBuffer(req.body)
+          ? req.body
+          : undefined;
+      try {
+        await procesarAvisoSkylink(crudo, req.headers, req.ip || req.socket.remoteAddress || "desconocida");
+        res.status(200).json({ ok: true });
+      } catch (error) {
+        responderErrorTienda(res, error, "POST /api/webhooks/skylink");
+      }
+    },
+  );
+
+  // Simulador de Skylink (solo con SKYLINK_MODO=simulador): imita su pagina de
+  // pago y, como Skylink, devuelve al pagador a /pago/resultado?token_ws=.
+  app.all("/simulador-skylink/pay/:token", (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("X-Robots-Tag", "noindex");
+    if (!simuladorActivo()) return res.status(404).send("No encontrado");
+    const token = req.params.token;
+    const regreso = urlPublica(`/pago/resultado?token_ws=${encodeURIComponent(token)}`);
+    if (req.method === "POST") {
+      const cuerpo = (req.body ?? {}) as Record<string, unknown>;
+      const r = resolverCobroSimulado(token, String(cuerpo.decision ?? ""), {
+        metodo: "mobile_payment",
+        banco: String(cuerpo.banco ?? "").slice(0, 40) || undefined,
+        referencia: String(cuerpo.referencia ?? "").replace(/\D/g, "").slice(0, 12) || undefined,
+      });
+      if (!r.ok) return res.status(409).send(r.error ?? "No se pudo");
+      return res.redirect(303, regreso);
+    }
+    if (req.method !== "GET") return res.status(405).send("Metodo no permitido");
+    const html = paginaSimulador(token, regreso);
+    if (!html) return res.status(404).send("Cobro inexistente (el simulador vive en memoria)");
+    res.type("html").send(html);
+  });
 
   // Consulta de una Gift Card (para validarla antes de canjearla).
   app.get("/api/admin/gift-cards/:codigo", async (req, res) => {

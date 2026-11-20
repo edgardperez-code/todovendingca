@@ -215,6 +215,12 @@ export interface DatosCorreoVenta {
   // el modo actual del servidor: un pago real reenviado desde un servidor en
   // modo prueba no debe llegar rotulado como prueba.
   esPrueba: boolean;
+  // Con que pasarela se cobro ("spidi" | "skylink"). Solo cambia textos.
+  pasarela: 'spidi' | 'skylink';
+}
+
+function nombrePasarela(pasarela: DatosCorreoVenta['pasarela']): string {
+  return pasarela === 'skylink' ? 'Skylink Pay' : 'SPIDI';
 }
 
 const CORREO_NEGOCIO = 'todovendingca@gmail.com';
@@ -234,8 +240,11 @@ function notaPruebaHtml(esPrueba: boolean, texto: string): string {
 
 const NOTA_PRUEBA_COMPRADOR =
   'esta no es una compra real. El pago no es real y los códigos de abajo no sirven para canjear.';
-const NOTA_PRUEBA_VENTA =
-  'esta venta se hizo contra un entorno de prueba de SPIDI (simulador, sandbox u otro). No es una compra real: no entró dinero y sus códigos no se pueden canjear.';
+function notaPruebaVenta(pasarela: DatosCorreoVenta['pasarela']): string {
+  return pasarela === 'skylink'
+    ? 'esta venta se hizo con Skylink Pay en modo de prueba (simulador o monto de prueba). No es una compra real: sus códigos no se pueden canjear.'
+    : 'esta venta se hizo contra un entorno de prueba de SPIDI (simulador, sandbox u otro). No es una compra real: no entró dinero y sus códigos no se pueden canjear.';
+}
 
 function remitenteTienda(): string {
   return process.env.EMAIL_FROM?.trim() || 'Todo Vending CA <onboarding@resend.dev>';
@@ -499,7 +508,7 @@ export async function sendNotificacionVenta(
           <p style="color: white; margin: 5px 0 0 0;">Nueva venta de Gift Cards</p>
         </div>
         <div style="padding: 30px; background-color: #f9fafb;">
-          ${notaPruebaHtml(data.esPrueba, NOTA_PRUEBA_VENTA)}
+          ${notaPruebaHtml(data.esPrueba, notaPruebaVenta(data.pasarela))}
           ${avisoSinStock}
           <table style="width: 100%; border-collapse: collapse;">
             ${filas}
@@ -508,7 +517,7 @@ export async function sendNotificacionVenta(
         </div>
         <div style="background-color: #1f2937; padding: 15px; text-align: center;">
           <p style="color: #9ca3af; margin: 0; font-size: 12px;">
-            Pago confirmado por SPIDI. Enviado desde la tienda de todovendingca.com
+            Pago confirmado por ${nombrePasarela(data.pasarela)}. Enviado desde la tienda de todovendingca.com
           </p>
         </div>
       </div>

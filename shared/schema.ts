@@ -5,6 +5,7 @@ import {
   varchar,
   timestamp,
   integer,
+  bigint,
   jsonb,
   boolean,
   doublePrecision,
@@ -150,6 +151,17 @@ export const pedidos = pgTable("pedidos", {
   // es la unica llave para consultarla despues.
   spidiSessionId: text("spidi_session_id").unique(),
   spidiPaymentUrl: text("spidi_payment_url"),
+  // Con que pasarela se cobra: "spidi" | "skylink" (Pasarela en shared/tienda.ts).
+  // Los pedidos anteriores a Skylink quedan en "spidi" por el default.
+  pasarela: text("pasarela").notNull().default("spidi"),
+  // Cobro de Skylink Pay: el token es la llave para consultarlo y para casar la
+  // vuelta del pagador (?token_ws=) y el aviso. El monto en centimos de Bs y la
+  // tasa se congelan al crear el cobro: el pago solo vale si Skylink reporta
+  // exactamente ese monto.
+  skylinkToken: text("skylink_token").unique(),
+  skylinkPaymentUrl: text("skylink_payment_url"),
+  skylinkMontoVesCentavos: bigint("skylink_monto_ves_centavos", { mode: "number" }),
+  skylinkTasaBcv: doublePrecision("skylink_tasa_bcv"),
   motivo: text("motivo"),
   // Fase 1 (pago). Datos informativos tal como los reporta SPIDI.
   pagoMetodo: text("pago_metodo"),
@@ -213,8 +225,9 @@ export const spidiEventos = pgTable("spidi_eventos", {
 // gift_cards. Si el pago falla o expira, vuelve a disponible.
 // OJO: server/storage.ts crea esta tabla (y pedidos, gift_cards y
 // spidi_eventos) con CREATE TABLE IF NOT EXISTS si aun
-// no existe (para no depender de un db:push en el despliegue). Si se cambia
-// algo aqui, hay que cambiar tambien ese SQL.
+// no existe (para no depender de un db:push en el despliegue), y agrega con
+// ALTER TABLE ... ADD COLUMN IF NOT EXISTS las columnas nuevas de pedidos
+// (pasarela y skylink_*). Si se cambia algo aqui, hay que cambiar tambien ese SQL.
 export const codigosInventario = pgTable(
   "codigos_inventario",
   {
