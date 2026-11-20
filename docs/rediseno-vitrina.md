@@ -436,3 +436,68 @@ servidor y Café Oriente no se tocaron.
 `/gift-card` conserva sus apariciones al desplazar (framer-motion, archivo
 vetado): en una captura de página entera sin desplazar, "Cómo funciona" y el
 título de las preguntas salen en blanco. No es un fallo del rediseño.
+
+## 11. Correos y PDF
+
+Los correos de la Tienda y del formulario de contacto, y el PDF imprimible de
+las Gift Cards, usan el mismo diseño Vitrina. Solo cambió el aspecto: a quién
+y cuándo se envía, remitentes, asuntos, textos de aviso y datos mostrados son
+los de siempre. `sendEncuestaNotification` (Café Oriente) no usa esta plantilla.
+
+### Correos (`server/email.ts` + `server/correo/plantilla.ts`)
+
+- `plantilla.ts` tiene las piezas: `documentoCorreo` (cabecera de gabinete con
+  logo, rótulo LED y ola; cuerpo claro; pie de gabinete), `tarjetaGiftCard`
+  (plata, azul o tinta según el monto, igual que `gift-card-visual.tsx`),
+  `pantallaLed`, `tablaDatos`, `aviso`, `boton`, `tituloSeccion`,
+  `listaCodigos` y `parrafo`.
+- Es HTML de correo: tablas, estilos en línea, ancho máximo de 600 px, sin
+  flex/grid ni SVG. Las media queries solo agrandan (el correo se ve bien sin
+  ellas). Los espacios van como `padding` en celdas, que es lo que respeta
+  Outlook de escritorio; la tarjeta lleva tabla "fantasma" de 440 px para él.
+- **Las piezas no escapan nada.** Todo dato de fuera llega ya escapado con
+  `escaparHtml` / `urlSegura` desde `email.ts`.
+- El código de la Gift Card va a 18 px de base para que los 17 caracteres de
+  `TV-XXXX-XXXX-XXXX` quepan en una línea en un teléfono de 320 px; sube a
+  22 px desde 400 px de ancho y a 24 px desde 480 px. Los códigos sin guiones
+  se parten solos (`overflow-wrap:anywhere`) en vez de ensanchar el correo.
+- Las cifras de dinero van en IBM Plex Mono, no en Doto: en Doto el punto
+  decimal parece una coma.
+- El texto de vista previa (preheader) nunca lleva códigos.
+- Imágenes en `client/public/correo/`, PNG a 2x con la versión en el nombre:
+  `logo-tinta-v1`, `logo-azul-v1`, `logo-plata-v1`, `ola-v1` (cabecera) y
+  `ola-tarjeta-v1` (pie de cada tarjeta). Los correos las piden a
+  `https://www.todovendingca.com/correo/…`, así que solo se ven con la web
+  publicada. Si se cambia una imagen, se sube la versión del nombre (`-v2`):
+  los correos ya enviados siguen apuntando a la anterior, que no se borra.
+  Todas son decorativas (`alt=""`): con imágenes bloqueadas el correo se lee
+  igual, porque cada pieza lleva su color de fondo.
+- Vista previa sin enviar nada: `npx tsx script/vista-correos.ts --salida <carpeta>`
+  escribe un `.html` por caso (comprador con 1 y 3 tarjetas, faltan códigos,
+  prueba, Skylink; aviso al dueño; contacto).
+
+### PDF (`server/gift-card-pdf.ts`)
+
+- Una hoja carta por Gift Card: frente (copia de la tarjeta de la Tienda, con
+  el código en una placa blanca) y reverso girado 180° debajo, para recortar y
+  doblar. La tarjeta mide 85,6 × 54 mm; no cambiar tamaño ni posición sin
+  revisar la regla de 5 cm y las líneas de corte y doblez.
+- El código va siempre en tinta negra sobre placa blanca, para que se lea
+  impreso en blanco y negro; se achica solo si es largo (caben los 64
+  caracteres que admite el inventario).
+- La línea de doblez se dibuja solo en los márgenes, fuera de la tarjeta.
+- Tipografías incrustadas desde `server/fuentes/` (TTF con licencia OFL; ver
+  `LEEME.txt`). `script/build.ts` las copia a `dist/fuentes`, que es donde las
+  busca el servidor en producción. Si falta alguna, el PDF sale igual con
+  Helvetica/Courier y lo deja en el log.
+- Vista previa: `npx tsx script/vista-pdf.ts <carpeta>`.
+
+### Pendiente / no verificado
+
+- No se probó en clientes reales (Gmail, Outlook, Apple Mail) ni en modo
+  oscuro: solo en Edge, a 320, 360 y 640 px. Lo de Outlook sale de las reglas
+  conocidas de su motor, no de verlo.
+- El botón "Ver comprobante de SPIDI" y el enlace "Ver en SPIDI" conservan ese
+  texto (solo aparecen cuando hay comprobante de SPIDI).
+- La tarjeta del correo muestra "$10.00"; la Tienda y el PDF, "$10". Igualarlo
+  es decisión del dueño.

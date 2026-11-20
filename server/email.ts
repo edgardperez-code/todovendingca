@@ -2,6 +2,23 @@
 // Using direct RESEND_API_KEY secret for simplified configuration
 import { Resend } from 'resend';
 import { crearPdfGiftCards } from './gift-card-pdf';
+import { PRODUCTOS } from '@shared/catalogo';
+import {
+  COLOR,
+  FUENTE,
+  aviso,
+  boton,
+  documentoCorreo,
+  enlace,
+  listaCodigos,
+  pantallaLed,
+  parrafo,
+  tablaDatos,
+  tarjetaGiftCard,
+  tituloSeccion,
+  type AcabadoTarjeta,
+  type OpcionesCorreo,
+} from './correo/plantilla';
 
 interface ContactEmailData {
   name: string;
@@ -91,6 +108,45 @@ export async function sendEncuestaNotification(data: EncuestaEmailData): Promise
   }
 }
 
+// HTML del aviso de contacto (diseño Vitrina). Función pura: no envía nada,
+// así se puede previsualizar con script/vista-correos.ts. Todo lo que escribió
+// la persona en el formulario se escapa antes de entrar al HTML.
+export function htmlContacto(data: ContactEmailData, opciones?: OpcionesCorreo): string {
+  const nombre = escaparHtml(data.name);
+  const email = escaparHtml(data.email);
+  const telefono = data.phone ? escaparHtml(data.phone) : null;
+
+  const cuerpo = [
+    tituloSeccion('Detalles del contacto', '0 0 12px'),
+    tablaDatos([
+      { etiqueta: 'Nombre', valorHtml: nombre },
+      { etiqueta: 'Email', valorHtml: enlace(`mailto:${email}`, email) },
+      telefono ? { etiqueta: 'Teléfono', valorHtml: enlace(`tel:${telefono}`, telefono) } : null,
+      data.company ? { etiqueta: 'Empresa', valorHtml: escaparHtml(data.company) } : null,
+    ]),
+    tituloSeccion('Mensaje'),
+    `
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td width="5" bgcolor="${COLOR.naranja}" style="width:5px;font-size:0;line-height:0;background-color:${COLOR.naranja};">&nbsp;</td>
+    <td bgcolor="${COLOR.blanco}" style="background-color:${COLOR.blanco};border:1px solid ${COLOR.linea};border-left:0;padding:16px 18px;font-family:${FUENTE.texto};font-size:16px;line-height:1.55;color:${COLOR.tinta};white-space:pre-wrap;word-break:break-word;">${escaparHtml(data.message)}</td>
+  </tr>
+</table>`,
+  ].join('');
+
+  return documentoCorreo(
+    {
+      tituloDocumento: `Nuevo contacto de ${nombre} - Todo Vending CA`,
+      preheader: `Nuevo contacto de ${nombre}`,
+      rotulo: 'Contacto',
+      encabezado: 'Nuevo mensaje de contacto',
+      cuerpoHtml: cuerpo,
+      pieHtml: 'Este mensaje fue enviado desde el formulario de contacto de todovendingca.com',
+    },
+    opciones,
+  );
+}
+
 export async function sendContactNotification(data: ContactEmailData): Promise<boolean> {
   try {
     // Use the RESEND_API_KEY secret directly
@@ -103,58 +159,7 @@ export async function sendContactNotification(data: ContactEmailData): Promise<b
     
     const client = new Resend(apiKey);
     
-    const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #10B981; padding: 20px; text-align: center;">
-          <h1 style="color: white; margin: 0;">Todo Vending CA</h1>
-          <p style="color: white; margin: 5px 0 0 0;">Nuevo mensaje de contacto</p>
-        </div>
-        
-        <div style="padding: 30px; background-color: #f9fafb;">
-          <h2 style="color: #1f2937; margin-top: 0;">Detalles del contacto:</h2>
-          
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Nombre:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${data.name}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Email:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">
-                <a href="mailto:${data.email}" style="color: #10B981;">${data.email}</a>
-              </td>
-            </tr>
-            ${data.phone ? `
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Telefono:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">
-                <a href="tel:${data.phone}" style="color: #10B981;">${data.phone}</a>
-              </td>
-            </tr>
-            ` : ''}
-            ${data.company ? `
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">Empresa:</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937;">${data.company}</td>
-            </tr>
-            ` : ''}
-          </table>
-          
-          <div style="margin-top: 20px;">
-            <h3 style="color: #374151; margin-bottom: 10px;">Mensaje:</h3>
-            <div style="background-color: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
-              <p style="color: #1f2937; margin: 0; white-space: pre-wrap;">${data.message}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div style="background-color: #1f2937; padding: 15px; text-align: center;">
-          <p style="color: #9ca3af; margin: 0; font-size: 12px;">
-            Este mensaje fue enviado desde el formulario de contacto de todovendingca.com
-          </p>
-        </div>
-      </div>
-    `;
+    const emailHtml = htmlContacto(data);
 
     // Use Resend's default onboarding domain - this allows sending to any email
     // without needing to verify a custom domain
@@ -232,10 +237,7 @@ function asuntoConPrueba(asunto: string, esPrueba: boolean): string {
 // Recuadro de aviso para los pedidos de prueba (vacio si no lo es).
 function notaPruebaHtml(esPrueba: boolean, texto: string): string {
   if (!esPrueba) return '';
-  return `
-          <p style="margin: 0 0 20px; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; font-size: 14px;">
-            <strong>Modo de prueba:</strong> ${texto}
-          </p>`;
+  return aviso('aviso', `<strong>Modo de prueba:</strong> ${texto}`);
 }
 
 const NOTA_PRUEBA_COMPRADOR =
@@ -276,28 +278,140 @@ function formatoBs(monto: number): string {
   return `Bs. ${new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(monto)}`;
 }
 
-// Fila "etiqueta: valor" de las tablas de resumen (el valor ya viene escapado).
-function filaResumen(etiqueta: string, valorHtml: string): string {
-  return `
-            <tr>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #374151;">${etiqueta}</td>
-              <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #1f2937; text-align: right;">${valorHtml}</td>
-            </tr>`;
-}
-
 // Recuadro para el comprador cuando falta algun codigo (vacio si no falta).
 function notaFaltanHtml(faltan: number): string {
   if (faltan <= 0) return '';
-  return `
-          <p style="margin: 0 0 20px; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; font-size: 14px;">
-            ${escaparHtml(textoFaltanComprador(faltan))}
-          </p>`;
+  return aviso('aviso', escaparHtml(textoFaltanComprador(faltan)));
+}
+
+// Acabado de la tarjeta segun su monto, igual que en la Tienda
+// (client/src/components/gift-card-visual.tsx): la primera Gift Card del
+// catalogo es plateada, la segunda azul y la tercera tinta de gabinete.
+const ACABADOS_TARJETA: AcabadoTarjeta[] = ['plata', 'azul', 'tinta'];
+const MONTOS_CATALOGO: number[] = PRODUCTOS.filter((p) => p.esGiftCard).map((p) => p.precioUsd);
+
+function acabadoDe(montoUsd: number): AcabadoTarjeta {
+  const posicion = MONTOS_CATALOGO.indexOf(montoUsd);
+  return posicion === -1 ? 'tinta' : ACABADOS_TARJETA[posicion % ACABADOS_TARJETA.length];
 }
 
 function textoFaltanComprador(faltan: number): string {
   return faltan === 1
     ? 'Tu pago está confirmado, pero una de tus Gift Cards aún no tiene código disponible. Nuestro equipo te la enviará a este correo a la brevedad; no tienes que hacer nada.'
     : `Tu pago está confirmado, pero ${faltan} de tus Gift Cards aún no tienen código disponible. Nuestro equipo te las enviará a este correo a la brevedad; no tienes que hacer nada.`;
+}
+
+// HTML del correo al comprador (diseño Vitrina). Funcion pura: no envia nada,
+// asi se puede previsualizar con script/vista-correos.ts. `tienePdf` dice si el
+// correo lleva adjunto el PDF de las tarjetas (solo cambia una frase).
+export function htmlGiftCardsComprador(
+  data: DatosCorreoVenta,
+  tienePdf: boolean,
+  opciones?: OpcionesCorreo,
+): string {
+  const comprobante = urlSegura(data.comprobanteUrl);
+  const numero = escaparHtml(data.numero);
+  const una = data.giftCards.length === 1;
+
+  // Cada Gift Card es una tarjeta con el color de su monto y el codigo en
+  // grande, como texto corrido para poder copiarlo.
+  const tarjetas = data.giftCards
+    .map((g) => {
+      const [entero, decimales = ''] = formatoUsd(g.montoUsd).split('.');
+      return tarjetaGiftCard(
+        {
+          acabado: acabadoDe(g.montoUsd),
+          montoEntero: escaparHtml(entero),
+          montoDecimales: decimales ? `.${escaparHtml(decimales)}` : '',
+          codigoHtml: escaparHtml(g.codigo),
+        },
+        opciones,
+      );
+    })
+    .join('');
+
+  const resumen = tablaDatos([
+    { etiqueta: 'Número de pedido', valorHtml: numero },
+    { etiqueta: 'Total', valorHtml: escaparHtml(formatoUsd(data.totalUsd)) },
+    data.montoVes !== null ? { etiqueta: 'Monto pagado', valorHtml: escaparHtml(formatoBs(data.montoVes)) } : null,
+    data.referencia ? { etiqueta: 'Referencia bancaria', valorHtml: escaparHtml(data.referencia) } : null,
+  ]);
+
+  const introduccion = data.giftCards.length > 0
+    ? `Recibimos tu pago. Aquí tienes ${una ? 'tu Gift Card' : 'tus Gift Cards'} del pedido <strong style="white-space:nowrap;">${numero}</strong>:`
+    : `Recibimos tu pago del pedido <strong style="white-space:nowrap;">${numero}</strong>.`;
+
+  const cuerpo = [
+    notaPruebaHtml(data.esPrueba, NOTA_PRUEBA_COMPRADOR),
+    parrafo(`Hola ${escaparHtml(data.compradorNombre)},`, '0 0 10px'),
+    parrafo(introduccion, '0 0 20px'),
+    notaFaltanHtml(data.faltanCodigos),
+    tarjetas,
+    data.giftCards.length > 0 && tienePdf
+      ? parrafo(
+          `Te adjuntamos ${una ? 'tu Gift Card' : 'tus Gift Cards'} en PDF, lista${una ? '' : 's'} para imprimir a tamaño real.`,
+          '4px 0 0',
+        )
+      : '',
+    tituloSeccion('Resumen del pago'),
+    resumen,
+    comprobante ? boton(escaparHtml(comprobante), 'Ver comprobante de SPIDI') : '',
+    tituloSeccion('Cómo usar tu Gift Card'),
+    listaCodigos([
+      'Cada código vale por el monto indicado para consumir en las máquinas de Todo Vending CA y Café Oriente.',
+      'Si tienes dudas sobre cómo usarlo, escríbenos por WhatsApp al <span style="white-space:nowrap;">+58 414-616-4177</span> y te ayudamos.',
+      'Cada código se puede usar una sola vez. Guárdalo como si fuera efectivo y compártelo solo con quien lo vaya a usar.',
+    ]),
+  ].join('');
+
+  // El texto de vista previa nunca lleva los codigos.
+  const preheader = data.esPrueba
+    ? `Modo de prueba: ${NOTA_PRUEBA_COMPRADOR}`
+    : data.giftCards.length > 0
+      ? `Recibimos tu pago. Aquí tienes ${una ? 'tu Gift Card' : 'tus Gift Cards'} del pedido ${numero}.`
+      : `Recibimos tu pago del pedido ${numero}.`;
+
+  return documentoCorreo(
+    {
+      tituloDocumento: `Tus Gift Cards Todo Vending - Pedido ${numero}`,
+      preheader,
+      rotulo: 'Gift&nbsp;Cards',
+      encabezado: '¡Gracias por tu compra!',
+      cuerpoHtml: cuerpo,
+      pieHtml: 'Compra realizada en todovendingca.com. Si tienes alguna duda, responde a este correo.',
+    },
+    opciones,
+  );
+}
+
+// Version en texto plano del correo al comprador: algunos clientes de correo
+// no muestran HTML.
+export function textoGiftCardsComprador(data: DatosCorreoVenta, tienePdf: boolean): string {
+  const comprobante = urlSegura(data.comprobanteUrl);
+  return [
+    data.esPrueba ? `MODO DE PRUEBA: ${NOTA_PRUEBA_COMPRADOR}` : null,
+    data.esPrueba ? '' : null,
+    `Hola ${data.compradorNombre},`,
+    '',
+    data.giftCards.length > 0
+      ? `Recibimos tu pago. Estas son tus Gift Cards del pedido ${data.numero}:`
+      : `Recibimos tu pago del pedido ${data.numero}.`,
+    ...data.giftCards.map((g) => `  ${g.codigo}  (${formatoUsd(g.montoUsd)})`),
+    tienePdf ? 'Te adjuntamos tus Gift Cards en PDF, listas para imprimir a tamaño real.' : null,
+    data.faltanCodigos > 0 ? '' : null,
+    data.faltanCodigos > 0 ? textoFaltanComprador(data.faltanCodigos) : null,
+    '',
+    `Total: ${formatoUsd(data.totalUsd)}`,
+    data.montoVes !== null ? `Monto pagado: ${formatoBs(data.montoVes)}` : null,
+    data.referencia ? `Referencia bancaria: ${data.referencia}` : null,
+    comprobante ? `Comprobante de SPIDI: ${comprobante}` : null,
+    '',
+    'Cómo usar tu Gift Card: cada código vale por su monto en las máquinas de Todo Vending CA y Café Oriente.',
+    'Si tienes dudas, escríbenos por WhatsApp al +58 414-616-4177.',
+    'Cada código se puede usar una sola vez. Guárdalo como si fuera efectivo.',
+  ]
+    .filter((linea): linea is string => linea !== null)
+    .join('\n');
 }
 
 // Al comprador: sus codigos (cada uno con su monto), el resumen del pago y
@@ -311,7 +425,6 @@ export async function sendGiftCardsComprador(data: DatosCorreoVenta): Promise<bo
     }
 
     const client = new Resend(apiKey);
-    const comprobante = urlSegura(data.comprobanteUrl);
 
     // PDF con las tarjetas a tamano real para imprimir. Si no se puede generar,
     // el correo sale igual sin el adjunto: los codigos van tambien en el texto.
@@ -324,107 +437,8 @@ export async function sendGiftCardsComprador(data: DatosCorreoVenta): Promise<bo
       }
     }
 
-    const filasCodigos = data.giftCards
-      .map(
-        (g) => `
-            <tr>
-              <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold; letter-spacing: 1px; color: #111827;">${escaparHtml(g.codigo)}</td>
-              <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #1f2937; text-align: right;">${escaparHtml(formatoUsd(g.montoUsd))}</td>
-            </tr>`,
-      )
-      .join('');
-
-    const resumen = [
-      filaResumen('Número de pedido:', escaparHtml(data.numero)),
-      filaResumen('Total:', escaparHtml(formatoUsd(data.totalUsd))),
-      data.montoVes !== null ? filaResumen('Monto pagado:', escaparHtml(formatoBs(data.montoVes))) : '',
-      data.referencia ? filaResumen('Referencia bancaria:', escaparHtml(data.referencia)) : '',
-    ].join('');
-
-    const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #10B981; padding: 20px; text-align: center;">
-          <h1 style="color: white; margin: 0;">Todo Vending CA</h1>
-          <p style="color: white; margin: 5px 0 0 0;">¡Gracias por tu compra!</p>
-        </div>
-
-        <div style="padding: 30px; background-color: #f9fafb;">
-          ${notaPruebaHtml(data.esPrueba, NOTA_PRUEBA_COMPRADOR)}
-          <p style="color: #1f2937; margin-top: 0;">Hola ${escaparHtml(data.compradorNombre)},</p>
-          ${data.giftCards.length > 0 ? `
-          <p style="color: #1f2937;">
-            Recibimos tu pago. Aquí tienes ${data.giftCards.length === 1 ? 'tu Gift Card' : 'tus Gift Cards'} del pedido
-            <strong>${escaparHtml(data.numero)}</strong>:
-          </p>
-          ${notaFaltanHtml(data.faltanCodigos)}
-          <table style="width: 100%; border-collapse: collapse; background-color: white; border: 1px solid #e5e7eb;">
-            <tr>
-              <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; color: #374151;">Código</th>
-              <th style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151;">Monto</th>
-            </tr>
-            ${filasCodigos}
-          </table>
-          ${pdf ? `
-          <p style="color: #1f2937;">
-            Te adjuntamos ${data.giftCards.length === 1 ? 'tu Gift Card' : 'tus Gift Cards'} en PDF, lista${data.giftCards.length === 1 ? '' : 's'} para imprimir a tamaño real.
-          </p>
-          ` : ''}
-          ` : `
-          <p style="color: #1f2937;">Recibimos tu pago del pedido <strong>${escaparHtml(data.numero)}</strong>.</p>
-          ${notaFaltanHtml(data.faltanCodigos)}
-          `}
-
-          <h2 style="color: #1f2937; font-size: 18px; margin-top: 30px;">Resumen del pago</h2>
-          <table style="width: 100%; border-collapse: collapse;">
-            ${resumen}
-          </table>
-          ${comprobante ? `
-          <p style="margin-top: 20px;">
-            <a href="${escaparHtml(comprobante)}" style="display: inline-block; background-color: #10B981; color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none;">Ver comprobante de SPIDI</a>
-          </p>
-          ` : ''}
-
-          <h2 style="color: #1f2937; font-size: 18px; margin-top: 30px;">Cómo usar tu Gift Card</h2>
-          <ul style="color: #1f2937; padding-left: 20px; line-height: 1.6;">
-            <li>Cada código vale por el monto indicado para consumir en las máquinas de Todo Vending CA y Café Oriente.</li>
-            <li>Si tienes dudas sobre cómo usarlo, escríbenos por WhatsApp al +58 414-616-4177 y te ayudamos.</li>
-            <li>Cada código se puede usar una sola vez. Guárdalo como si fuera efectivo y compártelo solo con quien lo vaya a usar.</li>
-          </ul>
-        </div>
-
-        <div style="background-color: #1f2937; padding: 15px; text-align: center;">
-          <p style="color: #9ca3af; margin: 0; font-size: 12px;">
-            Compra realizada en todovendingca.com. Si tienes alguna duda, responde a este correo.
-          </p>
-        </div>
-      </div>
-    `;
-
-    // Version en texto plano: algunos clientes de correo no muestran HTML.
-    const emailTexto = [
-      data.esPrueba ? `MODO DE PRUEBA: ${NOTA_PRUEBA_COMPRADOR}` : null,
-      data.esPrueba ? '' : null,
-      `Hola ${data.compradorNombre},`,
-      '',
-      data.giftCards.length > 0
-        ? `Recibimos tu pago. Estas son tus Gift Cards del pedido ${data.numero}:`
-        : `Recibimos tu pago del pedido ${data.numero}.`,
-      ...data.giftCards.map((g) => `  ${g.codigo}  (${formatoUsd(g.montoUsd)})`),
-      pdf ? 'Te adjuntamos tus Gift Cards en PDF, listas para imprimir a tamaño real.' : null,
-      data.faltanCodigos > 0 ? '' : null,
-      data.faltanCodigos > 0 ? textoFaltanComprador(data.faltanCodigos) : null,
-      '',
-      `Total: ${formatoUsd(data.totalUsd)}`,
-      data.montoVes !== null ? `Monto pagado: ${formatoBs(data.montoVes)}` : null,
-      data.referencia ? `Referencia bancaria: ${data.referencia}` : null,
-      comprobante ? `Comprobante de SPIDI: ${comprobante}` : null,
-      '',
-      'Cómo usar tu Gift Card: cada código vale por su monto en las máquinas de Todo Vending CA y Café Oriente.',
-      'Si tienes dudas, escríbenos por WhatsApp al +58 414-616-4177.',
-      'Cada código se puede usar una sola vez. Guárdalo como si fuera efectivo.',
-    ]
-      .filter((linea): linea is string => linea !== null)
-      .join('\n');
+    const emailHtml = htmlGiftCardsComprador(data, pdf !== null);
+    const emailTexto = textoGiftCardsComprador(data, pdf !== null);
 
     const result = await client.emails.send({
       from: remitenteTienda(),
@@ -452,6 +466,81 @@ export async function sendGiftCardsComprador(data: DatosCorreoVenta): Promise<bo
   }
 }
 
+// HTML del aviso interno de venta (diseño Vitrina). Funcion pura: no envia
+// nada, asi se puede previsualizar con script/vista-correos.ts. No lleva los
+// codigos de Gift Card.
+export function htmlNotificacionVenta(
+  data: DatosCorreoVenta,
+  correoCompradorEnviado?: boolean,
+  opciones?: OpcionesCorreo,
+): string {
+  const comprobante = urlSegura(data.comprobanteUrl);
+  const numero = escaparHtml(data.numero);
+  const email = escaparHtml(data.compradorEmail);
+  const telefono = data.compradorTelefono ? escaparHtml(data.compradorTelefono) : null;
+  const total = escaparHtml(formatoUsd(data.totalUsd));
+  const cantidad = escaparHtml(String(data.cantidad));
+
+  const filas = tablaDatos([
+    { etiqueta: 'Pedido', valorHtml: numero },
+    { etiqueta: 'Comprador', valorHtml: escaparHtml(data.compradorNombre) },
+    { etiqueta: 'Email', valorHtml: enlace(`mailto:${email}`, email) },
+    telefono ? { etiqueta: 'Teléfono', valorHtml: enlace(`tel:${telefono}`, telefono) } : null,
+    { etiqueta: 'Cantidad', valorHtml: cantidad },
+    { etiqueta: 'Total', valorHtml: total },
+    data.montoVes !== null ? { etiqueta: 'Monto pagado', valorHtml: escaparHtml(formatoBs(data.montoVes)) } : null,
+    { etiqueta: 'Referencia bancaria', valorHtml: data.referencia ? escaparHtml(data.referencia) : 'Sin referencia' },
+    comprobante ? { etiqueta: 'Comprobante', valorHtml: enlace(escaparHtml(comprobante), 'Ver en SPIDI') } : null,
+  ]);
+
+  // Pago sin stock: el comprador pago y le faltan codigos. Es lo primero que
+  // debe ver quien lee el aviso.
+  const avisoSinStock = data.faltanCodigos > 0
+    ? aviso(
+        'alerta',
+        `<strong>PAGO SIN STOCK:</strong> faltan ${escaparHtml(String(data.faltanCodigos))} código(s) de Gift Card para este pedido
+           porque el inventario estaba vacío. Carga stock y entrégaselos a mano al comprador (el pedido aparece en /admin).`,
+      )
+    : '';
+
+  const avisoCorreo = correoCompradorEnviado !== false
+    ? ''
+    : aviso(
+        'aviso',
+        `El correo con los códigos <strong>no pudo enviarse al comprador</strong>. Los ve en la página de resultado del pago;
+           si te escribe, puedes confirmarle el pedido con su número.`,
+        '20px 0 0',
+      );
+
+  // Pantalla de la maquina con lo esencial de la venta (los mismos datos de la
+  // tabla de abajo): pedido, total y cantidad.
+  const pantalla = pantallaLed({
+    lineaSuperior: `Pedido ${numero}`,
+    cifra: total,
+    lineaInferior: `${cantidad} Gift&nbsp;Card${data.cantidad === 1 ? '' : 's'}`,
+  });
+
+  const cuerpo = [
+    notaPruebaHtml(data.esPrueba, notaPruebaVenta(data.pasarela)),
+    avisoSinStock,
+    pantalla,
+    filas,
+    avisoCorreo,
+  ].join('');
+
+  return documentoCorreo(
+    {
+      tituloDocumento: `Venta ${numero}: ${cantidad} Gift Card${data.cantidad === 1 ? '' : 's'} - ${total}`,
+      preheader: `${data.faltanCodigos > 0 ? 'PAGO SIN STOCK - ' : ''}${escaparHtml(data.compradorNombre)} · ${cantidad} Gift Card${data.cantidad === 1 ? '' : 's'} · ${total}`,
+      rotulo: 'Venta',
+      encabezado: 'Nueva venta de Gift Cards',
+      cuerpoHtml: cuerpo,
+      pieHtml: `Pago confirmado por ${nombrePasarela(data.pasarela)}. Enviado desde la tienda de todovendingca.com`,
+    },
+    opciones,
+  );
+}
+
 // Aviso interno de cada venta. No lleva los codigos (no hacen falta para el
 // aviso y asi circulan por menos sitios). Dice si el correo al comprador salio,
 // para saber si hay que escribirle a mano.
@@ -467,61 +556,7 @@ export async function sendNotificacionVenta(
     }
 
     const client = new Resend(apiKey);
-    const comprobante = urlSegura(data.comprobanteUrl);
-    const email = escaparHtml(data.compradorEmail);
-    const telefono = data.compradorTelefono ? escaparHtml(data.compradorTelefono) : null;
-
-    const filas = [
-      filaResumen('Pedido:', escaparHtml(data.numero)),
-      filaResumen('Comprador:', escaparHtml(data.compradorNombre)),
-      filaResumen('Email:', `<a href="mailto:${email}" style="color: #10B981;">${email}</a>`),
-      telefono ? filaResumen('Teléfono:', `<a href="tel:${telefono}" style="color: #10B981;">${telefono}</a>`) : '',
-      filaResumen('Cantidad:', escaparHtml(String(data.cantidad))),
-      filaResumen('Total:', escaparHtml(formatoUsd(data.totalUsd))),
-      data.montoVes !== null ? filaResumen('Monto pagado:', escaparHtml(formatoBs(data.montoVes))) : '',
-      filaResumen('Referencia bancaria:', data.referencia ? escaparHtml(data.referencia) : 'Sin referencia'),
-      comprobante
-        ? filaResumen('Comprobante:', `<a href="${escaparHtml(comprobante)}" style="color: #10B981;">Ver en SPIDI</a>`)
-        : '',
-    ].join('');
-
-    // Pago sin stock: el comprador pago y le faltan codigos. Es lo primero que
-    // debe ver quien lee el aviso.
-    const avisoSinStock = data.faltanCodigos > 0
-      ? `<p style="margin:0 0 20px;padding:12px;background:#fee2e2;border-left:4px solid #dc2626;color:#991b1b;font-size:14px;">
-           <strong>PAGO SIN STOCK:</strong> faltan ${escaparHtml(String(data.faltanCodigos))} código(s) de Gift Card para este pedido
-           porque el inventario estaba vacío. Carga stock y entrégaselos a mano al comprador (el pedido aparece en /admin).
-         </p>`
-      : '';
-
-    const avisoCorreo = correoCompradorEnviado !== false
-      ? ''
-      : `<p style="margin:16px 0 0;padding:12px;background:#fef3c7;border-left:4px solid #f59e0b;color:#92400e;font-size:13px;">
-           El correo con los códigos <strong>no pudo enviarse al comprador</strong>. Los ve en la página de resultado del pago;
-           si te escribe, puedes confirmarle el pedido con su número.
-         </p>`;
-
-    const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #10B981; padding: 20px; text-align: center;">
-          <h1 style="color: white; margin: 0;">Todo Vending CA</h1>
-          <p style="color: white; margin: 5px 0 0 0;">Nueva venta de Gift Cards</p>
-        </div>
-        <div style="padding: 30px; background-color: #f9fafb;">
-          ${notaPruebaHtml(data.esPrueba, notaPruebaVenta(data.pasarela))}
-          ${avisoSinStock}
-          <table style="width: 100%; border-collapse: collapse;">
-            ${filas}
-          </table>
-          ${avisoCorreo}
-        </div>
-        <div style="background-color: #1f2937; padding: 15px; text-align: center;">
-          <p style="color: #9ca3af; margin: 0; font-size: 12px;">
-            Pago confirmado por ${nombrePasarela(data.pasarela)}. Enviado desde la tienda de todovendingca.com
-          </p>
-        </div>
-      </div>
-    `;
+    const emailHtml = htmlNotificacionVenta(data, correoCompradorEnviado);
 
     const result = await client.emails.send({
       from: remitenteTienda(),

@@ -1,6 +1,6 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, cp } from "fs/promises";
 import path from "path";
 import viteConfig from "../vite.config";
 
@@ -78,6 +78,9 @@ async function buildAll() {
     external: externals,
     logLevel: "info",
   });
+
+  // Tipografías del PDF de Gift Cards (server/gift-card-pdf.ts las busca en dist/fuentes).
+  await cp("server/fuentes", "dist/fuentes", { recursive: true });
 }
 
 buildAll().catch((err) => {

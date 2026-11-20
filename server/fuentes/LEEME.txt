@@ -1,0 +1,13 @@
+Tipografías del sitio para el PDF imprimible de las Gift Cards
+(server/gift-card-pdf.ts). La compilación las copia a dist/fuentes.
+
+Son los pesos estáticos (subconjunto "latin") de los paquetes @fontsource,
+convertidos de WOFF a TTF porque pdfkit/fontkit no abre bien esos WOFF:
+
+  bricolage-grotesque-latin-700-normal.ttf   Bricolage Grotesque Bold (titulares)
+  instrument-sans-latin-400/600-normal.ttf   Instrument Sans (texto)
+  ibm-plex-mono-latin-500/600-normal.ttf     IBM Plex Mono (códigos y etiquetas)
+  doto-latin-900-normal.ttf                  Doto Black (cifras LED)
+
+Todas tienen licencia SIL Open Font License 1.1 (https://openfontlicense.org).
+Si falta algún archivo, el PDF sale igual con Helvetica/Courier.
