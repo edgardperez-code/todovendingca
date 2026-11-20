@@ -1,5 +1,5 @@
 import { FlaskConical } from "lucide-react";
-import { useModoPrueba } from "@/lib/config-tienda";
+import { useFranjaPrueba } from "@/lib/config-tienda";
 import { cn } from "@/lib/utils";
 
 // Franja que avisa que la tienda esta en modo prueba (cobra contra un entorno de
@@ -16,8 +16,10 @@ import { cn } from "@/lib/utils";
 // prueba se rotula aunque el servidor ya este en produccion. Mientras el pedido
 // no ha cargado (undefined), se usa la franja general del servidor.
 export function AvisoModoPrueba({ delPedido, className }: { delPedido?: boolean; className?: string }) {
-  const modoPruebaTienda = useModoPrueba();
-  const mostrar = delPedido ?? modoPruebaTienda;
+  const franja = useFranjaPrueba();
+  const mostrar = delPedido ?? franja.mostrar;
+  // La franja general (sin pedido) con Skylink real al lado: solo SPIDI es de prueba.
+  const soloSpidi = delPedido === undefined && franja.skylinkReal;
   if (!mostrar) return null;
   return (
     <div
@@ -31,8 +33,17 @@ export function AvisoModoPrueba({ delPedido, className }: { delPedido?: boolean;
     >
       <FlaskConical className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
       <p>
-        <strong className="font-semibold">Modo de prueba:</strong> los pagos no son reales y las Gift Cards
-        emitidas no sirven para canjear.
+        {soloSpidi ? (
+          <>
+            <strong className="font-semibold">SPIDI en modo de prueba:</strong> los pagos con SPIDI no son reales y
+            sus Gift Cards no sirven para canjear. Los pagos con Skylink sí son reales.
+          </>
+        ) : (
+          <>
+            <strong className="font-semibold">Modo de prueba:</strong> los pagos no son reales y las Gift Cards
+            emitidas no sirven para canjear.
+          </>
+        )}
       </p>
     </div>
   );

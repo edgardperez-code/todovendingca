@@ -64,6 +64,26 @@ export function useModoPrueba(): boolean {
   return data?.modoPrueba === true && data.entorno !== "desconocido";
 }
 
+// SPIDI: false solo si el servidor dice que su checkout esta cerrado (un
+// servidor viejo no manda el campo y se ofrece como siempre).
+export function useSpidiDisponible(): boolean {
+  const { data } = useConfigTienda();
+  return data?.spidi?.disponible !== false;
+}
+
+// true si la franja general de prueba debe salir: SPIDI en modo prueba y con
+// su checkout abierto (si esta cerrado no se ofrece, y decir "los pagos no son
+// reales" junto a un Skylink real seria falso).
+export function useFranjaPrueba(): { mostrar: boolean; skylinkReal: boolean } {
+  const { data } = useConfigTienda();
+  const spidiAbierto = data?.spidi?.disponible !== false;
+  const skylinkReal = data?.skylink?.disponible === true && data.skylink.modoPrueba === false;
+  return {
+    mostrar: data?.modoPrueba === true && data.entorno !== "desconocido" && spidiAbierto,
+    skylinkReal,
+  };
+}
+
 // Skylink Pay: si el servidor ofrece pagar con el y si esos pagos son de
 // prueba. Mientras carga (y en el SSR, o con un servidor viejo sin el campo)
 // devuelve no disponible: el boton de Skylink aparece cuando llega la config.

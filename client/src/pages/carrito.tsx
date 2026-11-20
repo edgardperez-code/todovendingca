@@ -25,7 +25,7 @@ import { SpidiAtribucion } from "@/components/spidi-atribucion";
 import { useToast } from "@/hooks/use-toast";
 import { useCarrito } from "@/lib/carrito";
 import { useStock } from "@/lib/stock-tienda";
-import { useSkylink } from "@/lib/config-tienda";
+import { useSkylink, useSpidiDisponible } from "@/lib/config-tienda";
 import { formatoUsd, textoUnidades } from "@/lib/formato";
 import { useSEO } from "@/lib/seo";
 import {
@@ -240,6 +240,10 @@ export default function CarritoPage() {
   // Con que pasarela se esta pagando (para el spinner del boton que se toco).
   const [pasarelaEnVuelo, setPasarelaEnVuelo] = useState<Pasarela>("spidi");
   const skylink = useSkylink();
+  // Si el checkout de SPIDI esta cerrado (y Skylink abierto), solo se ofrece
+  // Skylink, que pasa a ser el boton principal y el de la tecla Enter.
+  const mostrarSpidi = useSpidiDisponible() || !skylink.disponible;
+  const pasarelaPrincipal: Pasarela = mostrarSpidi ? "spidi" : "skylink";
   const [avisoPedido, setAvisoPedido] = useState<AvisoPedido | null>(null);
   // Candado sincronico: setState no es inmediato y un doble clic rapido podria
   // mandar dos peticiones antes de que el boton se vea deshabilitado.
@@ -544,7 +548,7 @@ export default function CarritoPage() {
                     <CardContent>
                       <Form {...form}>
                         <form
-                          onSubmit={form.handleSubmit((c) => onSubmit(c, "spidi"))}
+                          onSubmit={form.handleSubmit((c) => onSubmit(c, pasarelaPrincipal))}
                           className="space-y-4"
                           noValidate
                         >
@@ -649,6 +653,8 @@ export default function CarritoPage() {
                             </div>
                           )}
 
+                          {mostrarSpidi && (
+                            <>
                           <Button
                             type="submit"
                             size="lg"
@@ -675,20 +681,24 @@ export default function CarritoPage() {
                             sin registrarte.
                           </p>
                           <SpidiAtribucion className="pt-1" />
+                            </>
+                          )}
 
                           {skylink.disponible && (
-                            <div className="space-y-3 pt-2" data-testid="opcion-skylink">
-                              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                <Separator className="flex-1" />o<Separator className="flex-1" />
-                              </div>
+                            <div className={mostrarSpidi ? "space-y-3 pt-2" : "space-y-3"} data-testid="opcion-skylink">
+                              {mostrarSpidi && (
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                  <Separator className="flex-1" />o<Separator className="flex-1" />
+                                </div>
+                              )}
                               <Button
-                                type="button"
+                                type={mostrarSpidi ? "button" : "submit"}
                                 size="lg"
-                                variant="outline"
-                                className="w-full gap-2"
+                                variant={mostrarSpidi ? "outline" : "default"}
+                                className={mostrarSpidi ? "w-full gap-2" : "w-full gap-2 glow-primary"}
                                 disabled={bloqueado || hayExcedidas}
                                 aria-busy={bloqueado && pasarelaEnVuelo === "skylink"}
-                                onClick={form.handleSubmit((c) => onSubmit(c, "skylink"))}
+                                onClick={mostrarSpidi ? form.handleSubmit((c) => onSubmit(c, "skylink")) : undefined}
                                 data-testid="button-pagar-skylink"
                               >
                                 {bloqueado && pasarelaEnVuelo === "skylink" ? (

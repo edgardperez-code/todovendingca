@@ -196,23 +196,32 @@ export default function PagoResultadoPage() {
       }
     };
     // Vuelta desde Skylink: el token dice que pedido es (aunque se pague en
-    // otro navegador que el de la compra). Si falla la consulta, el ultimo
-    // pedido de este navegador.
+    // otro navegador que el de la compra). Si el token no es de ningun pedido,
+    // el ultimo pedido de este navegador. Si falla la red, se reintenta y,
+    // si sigue fallando, NO se muestra otro pedido ni se borra el token de la
+    // URL (recargar vuelve a intentarlo).
     const tokenSkylink = query.get("token_ws");
     if (tokenSkylink) {
       let vigente = true;
-      referenciaPorTokenSkylink(tokenSkylink)
-        .then((ref) => {
-          if (!vigente) return;
-          if (!ref) return usarUltimo();
-          window.history.replaceState(window.history.state, "", urlResultadoPedido(ref));
-          setParametros(ref);
-        })
-        .catch(() => {
-          if (vigente) usarUltimo();
-        });
+      let temporizador: number | undefined;
+      const intentar = (intento: number) => {
+        referenciaPorTokenSkylink(tokenSkylink)
+          .then((ref) => {
+            if (!vigente) return;
+            if (!ref) return usarUltimo();
+            window.history.replaceState(window.history.state, "", urlResultadoPedido(ref));
+            setParametros(ref);
+          })
+          .catch(() => {
+            if (!vigente) return;
+            if (intento < 3) temporizador = window.setTimeout(() => intentar(intento + 1), 1500 * intento);
+            else setParametros(null);
+          });
+      };
+      intentar(1);
       return () => {
         vigente = false;
+        if (temporizador !== undefined) window.clearTimeout(temporizador);
       };
     }
     usarUltimo();

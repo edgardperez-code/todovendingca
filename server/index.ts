@@ -117,7 +117,12 @@ app.use((req, res, next) => {
       // (?k=) y la busqueda del admin (?buscar=, que puede ser un email) nunca
       // llegan al log. El codigo de Gift Card, en cambio, viaja en la ruta de
       // los endpoints admin: se enmascara para que nunca quede escrito.
-      const rutaLog = path.replace(/^(\/api\/admin\/gift-cards\/)[^/]+/, "$1***");
+      // El token de Skylink tambien va en la ruta y abre el pedido como su
+      // clave: tambien se enmascara.
+      const rutaLog = path
+        .replace(/^(\/api\/admin\/gift-cards\/)[^/]+/, "$1***")
+        .replace(/^(\/api\/pedidos\/skylink\/)[^/]+/, "$1***")
+        .replace(/^(\/simulador-skylink\/pay\/)[^/]+/, "$1***");
       let logLine = `${req.method} ${rutaLog} ${res.statusCode} in ${duration}ms`;
       // En estas rutas viajan emails y codigos de Gift Card: solo se registra
       // metodo, ruta, status y duracion, nunca el cuerpo.

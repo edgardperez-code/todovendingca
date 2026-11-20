@@ -121,6 +121,9 @@ export interface ConfigTienda {
   // (simulador o monto de prueba). Un servidor viejo no manda el campo: el
   // cliente lo trata como no disponible.
   skylink?: { disponible: boolean; modoPrueba: boolean };
+  // Si el checkout de SPIDI esta abierto. Un servidor viejo no lo manda: el
+  // cliente lo trata como disponible (asi era antes de Skylink).
+  spidi?: { disponible: boolean };
 }
 
 // GET /api/pedidos/skylink/:token — la vuelta del pagador desde Skylink llega

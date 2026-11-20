@@ -264,8 +264,14 @@ function describirEntorno(pedido: Pedido): string {
 
 // TIENDA_PRUEBA_ENTREGA_INVENTARIO=1: ensayo "como en produccion" (ver arriba).
 // Solo vale con el servidor en modo prueba.
+// Nunca con Skylink en produccion: el ensayo entrega codigos del inventario
+// por pagos de prueba de SPIDI, y ese inventario es el mismo que Skylink vende
+// con dinero real (un pago falso se llevaria un codigo real). Con Skylink real,
+// los pedidos de prueba de SPIDI vuelven a salir PRUEBA-.
 function ensayoComoProduccion(): boolean {
-  return process.env.TIENDA_PRUEBA_ENTREGA_INVENTARIO?.trim() === "1" && modoPrueba();
+  return (
+    process.env.TIENDA_PRUEBA_ENTREGA_INVENTARIO?.trim() === "1" && modoPrueba() && entornoSkylink() !== "produccion"
+  );
 }
 
 // GET /api/tienda/config: solo si los pagos son de prueba y contra que entorno
@@ -277,6 +283,8 @@ export function configTienda(): ConfigTienda {
   return {
     modoPrueba: entorno !== "produccion" && !ensayoComoProduccion(),
     entorno,
+    // Si el checkout de SPIDI esta cerrado, la pagina no muestra su boton.
+    spidi: { disponible: spidiConfigurado() && !pruebasBloqueadas() },
     skylink: { disponible: !skylinkBloqueado(), modoPrueba: skylinkModoPrueba() },
   };
 }
@@ -845,8 +853,9 @@ async function crearCheckoutSkylink(
   }
 
   // Sin el token no se podria consultar ni casar la vuelta del pagador: se
-  // intenta dos veces y, si falla, el token queda en el log (no es un secreto
-  // por si solo: consultarlo exige la API Key) para recuperarlo a mano.
+  // intenta dos veces y, si falla, queda en el log solo el comienzo del token
+  // (el token completo abre el pedido, ver pedidoPorTokenSkylink) para poder
+  // ubicar el cobro en el panel de Skylink.
   let guardado: Pedido | undefined;
   let ultimoError: unknown = null;
   for (let intento = 1; intento <= 2 && !guardado; intento++) {
@@ -859,7 +868,7 @@ async function crearCheckoutSkylink(
   }
   if (!guardado) {
     console.error(
-      `[tienda] COBRO SKYLINK SIN GUARDAR: pedido ${pedido.numero} (id ${pedido.id}), token ${cobro.token}:`,
+      `[tienda] COBRO SKYLINK SIN GUARDAR: pedido ${pedido.numero} (id ${pedido.id}), token ${cobro.token.slice(0, 8)}...:`,
       describirError(ultimoError),
     );
     await storage.marcarPedidoError(pedido.id, "No se pudo guardar el cobro de Skylink").catch(() => undefined);
