@@ -13,6 +13,8 @@ import Carrito from "@/pages/carrito";
 import PagoResultado from "@/pages/pago-resultado";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
+import Blog from "@/pages/blog";
+import BlogArticulo from "@/pages/blog-articulo";
 import { CarritoProvider } from "@/lib/carrito";
 import { GestorScroll } from "@/lib/navegacion";
 import { MotionConfig } from "framer-motion";
@@ -27,6 +29,9 @@ function AppRoutes() {
       <Route path="/maquinas-expendedoras-lecheria" component={MaquinasLecheria} />
       <Route path="/vending-para-empresas" component={VendingEmpresas} />
       <Route path="/vending-gimnasios" component={VendingGimnasios} />
+      {/* Blog: el servidor precarga los articulos para el SSR (server/blog-rutas.ts). */}
+      <Route path="/blog" component={Blog} />
+      <Route path="/blog/:slug" component={BlogArticulo} />
       {/* Tienda: /carrito y /pago/resultado son noindex (ver useSEO). */}
       <Route path="/gift-card" component={GiftCard} />
       <Route path="/carrito" component={Carrito} />

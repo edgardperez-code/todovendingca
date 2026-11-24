@@ -65,7 +65,7 @@ function mensajeDe(cuerpo: unknown): string | null {
 export async function pedirAdmin<T>(
   clave: string,
   ruta: string,
-  opciones: { metodo?: "GET" | "POST"; cuerpo?: unknown } = {},
+  opciones: { metodo?: "GET" | "POST" | "PUT" | "DELETE"; cuerpo?: unknown } = {},
 ): Promise<T> {
   const metodo = opciones.metodo ?? "GET";
   const cabeceras: Record<string, string> = { "x-admin-key": clave };

@@ -21,6 +21,7 @@ const navLinks = [
   // Pagina estatica servida por Express (no es ruta de React): <a> normal.
   { href: "/cafe-oriente", label: "Café Oriente", external: true },
   { href: "/gift-card", label: "Gift Cards" },
+  { href: "/blog", label: "Blog" },
 ];
 
 const WHATSAPP =

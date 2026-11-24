@@ -11,6 +11,8 @@ export type SEOData = {
   // de pago). Igual llaman a useSEO: el servidor usa ssrSEO para saber que la
   // ruta existe y responder 200 en vez de 404.
   noindex?: boolean;
+  // "article" en los articulos del blog; por defecto "website".
+  ogType?: "website" | "article";
 };
 
 // Capturado durante el renderToString en el servidor (síncrono, sin condición de
@@ -140,7 +142,7 @@ export function renderHeadTags(data: SEOData): string {
   return `<title>${escapeHtml(data.title)}</title>
     <meta name="description" content="${escapeAttr(data.description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="${data.ogType ?? "website"}" />
     <meta property="og:url" content="${canonical}" />
     <meta property="og:title" content="${escapeAttr(data.title)}" />
     <meta property="og:description" content="${escapeAttr(data.description)}" />

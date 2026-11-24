@@ -60,6 +60,7 @@ import {
 } from "@/lib/admin-api";
 import { formatoBs, formatoFechaHora, formatoUsd, metodoPagoLegible } from "@/lib/formato";
 import { useSEO } from "@/lib/seo";
+import { BlogAdmin } from "@/components/admin-blog";
 import { CLAVE_STOCK } from "@/lib/stock-tienda";
 import { cn } from "@/lib/utils";
 import { PRODUCTOS, buscarProducto } from "@shared/catalogo";
@@ -117,7 +118,7 @@ const TAMANO_PAGINA = 50;
 interface SesionPanel {
   // Hace una llamada admin con la clave. Ante un 401 cierra la sesion (vuelve
   // a la pantalla de acceso) y lanza el error igual.
-  pedir: <T>(ruta: string, opciones?: { metodo?: "GET" | "POST"; cuerpo?: unknown }) => Promise<T>;
+  pedir: <T>(ruta: string, opciones?: { metodo?: "GET" | "POST" | "PUT" | "DELETE"; cuerpo?: unknown }) => Promise<T>;
   salir: () => void;
 }
 
@@ -250,7 +251,7 @@ export default function AdminPage() {
   const sesion = useMemo<SesionPanel | null>(() => {
     if (!clave) return null;
     return {
-      pedir: async <T,>(ruta: string, opciones?: { metodo?: "GET" | "POST"; cuerpo?: unknown }) => {
+      pedir: async <T,>(ruta: string, opciones?: { metodo?: "GET" | "POST" | "PUT" | "DELETE"; cuerpo?: unknown }) => {
         try {
           return await pedirAdmin<T>(clave, ruta, opciones);
         } catch (error) {
@@ -389,6 +390,9 @@ function Panel() {
           <TabsTrigger value="inventario" data-testid="tab-inventario">
             Inventario
           </TabsTrigger>
+          <TabsTrigger value="blog" data-testid="tab-blog">
+            Blog
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="resumen">
           <Resumen onIrA={setPestana} />
@@ -399,9 +403,17 @@ function Panel() {
         <TabsContent value="inventario">
           <Inventario />
         </TabsContent>
+        <TabsContent value="blog">
+          <BlogAdminConSesion />
+        </TabsContent>
       </Tabs>
     </div>
   );
+}
+
+function BlogAdminConSesion() {
+  const { pedir } = useSesion();
+  return <BlogAdmin pedir={pedir} />;
 }
 
 const CLAVE_RESUMEN = ["admin", "resumen"] as const;

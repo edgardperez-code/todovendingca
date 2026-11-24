@@ -11,11 +11,19 @@ export type SEOData = {
   // Paginas privadas o de paso (carrito, resultado del pago): que los
   // buscadores no las indexen ni sigan sus enlaces.
   noindex?: boolean;
+  // "article" en los articulos del blog; por defecto "website".
+  ogType?: "website" | "article";
 };
 
 export type RenderModule = {
-  render: (url: string) => { html: string; seo: SEOData | null };
+  render: (url: string, datos?: unknown) => { html: string; seo: SEOData | null };
 };
+
+// JSON dentro de un <script>: "<" como < para que ningun texto (por
+// ejemplo un articulo que diga "</script>") pueda cerrar el bloque.
+function jsonEnScript(valor: unknown): string {
+  return JSON.stringify(valor).replace(/</g, "\\u003c");
+}
 
 const SITE_URL = "https://www.todovendingca.com";
 
@@ -32,7 +40,7 @@ function renderHeadTags(seo: SEOData): string {
   const canonical = `${SITE_URL}${seo.path}`;
   const ogImage = seo.ogImage || `${SITE_URL}/og-image.jpg`;
   const jsonLdBlocks = (seo.jsonLd || [])
-    .map((block) => `<script type="application/ld+json" data-seo-jsonld="1">${JSON.stringify(block)}</script>`)
+    .map((block) => `<script type="application/ld+json" data-seo-jsonld="1">${jsonEnScript(block)}</script>`)
     .join("\n    ");
   // data-seo-robots="1" igual que renderHeadTags de client/src/lib/seo.tsx: asi
   // el cliente reconoce este meta como suyo y lo quita al navegar a una pagina
@@ -43,7 +51,7 @@ function renderHeadTags(seo: SEOData): string {
   return `<title>${escapeHtml(seo.title)}</title>
     <meta name="description" content="${escapeAttr(seo.description)}" />${robots}
     <link rel="canonical" href="${canonical}" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="${seo.ogType ?? "website"}" />
     <meta property="og:url" content="${canonical}" />
     <meta property="og:title" content="${escapeAttr(seo.title)}" />
     <meta property="og:description" content="${escapeAttr(seo.description)}" />
@@ -64,9 +72,14 @@ export function renderPage(
   template: string,
   mod: RenderModule,
   url: string,
+  datos: unknown = null,
 ): { html: string; status: 200 | 404 } {
-  const { html: appHtml, seo } = mod.render(url);
+  const { html: appHtml, seo } = mod.render(url, datos);
   let page = template.replace("<!--app-html-->", appHtml);
+  if (datos) {
+    // Los mismos datos para que el navegador hidrate igual que el servidor.
+    page = page.replace("</body>", `<script>window.__DATOS_INICIALES__=${jsonEnScript(datos)}</script>\n  </body>`);
+  }
   if (seo) {
     if (seo.noindex) {
       // La plantilla trae un robots "index, follow" para todo el sitio; aqui se

@@ -5,6 +5,7 @@ import viteConfig from "../vite.config";
 import fs from "fs";
 import path from "path";
 import { renderPage, type RenderModule } from "./render";
+import { precargarDatosBlog } from "./blog-rutas";
 
 const viteLogger = createLogger();
 
@@ -58,7 +59,8 @@ export async function setupVite(server: Server, app: Express) {
         "/src/entry-server.tsx",
       )) as RenderModule;
 
-      const { html: page, status } = renderPage(template, mod, url.split("?")[0]);
+      const datos = await precargarDatosBlog(url);
+      const { html: page, status } = renderPage(template, mod, url.split("?")[0], datos);
       res.status(status).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);

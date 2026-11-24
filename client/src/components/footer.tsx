@@ -21,6 +21,7 @@ const navLinks = [
   { href: "/vending-para-empresas", label: "Vending para Empresas" },
   { href: "/vending-gimnasios", label: "Vending para Gimnasios" },
   { href: "/gift-card", label: "Gift Cards Todo Vending" },
+  { href: "/blog", label: "Blog" },
 ];
 
 interface FooterProps {

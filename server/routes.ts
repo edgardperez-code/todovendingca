@@ -31,6 +31,8 @@ import {
 import { paginaSimulador, resolverCobroSimulado, simuladorActivo } from "./skylink";
 import { urlPublica } from "./spidi";
 import path from "path";
+import fs from "fs";
+import { entradasSitemapBlog, registrarRutasBlog, seccionLlmsBlog } from "./blog-rutas";
 
 // === Ayudantes de la tienda ===
 
@@ -360,12 +362,32 @@ export async function registerRoutes(
   app.get("/vasos", vasosHandler);
   app.get("/vasos/", vasosHandler);
 
-  // Serve sitemap.xml directly
-  app.get("/sitemap.xml", (req, res) => {
+  // Serve sitemap.xml directly (las paginas fijas + el blog, que cambia).
+  app.get("/sitemap.xml", async (req, res) => {
     res.setHeader("Content-Type", "application/xml");
-    res.setHeader("Cache-Control", "public, max-age=86400");
-    res.send(sitemapXml);
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    const blog = await entradasSitemapBlog();
+    res.send(sitemapXml.replace("</urlset>", `  <!-- Blog -->\n${blog}\n</urlset>`));
   });
+
+  // llms.txt: el archivo fijo de client/public mas la lista de articulos del blog.
+  app.get("/llms.txt", async (_req, res) => {
+    const isDev = process.env.NODE_ENV !== "production";
+    const filePath = isDev
+      ? path.resolve(process.cwd(), "client", "public", "llms.txt")
+      : path.resolve(__dirname, "public", "llms.txt");
+    try {
+      const base = await fs.promises.readFile(filePath, "utf-8");
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
+      res.setHeader("Cache-Control", "public, max-age=3600");
+      res.send(base.trimEnd() + (await seccionLlmsBlog()));
+    } catch (error) {
+      console.error("[blog] No se pudo leer llms.txt:", error instanceof Error ? error.message : error);
+      res.status(500).send("Error");
+    }
+  });
+
+  registrarRutasBlog(app, verificarAdmin);
 
   // Serve robots.txt directly
   app.get("/robots.txt", (req, res) => {

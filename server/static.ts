@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
 import { renderPage, type RenderModule } from "./render";
+import { precargarDatosBlog } from "./blog-rutas";
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(__dirname, "public");
@@ -37,13 +38,14 @@ export function serveStatic(app: Express) {
   const ssrEntryPath = path.resolve(__dirname, "server", "entry-server.cjs");
   const mod = require(ssrEntryPath) as RenderModule;
 
-  app.use("/{*path}", (req, res) => {
+  app.use("/{*path}", async (req, res) => {
     try {
       // Express 5 recalcula req.path como "/" dentro de una ruta comodín
       // "/{*path}" (lo trata como un mount). req.originalUrl sí conserva la
       // URL real solicitada por el navegador.
       const url = req.originalUrl.split("?")[0];
-      const { html: page, status } = renderPage(template, mod, url);
+      const datos = await precargarDatosBlog(url);
+      const { html: page, status } = renderPage(template, mod, url, datos);
       res.status(status).set({ "Content-Type": "text/html" }).end(page);
     } catch (err) {
       console.error("SSR render error:", err);
