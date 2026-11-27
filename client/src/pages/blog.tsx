@@ -60,9 +60,9 @@ export default function Blog() {
   const visibles = categoria ? articulos.filter((a) => a.categoria === categoria) : articulos;
 
   useSEO({
-    title: "Blog de Máquinas Expendedoras y Vending en Venezuela | Todo Vending CA",
+    title: "Blog de Máquinas Expendedoras y Vending en Lechería | Todo Vending CA",
     description:
-      "Guías prácticas sobre máquinas expendedoras, café en grano y vending para empresas, clínicas, colegios y gimnasios en Venezuela, escritas por Todo Vending CA.",
+      "Guías prácticas sobre máquinas expendedoras, café en grano y vending para empresas, clínicas, colegios y gimnasios en Lechería, Anzoátegui, escritas por Todo Vending CA.",
     path: "/blog",
     jsonLd: [
       organizationSchema,
@@ -98,7 +98,7 @@ export default function Blog() {
           <div className="v-cont">
             <Etiqueta>Blog</Etiqueta>
             <h1 className="v-h1 vs-h1" data-speakable>
-              Todo sobre <em className="n">vending</em> en Venezuela
+              Todo sobre <em className="n">vending</em> en Lechería
             </h1>
             <p className="v-lead speakable">
               Guías prácticas para empresas, clínicas, colegios y gimnasios que quieren ofrecer snacks, bebidas y café a

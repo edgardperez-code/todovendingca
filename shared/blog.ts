@@ -112,7 +112,8 @@ export const articuloEntradaSchema = z.object({
     .string()
     .trim()
     .max(500)
-    .refine((v) => v === "" || /^(https:\/\/|\/)/.test(v), "La imagen debe ser una URL https o una ruta /…")
+    // Sin espacios, comillas ni < >: la URL va a atributos HTML (og:image, img).
+    .refine((v) => v === "" || /^(https:\/\/|\/)[^\s"'<>]*$/.test(v), "La imagen debe ser una URL https o una ruta /… sin espacios ni comillas")
     .nullable()
     .default(null)
     .transform((v) => (v ? v : null)),

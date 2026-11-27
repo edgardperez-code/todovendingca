@@ -133,8 +133,21 @@ export function BlogAdmin({ pedir }: { pedir: Pedir }) {
 
   // Se abre la versión actual del servidor, no la copia de la lista (que puede
   // ser vieja si alguien lo editó en otra pestaña).
+  // Solo hay un respaldo: abrir otro artículo con uno pendiente lo reemplazaría.
+  const sustituirRespaldo = (): boolean => {
+    if (!respaldo) return true;
+    const ok = window.confirm(
+      `Hay un artículo sin guardar («${respaldo.datos.titulo || "sin título"}»). Si abres otro, ese respaldo se perderá. ¿Continuar?`,
+    );
+    if (ok) {
+      escribirRespaldo(null);
+      setRespaldo(null);
+    }
+    return ok;
+  };
+
   const abrir = async (id: string) => {
-    if (abriendo) return;
+    if (abriendo || !sustituirRespaldo()) return;
     setAbriendo(id);
     try {
       const r = await pedir<{ ok: true; articulo: Articulo }>(`/api/admin/articulos/${id}`);
@@ -200,14 +213,14 @@ export function BlogAdmin({ pedir }: { pedir: Pedir }) {
             </CardDescription>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button className="gap-2" onClick={() => setGenerando(true)} disabled={abriendo !== null} data-testid="button-generar-articulo">
+            <Button className="gap-2" onClick={() => sustituirRespaldo() && setGenerando(true)} disabled={abriendo !== null} data-testid="button-generar-articulo">
               <Sparkles className="h-4 w-4" />
               Nuevo con IA
             </Button>
             <Button
               variant="outline"
               className="gap-2"
-              onClick={() => setEdicion({ id: null, version: null, datos: VACIO })}
+              onClick={() => sustituirRespaldo() && setEdicion({ id: null, version: null, datos: VACIO })}
               disabled={abriendo !== null}
               data-testid="button-nuevo-articulo"
             >
@@ -343,7 +356,7 @@ function FilaArticulo({
 // === Generador con IA ===
 
 const IDEAS = [
-  "¿Cuánto cuesta poner una máquina expendedora en mi empresa en Venezuela? (spoiler: la instalación es gratis)",
+  "¿Cuánto cuesta poner una máquina expendedora en mi empresa en Lechería? (spoiler: la instalación es gratis)",
   "Máquina de café en grano vs. café instantáneo en la oficina: diferencias y cuál conviene",
   "Cómo pagar con Pago Móvil en una máquina expendedora, paso a paso",
   "Beneficios del vending en clínicas para pacientes, familiares y personal de turno",
@@ -594,6 +607,8 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
       const et = datos.etiquetas.join(", ");
       const pc = datos.palabrasClave.join(", ");
       setId(r.articulo.id);
+      // Ya guardado: cambiar el título no mueve la URL (igual que al reabrirlo).
+      setSlugManual(true);
       setVersion(r.articulo.actualizadoEn);
       setD(datos);
       setEtiquetas(et);

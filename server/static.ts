@@ -2,7 +2,7 @@ import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
 import { renderPage, type RenderModule } from "./render";
-import { precargarDatosBlog } from "./blog-rutas";
+import { precargarDatosBlog, PrecargaFallida } from "./blog-rutas";
 
 export function serveStatic(app: Express) {
   const distPath = path.resolve(__dirname, "public");
@@ -48,6 +48,16 @@ export function serveStatic(app: Express) {
       const { html: page, status } = renderPage(template, mod, url, datos);
       res.status(status).set({ "Content-Type": "text/html" }).end(page);
     } catch (err) {
+      if (err instanceof PrecargaFallida) {
+        // Base de datos caída un momento: 503 + Retry-After para que los
+        // buscadores reintenten sin sacar el artículo del índice. El navegador
+        // recibe la plantilla y carga el artículo por la API.
+        res
+          .status(503)
+          .set({ "Content-Type": "text/html", "Retry-After": "120" })
+          .end(template.replace("<!--app-html-->", ""));
+        return;
+      }
       console.error("SSR render error:", err);
       res
         .status(200)

@@ -6,6 +6,7 @@ import { Icono } from "@/components/vitrina/iconos";
 import { apiRequest } from "@/lib/queryClient";
 import { EnlaceInterno } from "@/lib/navegacion";
 import { useSEO } from "@/lib/seo";
+import { contactoConLimites } from "@shared/schema";
 import { BUSINESS_PHONE_DISPLAY, organizationSchema, breadcrumbSchema } from "@/lib/schema";
 
 // Formulario de solicitud de máquina. Usa el mismo /api/contact del inicio
@@ -94,7 +95,9 @@ export default function SolicitarMaquina() {
       setError(
         e instanceof Error && e.message.startsWith("429")
           ? `Enviaste varias solicitudes seguidas. Espera unos minutos o escríbenos por WhatsApp al ${BUSINESS_PHONE_DISPLAY}.`
-          : `No pudimos enviar la solicitud. Inténtalo de nuevo o escríbenos por WhatsApp al ${BUSINESS_PHONE_DISPLAY}.`,
+          : e instanceof Error && e.message.startsWith("400")
+            ? "Revisa tus datos: el correo o algún campo no es válido."
+            : `No pudimos enviar la solicitud. Inténtalo de nuevo o escríbenos por WhatsApp al ${BUSINESS_PHONE_DISPLAY}.`,
       ),
   });
 
@@ -121,7 +124,8 @@ export default function SolicitarMaquina() {
     e.preventDefault();
     setError(null);
     if (d.nombre.trim().length < 2) return setError("Escribe tu nombre.");
-    if (!/^\S+@\S+\.\S+$/.test(d.email.trim())) return setError("Escribe un correo válido.");
+    // La misma regla de correo que aplica el servidor.
+    if (!contactoConLimites.shape.email.safeParse(d.email).success) return setError("Escribe un correo válido.");
     if (d.telefono.replace(/\D/g, "").length < 7) return setError("Escribe un teléfono para contactarte.");
     enviar.mutate();
   };

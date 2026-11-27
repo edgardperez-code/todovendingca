@@ -24,9 +24,9 @@ import {
 
 export default function Home() {
   useSEO({
-    title: "Máquinas Expendedoras en Venezuela | Todo Vending CA",
+    title: "Máquinas Expendedoras en Lechería, Anzoátegui | Todo Vending CA",
     description:
-      "Todo Vending CA: máquinas expendedoras en Venezuela con instalación GRATUITA, mantenimiento 24/7 y reposición incluida. Snacks, bebidas, café en grano (Café Oriente), bebidas energéticas y barras de proteínas en Lechería, Anzoátegui.",
+      "Todo Vending CA: máquinas expendedoras en Lechería, Anzoátegui, con instalación GRATUITA, mantenimiento 24/7 y reposición incluida. Snacks, bebidas, café en grano (Café Oriente), bebidas energéticas y barras de proteínas.",
     path: "/",
     jsonLd: [
       websiteSchema,

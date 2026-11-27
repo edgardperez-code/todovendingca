@@ -38,7 +38,8 @@ function escapeAttr(s: string) {
 
 function renderHeadTags(seo: SEOData): string {
   const canonical = `${SITE_URL}${seo.path}`;
-  const ogImage = seo.ogImage || `${SITE_URL}/og-image.jpg`;
+  // Escapada: en el blog viene de la portada que escribe el admin.
+  const ogImage = escapeAttr(seo.ogImage || `${SITE_URL}/og-image.jpg`);
   const jsonLdBlocks = (seo.jsonLd || [])
     .map((block) => `<script type="application/ld+json" data-seo-jsonld="1">${jsonEnScript(block)}</script>`)
     .join("\n    ");
@@ -75,10 +76,12 @@ export function renderPage(
   datos: unknown = null,
 ): { html: string; status: 200 | 404 } {
   const { html: appHtml, seo } = mod.render(url, datos);
-  let page = template.replace("<!--app-html-->", appHtml);
+  // Reemplazos con función: con un string, replace() interpretaría "$&", "$`",
+  // "$'" o "$$" que aparezcan en el texto de un artículo.
+  let page = template.replace("<!--app-html-->", () => appHtml);
   if (datos) {
     // Los mismos datos para que el navegador hidrate igual que el servidor.
-    page = page.replace("</body>", `<script>window.__DATOS_INICIALES__=${jsonEnScript(datos)}</script>\n  </body>`);
+    page = page.replace("</body>", () => `<script>window.__DATOS_INICIALES__=${jsonEnScript(datos)}</script>\n  </body>`);
   }
   if (seo) {
     if (seo.noindex) {
@@ -87,7 +90,7 @@ export function renderPage(
       // insertar el <head> propio, que trae el noindex).
       page = page.replace(/<meta\s+name="robots"[^>]*>\s*/i, "");
     }
-    page = page.replace("<!--app-head-->", renderHeadTags(seo));
+    page = page.replace("<!--app-head-->", () => renderHeadTags(seo));
     return { html: page, status: 200 };
   }
   // Sin seo => la ruta cayó en NotFound (ninguna página real llamó useSEO).

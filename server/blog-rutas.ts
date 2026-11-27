@@ -24,6 +24,10 @@ export interface DatosBlog {
   articulo?: { slug: string; datos: ArticuloPublico | null };
 }
 
+// La base de datos falló al precargar /blog o /blog/:slug. No es "no existe":
+// el servidor responde 503 (los buscadores reintentan) en vez de un 404 noindex.
+export class PrecargaFallida extends Error {}
+
 export async function precargarDatosBlog(url: string): Promise<DatosBlog | null> {
   const ruta = url.split("?")[0].replace(/\/+$/, "") || "/";
   try {
@@ -38,6 +42,7 @@ export async function precargarDatosBlog(url: string): Promise<DatosBlog | null>
     }
   } catch (error) {
     console.error("[blog] No se pudieron precargar los datos del SSR:", error instanceof Error ? error.message : error);
+    throw new PrecargaFallida("precarga del blog");
   }
   return null;
 }

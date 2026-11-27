@@ -46,7 +46,7 @@ export const organizationSchema = {
   },
   image: `${SITE_URL}/og-image.jpg`,
   description:
-    "Empresa líder en soluciones de máquinas expendedoras en Venezuela. Ofrecemos snacks, bebidas, café, bebidas energéticas y barras de proteínas con instalación gratuita, mantenimiento y reposición incluida.",
+    "Empresa de máquinas expendedoras en Lechería, Anzoátegui (Venezuela). Ofrecemos snacks, bebidas, café, bebidas energéticas y barras de proteínas con instalación gratuita, mantenimiento y reposición incluida.",
   foundingLocation: { "@type": "Place", name: "Lechería, Anzoátegui, Venezuela" },
   // Zona de servicio real: solo Lechería.
   areaServed: {
@@ -97,7 +97,7 @@ export const localBusinessSchema = {
   image: `${SITE_URL}/og-image.jpg`,
   logo: `${SITE_URL}/logo.png`,
   description:
-    "Empresa líder en máquinas expendedoras en Venezuela. Instalación gratuita, mantenimiento 24/7 y reposición incluida en Lechería, Anzoátegui.",
+    "Máquinas expendedoras en Lechería, Anzoátegui. Instalación gratuita, mantenimiento 24/7 y reposición incluida.",
   url: `${SITE_URL}/`,
   telephone: BUSINESS_PHONE,
   email: BUSINESS_EMAIL,
@@ -219,7 +219,7 @@ export const homeServicesItemListSchema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   name: "Servicios de Todo Vending CA",
-  description: "Lista completa de servicios de máquinas expendedoras ofrecidos por Todo Vending CA en Venezuela",
+  description: "Lista completa de servicios de máquinas expendedoras ofrecidos por Todo Vending CA en Lechería, Anzoátegui",
   url: `${SITE_URL}/#servicios`,
   numberOfItems: 8,
   itemListElement: [
@@ -265,7 +265,7 @@ export const homeFaqSchema = faqSchema([
 export const homeHowToSchema = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  name: "Cómo obtener una máquina expendedora gratis para tu negocio en Venezuela",
+  name: "Cómo obtener una máquina expendedora gratis para tu negocio en Lechería",
   description: "Proceso para solicitar e instalar una máquina expendedora de Todo Vending CA en tu empresa, clínica, gimnasio u oficina en Lechería, Anzoátegui.",
   totalTime: "P3D",
   estimatedCost: { "@type": "MonetaryAmount", currency: "USD", value: "0" },
@@ -287,9 +287,9 @@ export const homeWebPageSchema = {
   "@type": "WebPage",
   "@id": `${SITE_URL}/#webpage`,
   url: `${SITE_URL}/`,
-  name: "Todo Vending CA — Máquinas Expendedoras en Venezuela",
-  headline: "Máquinas Expendedoras en Venezuela con Instalación Gratuita",
-  description: "Todo Vending CA es la empresa líder en máquinas expendedoras en Venezuela. Ofrecemos snacks, bebidas frías, café en grano, bebidas energéticas y barras de proteínas con instalación gratuita, mantenimiento 24/7 y reposición sin costo adicional en Lechería, Anzoátegui.",
+  name: "Todo Vending CA — Máquinas Expendedoras en Lechería, Anzoátegui",
+  headline: "Máquinas Expendedoras en Lechería con Instalación Gratuita",
+  description: "Todo Vending CA ofrece máquinas expendedoras en Lechería, Anzoátegui: snacks, bebidas frías, café en grano, bebidas energéticas y barras de proteínas con instalación gratuita, mantenimiento 24/7 y reposición sin costo adicional.",
   inLanguage: "es",
   isPartOf: { "@id": `${SITE_URL}/#website` },
   about: { "@id": `${SITE_URL}/#organization` },
