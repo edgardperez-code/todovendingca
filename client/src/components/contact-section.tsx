@@ -17,13 +17,42 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle } from "lucide-react";
 import { Etiqueta, Icono, type NombreIcono } from "@/components/vitrina";
-import { insertContactMessageSchema, type InsertContactMessage } from "@shared/schema";
+import { insertContactMessageSchema, LIMITES_CONTACTO, type InsertContactMessage } from "@shared/schema";
 
+// Los máximos son los mismos que valida el servidor (LIMITES_CONTACTO).
 const contactFormSchema = insertContactMessageSchema.extend({
-  name: insertContactMessageSchema.shape.name.min(2, "El nombre debe tener al menos 2 caracteres"),
-  email: insertContactMessageSchema.shape.email.email("Por favor ingresa un email valido"),
-  message: insertContactMessageSchema.shape.message.min(10, "El mensaje debe tener al menos 10 caracteres"),
+  name: insertContactMessageSchema.shape.name
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .max(LIMITES_CONTACTO.name, `El nombre puede tener hasta ${LIMITES_CONTACTO.name} caracteres`),
+  email: insertContactMessageSchema.shape.email
+    .email("Por favor ingresa un email valido")
+    .max(LIMITES_CONTACTO.email, "El email es demasiado largo"),
+  phone: insertContactMessageSchema.shape.phone.refine(
+    (v) => !v || v.length <= LIMITES_CONTACTO.phone,
+    `El teléfono puede tener hasta ${LIMITES_CONTACTO.phone} caracteres`,
+  ),
+  company: insertContactMessageSchema.shape.company.refine(
+    (v) => !v || v.length <= LIMITES_CONTACTO.company,
+    `La empresa puede tener hasta ${LIMITES_CONTACTO.company} caracteres`,
+  ),
+  message: insertContactMessageSchema.shape.message
+    .min(10, "El mensaje debe tener al menos 10 caracteres")
+    .max(LIMITES_CONTACTO.message, `El mensaje puede tener hasta ${LIMITES_CONTACTO.message} caracteres`),
 });
+
+// apiRequest lanza "429: {json}": se muestra el mensaje del servidor cuando
+// es el límite de envíos (p. ej. "espera unos minutos o escríbenos por WhatsApp").
+function mensajeDelServidor(error: unknown): string | null {
+  const texto = error instanceof Error ? error.message : "";
+  const m = /^429: ([\s\S]*)$/.exec(texto);
+  if (!m) return null;
+  try {
+    const cuerpo = JSON.parse(m[1]) as { error?: unknown };
+    return typeof cuerpo.error === "string" ? cuerpo.error : null;
+  } catch {
+    return null;
+  }
+}
 
 type ContactFormData = InsertContactMessage;
 
@@ -152,10 +181,10 @@ export function ContactSection() {
         description: "Nos pondremos en contacto contigo pronto.",
       });
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: "Hubo un problema al enviar tu mensaje. Intenta de nuevo.",
+        description: mensajeDelServidor(error) ?? "Hubo un problema al enviar tu mensaje. Intenta de nuevo.",
         variant: "destructive",
       });
     },

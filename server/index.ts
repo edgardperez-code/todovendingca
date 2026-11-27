@@ -97,7 +97,16 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
-const RUTAS_SIN_CUERPO_EN_LOG = ["/api/checkout", "/api/pedidos", "/api/webhooks", "/api/admin"];
+// /api/contact y /api/encuesta-vasos llevan nombres, correos, telefonos y
+// comentarios: tampoco se registran.
+const RUTAS_SIN_CUERPO_EN_LOG = [
+  "/api/checkout",
+  "/api/pedidos",
+  "/api/webhooks",
+  "/api/admin",
+  "/api/contact",
+  "/api/encuesta-vasos",
+];
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -145,7 +154,10 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    console.error("Internal Server Error:", err);
+    // Solo tipo, estado y mensaje: el objeto completo puede traer el cuerpo
+    // crudo de la petición (por ejemplo un JSON mal formado del formulario de
+    // contacto) con nombres, correos y teléfonos.
+    console.error("Internal Server Error:", { status, type: err?.type, message: err?.message });
 
     if (res.headersSent) {
       return next(err);

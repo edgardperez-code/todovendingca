@@ -1,7 +1,7 @@
 import express, { type Express, type Request, type Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactMessageSchema, insertEncuestaVasosSchema, type GiftCard } from "@shared/schema";
+import { contactoConLimites, insertEncuestaVasosSchema, type GiftCard } from "@shared/schema";
 import { checkoutRequestSchema, ESTADO_GIFT_CARD_PRUEBA, type ErrorResponse } from "@shared/tienda";
 import { MAX_UNIDADES_POR_PEDIDO } from "@shared/catalogo";
 import { z } from "zod";
@@ -13,6 +13,7 @@ import {
   compararSecreto,
   completarCodigosAdmin,
   configTienda,
+  crearLimitador,
   consultarPedidoPublico,
   crearCheckout,
   ErrorTienda,
@@ -191,6 +192,13 @@ function motivoNoCanjeable(giftCard: GiftCard): string {
   }
   return "Esta Gift Card no está activa.";
 }
+
+// Formulario de contacto: 5 mensajes cada 10 minutos por IP, y largo maximo por
+// campo (el esquema de la tabla no limita nada).
+const limitarContacto = crearLimitador(10 * 60_000, 5, "Demasiados mensajes");
+// Encuesta de vasos: se llena desde el QR del vaso, a veces muchas personas
+// desde el mismo wifi (una clínica): cupo más amplio, 30 cada 10 minutos.
+const limitarEncuesta = crearLimitador(10 * 60_000, 30, "Demasiadas encuestas");
 
 // Sitemap XML content
 // Nota: los buscadores ignoran fragmentos (#seccion), por eso solo se listan URLs reales.
@@ -373,10 +381,20 @@ export async function registerRoutes(
     res.setHeader("Cache-Control", "public, max-age=86400");
     res.send(robotsTxt);
   });
-  // Contact form submission
+  // Contact form submission. Cada envio guarda en la base y manda un correo:
+  // limite por IP y largo maximo por campo para que nadie llene la base ni el
+  // correo de basura.
   app.post("/api/contact", async (req, res) => {
     try {
-      const validatedData = insertContactMessageSchema.parse(req.body);
+      limitarContacto(req.ip || req.socket.remoteAddress || "desconocida");
+    } catch (error) {
+      if (error instanceof ErrorTienda) {
+        return res.status(429).json({ success: false, error: "Demasiados mensajes seguidos. Espera unos minutos o escríbenos por WhatsApp." });
+      }
+      throw error;
+    }
+    try {
+      const validatedData = contactoConLimites.parse(req.body);
       const message = await storage.createContactMessage(validatedData);
       
       // Send email notification to todovendingca@gmail.com
@@ -392,7 +410,8 @@ export async function registerRoutes(
         console.warn("Email notification failed but message was saved");
       }
       
-      res.status(201).json({ success: true, message });
+      // Solo el id: el mensaje con los datos personales no vuelve al navegador.
+      res.status(201).json({ success: true, id: message.id });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ 
@@ -410,8 +429,10 @@ export async function registerRoutes(
     }
   });
 
-  // Get all contact messages (for admin purposes)
+  // Mensajes de contacto: traen nombres, correos y telefonos, asi que solo con
+  // la clave de administrador (antes respondia a cualquiera).
   app.get("/api/contact", async (req, res) => {
+    if (!verificarAdmin(req, res)) return;
     try {
       const messages = await storage.getContactMessages();
       res.json(messages);
@@ -427,6 +448,15 @@ export async function registerRoutes(
   // === ENCUESTA DE VASOS (Café Oriente feedback) ===
 
   app.post("/api/encuesta-vasos", async (req, res) => {
+    // Cada encuesta guarda una fila y manda un correo: límite por IP.
+    try {
+      limitarEncuesta(req.ip || req.socket.remoteAddress || "desconocida");
+    } catch (error) {
+      if (error instanceof ErrorTienda) {
+        return res.status(429).json({ ok: false, error: "Demasiadas encuestas seguidas. Intenta en unos minutos." });
+      }
+      throw error;
+    }
     let validatedData;
     try {
       validatedData = insertEncuestaVasosSchema.parse(req.body);
@@ -466,22 +496,14 @@ export async function registerRoutes(
       return res.status(500).json({ ok: false, error: "Error interno del servidor" });
     }
 
-    res.status(201).json({ ok: true, encuesta });
+    // Sin devolver la fila: la página solo mira que la respuesta sea correcta.
+    res.status(201).json({ ok: true });
   });
 
   app.get("/api/encuesta-vasos/resumen", async (req, res) => {
-    // Si ADMIN_KEY no esta configurada, la comparacion "undefined !== undefined"
-    // daba falso y dejaba el endpoint ABIERTO a cualquiera sin cabecera. Hay que
-    // exigir que la clave exista en el entorno antes de comparar nada.
-    const claveEsperada = process.env.ADMIN_KEY;
-    if (!claveEsperada) {
-      console.error("ADMIN_KEY no configurada: se rechaza el acceso al resumen");
-      return res.status(503).json({ ok: false, error: "Servicio no configurado" });
-    }
-    const claveRecibida = req.headers["x-admin-key"];
-    if (typeof claveRecibida !== "string" || claveRecibida !== claveEsperada) {
-      return res.status(401).json({ ok: false, error: "No autorizado" });
-    }
+    // Misma puerta que el panel: sin ADMIN_KEY queda cerrado (503), compara en
+    // tiempo constante, cuenta los intentos fallidos y pone no-store.
+    if (!verificarAdmin(req, res)) return;
 
     try {
       const encuestas = await storage.getEncuestasVasos();
