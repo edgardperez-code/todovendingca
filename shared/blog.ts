@@ -65,6 +65,20 @@ export function slugificar(texto: string): string {
     .replace(/-+$/g, "");
 }
 
+// Igual que slugificar, pero mientras se escribe: deja un guion al final para
+// que se pueda seguir escribiendo la palabra siguiente ("maquinas-" -> "maquinas-cafe").
+// Al salir del campo se pasa por slugificar para quitarlo si quedó suelto.
+export function slugificarEscribiendo(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/ñ/g, "n")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+/g, "")
+    .slice(0, 80);
+}
+
 export function minutosDeLectura(markdown: string): number {
   const palabras = markdown.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(palabras / 220));

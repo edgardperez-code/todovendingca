@@ -1,7 +1,7 @@
 // Pestaña "Blog" del panel /admin: lista de artículos, redacción con IA
 // (Claude) y editor con vista previa. Lo que genera la IA se carga en el editor
 // y NO se publica solo: hay que revisarlo y pulsar Publicar.
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import {
   CATEGORIAS_BLOG,
   markdownAHtml,
   slugificar,
+  slugificarEscribiendo,
   type Articulo,
   type ArticuloEntrada,
   type ArticuloGenerado,
@@ -54,7 +55,44 @@ const lista = (texto: string) =>
     .filter(Boolean);
 
 // Estado del editor: un artículo existente, uno nuevo (quizá generado por IA) o ninguno.
-type Edicion = { id: string | null; datos: ArticuloEntrada } | null;
+// version: el actualizadoEn del artículo al abrirlo (null si es nuevo); el
+// servidor rechaza el guardado si otro lo cambió mientras tanto.
+type Edicion = { id: string | null; version: string | null; datos: ArticuloEntrada; recuperado?: boolean } | null;
+
+// === Cambios sin guardar ===
+// El panel pregunta antes de "Salir" si el editor tiene cambios sin guardar.
+let cambiosSinGuardar = false;
+export function hayArticuloSinGuardar(): boolean {
+  return cambiosSinGuardar;
+}
+
+// Respaldo en el navegador del artículo que se está editando: si la sesión
+// vence (401), se pulsa "Salir" o se cierra la página, al volver se ofrece
+// recuperarlo. Se borra al guardar o al descartar los cambios a propósito.
+const CLAVE_RESPALDO = "tv-blog-respaldo";
+interface Respaldo {
+  id: string | null;
+  version: string | null;
+  datos: ArticuloEntrada;
+  guardadoEn: string;
+}
+function leerRespaldo(): Respaldo | null {
+  try {
+    const crudo = window.localStorage.getItem(CLAVE_RESPALDO);
+    const r = crudo ? (JSON.parse(crudo) as Respaldo) : null;
+    return r && r.datos && typeof r.datos.titulo === "string" ? r : null;
+  } catch {
+    return null;
+  }
+}
+function escribirRespaldo(r: Respaldo | null) {
+  try {
+    if (r) window.localStorage.setItem(CLAVE_RESPALDO, JSON.stringify(r));
+    else window.localStorage.removeItem(CLAVE_RESPALDO);
+  } catch {
+    // Almacenamiento lleno o bloqueado: el respaldo es solo una ayuda.
+  }
+}
 
 const VACIO: ArticuloEntrada = {
   titulo: "",
@@ -81,24 +119,57 @@ function deArticulo(a: Articulo): ArticuloEntrada {
 export function BlogAdmin({ pedir }: { pedir: Pedir }) {
   const [edicion, setEdicion] = useState<Edicion>(null);
   const [generando, setGenerando] = useState(false);
+  const [abriendo, setAbriendo] = useState<string | null>(null);
+  const [respaldo, setRespaldo] = useState<Respaldo | null>(null);
+  const { toast } = useToast();
+  // Se lee después de montar (localStorage no existe en el servidor).
+  useEffect(() => {
+    setRespaldo(leerRespaldo());
+  }, []);
   const consulta = useQuery({
     queryKey: CLAVE_LISTA,
     queryFn: () => pedir<{ ok: true; iaConfigurada: boolean; articulos: Articulo[] }>("/api/admin/articulos"),
   });
 
+  // Se abre la versión actual del servidor, no la copia de la lista (que puede
+  // ser vieja si alguien lo editó en otra pestaña).
+  const abrir = async (id: string) => {
+    if (abriendo) return;
+    setAbriendo(id);
+    try {
+      const r = await pedir<{ ok: true; articulo: Articulo }>(`/api/admin/articulos/${id}`);
+      setEdicion({ id, version: r.articulo.actualizadoEn, datos: deArticulo(r.articulo) });
+    } catch (e) {
+      toast({ variant: "destructive", title: "No se pudo abrir el artículo", description: mensajeError(e) });
+    } finally {
+      setAbriendo(null);
+    }
+  };
+
   if (edicion) {
-    return <Editor pedir={pedir} edicion={edicion} onSalir={() => setEdicion(null)} />;
+    return (
+      <Editor
+        key={edicion.id ?? "nuevo"}
+        pedir={pedir}
+        edicion={edicion}
+        onSalir={() => {
+          setEdicion(null);
+          setRespaldo(leerRespaldo());
+        }}
+      />
+    );
   }
   if (generando) {
     return (
       <Generador
         pedir={pedir}
-        iaConfigurada={consulta.data?.iaConfigurada ?? false}
+        iaConfigurada={consulta.data?.iaConfigurada}
         onCancelar={() => setGenerando(false)}
         onListo={(g, prompt) => {
           setGenerando(false);
           setEdicion({
             id: null,
+            version: null,
             datos: {
               ...VACIO,
               ...g,
@@ -129,17 +200,53 @@ export function BlogAdmin({ pedir }: { pedir: Pedir }) {
             </CardDescription>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button className="gap-2" onClick={() => setGenerando(true)} data-testid="button-generar-articulo">
+            <Button className="gap-2" onClick={() => setGenerando(true)} disabled={abriendo !== null} data-testid="button-generar-articulo">
               <Sparkles className="h-4 w-4" />
               Nuevo con IA
             </Button>
-            <Button variant="outline" className="gap-2" onClick={() => setEdicion({ id: null, datos: VACIO })} data-testid="button-nuevo-articulo">
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => setEdicion({ id: null, version: null, datos: VACIO })}
+              disabled={abriendo !== null}
+              data-testid="button-nuevo-articulo"
+            >
               <FilePlus2 className="h-4 w-4" />
               En blanco
             </Button>
           </div>
         </CardHeader>
         <CardContent>
+          {respaldo && (
+            <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-100" role="alert">
+              <p>
+                Hay un artículo sin guardar: <strong>«{respaldo.datos.titulo || "sin título"}»</strong> (
+                {new Date(respaldo.guardadoEn).toLocaleString("es-VE", { timeZone: "America/Caracas" })}).
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  onClick={() =>
+                    setEdicion({ id: respaldo.id, version: respaldo.version, datos: respaldo.datos, recuperado: true })
+                  }
+                  data-testid="button-recuperar-articulo"
+                >
+                  Recuperar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    if (!window.confirm("¿Descartar el artículo sin guardar? No se puede deshacer.")) return;
+                    escribirRespaldo(null);
+                    setRespaldo(null);
+                  }}
+                >
+                  Descartar
+                </Button>
+              </div>
+            </div>
+          )}
           {consulta.isPending ? (
             <p className="text-sm text-muted-foreground flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" /> Cargando…
@@ -153,7 +260,7 @@ export function BlogAdmin({ pedir }: { pedir: Pedir }) {
           ) : (
             <ul className="divide-y">
               {articulos.map((a) => (
-                <FilaArticulo key={a.id} a={a} pedir={pedir} onEditar={() => setEdicion({ id: a.id, datos: deArticulo(a) })} />
+                <FilaArticulo key={a.id} a={a} pedir={pedir} abriendo={abriendo === a.id} bloqueado={abriendo !== null} onEditar={() => abrir(a.id)} />
               ))}
             </ul>
           )}
@@ -163,7 +270,19 @@ export function BlogAdmin({ pedir }: { pedir: Pedir }) {
   );
 }
 
-function FilaArticulo({ a, pedir, onEditar }: { a: Articulo; pedir: Pedir; onEditar: () => void }) {
+function FilaArticulo({
+  a,
+  pedir,
+  abriendo,
+  bloqueado,
+  onEditar,
+}: {
+  a: Articulo;
+  pedir: Pedir;
+  abriendo: boolean;
+  bloqueado: boolean;
+  onEditar: () => void;
+}) {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [confirmar, setConfirmar] = useState(false);
@@ -195,8 +314,8 @@ function FilaArticulo({ a, pedir, onEditar }: { a: Articulo; pedir: Pedir; onEdi
             </a>
           </Button>
         )}
-        <Button variant="outline" size="sm" className="gap-1" onClick={onEditar}>
-          <Pencil className="h-4 w-4" /> Editar
+        <Button variant="outline" size="sm" className="gap-1" onClick={onEditar} disabled={bloqueado}>
+          {abriendo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pencil className="h-4 w-4" />} Editar
         </Button>
         <Button variant="ghost" size="sm" className="gap-1 text-destructive" onClick={() => setConfirmar(true)} disabled={borrar.isPending}>
           <Trash2 className="h-4 w-4" /> Borrar
@@ -238,7 +357,8 @@ function Generador({
   onListo,
 }: {
   pedir: Pedir;
-  iaConfigurada: boolean;
+  // undefined mientras se sabe (cargando o error): no se muestra el aviso.
+  iaConfigurada: boolean | undefined;
   onCancelar: () => void;
   onListo: (g: ArticuloGenerado, prompt: string) => void;
 }) {
@@ -279,7 +399,7 @@ function Generador({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {!iaConfigurada && (
+        {iaConfigurada === false && (
           <p className="mb-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-100" role="alert">
             La IA no está configurada en el servidor: falta la variable ANTHROPIC_API_KEY. Puedes escribir artículos «En
             blanco» mientras tanto.
@@ -363,7 +483,7 @@ function Generador({
               <Input id="blog-publico" value={publico} onChange={(e) => setPublico(e.target.value)} placeholder="Gerentes de clínicas en Anzoátegui" />
             </div>
           </div>
-          <Button type="submit" className="gap-2" disabled={generar.isPending || prompt.trim().length < 10 || !iaConfigurada} data-testid="button-enviar-generar">
+          <Button type="submit" className="gap-2" disabled={generar.isPending || prompt.trim().length < 10 || iaConfigurada === false} data-testid="button-enviar-generar">
             {generar.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {generar.isPending ? "Redactando… (1 a 3 minutos)" : "Generar artículo"}
           </Button>
@@ -389,12 +509,65 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
   const { toast } = useToast();
   const qc = useQueryClient();
   const [id, setId] = useState(edicion.id);
+  const [version, setVersion] = useState(edicion.version);
   const [d, setD] = useState<ArticuloEntrada>(edicion.datos);
   // La URL sigue al título mientras no se edite a mano (y solo en artículos nuevos).
   const [slugManual, setSlugManual] = useState(edicion.id !== null || edicion.datos.slug !== "");
   const [etiquetas, setEtiquetas] = useState(edicion.datos.etiquetas.join(", "));
   const [palabras, setPalabras] = useState(edicion.datos.palabrasClave.join(", "));
   const vista = useMemo(() => markdownAHtml(d.contenido), [d.contenido]);
+
+  // Cambios sin guardar: se compara con lo último guardado. Un artículo nuevo
+  // (por ejemplo, el que acaba de redactar la IA) cuenta como sin guardar.
+  const foto = (datos: ArticuloEntrada, et: string, pc: string) => JSON.stringify([datos, et, pc]);
+  // Un respaldo recuperado cuenta como sin guardar hasta que se guarde.
+  const [guardado, setGuardado] = useState(() =>
+    edicion.id && !edicion.recuperado
+      ? foto(edicion.datos, edicion.datos.etiquetas.join(", "), edicion.datos.palabrasClave.join(", "))
+      : foto(VACIO, "", ""),
+  );
+  const sucio = foto(d, etiquetas, palabras) !== guardado;
+
+  // Aviso para el botón "Salir" del panel.
+  useEffect(() => {
+    cambiosSinGuardar = sucio;
+    return () => {
+      cambiosSinGuardar = false;
+    };
+  }, [sucio]);
+
+  // Respaldo en el navegador mientras haya cambios sin guardar (medio segundo
+  // después de la última tecla, para no escribir en cada una).
+  useEffect(() => {
+    if (!sucio) return;
+    const t = window.setTimeout(() => {
+      escribirRespaldo({
+        id,
+        version,
+        datos: { ...d, etiquetas: lista(etiquetas), palabrasClave: lista(palabras) },
+        guardadoEn: new Date().toISOString(),
+      });
+    }, 500);
+    return () => window.clearTimeout(t);
+  }, [sucio, d, etiquetas, palabras, id, version]);
+
+  // Cerrar o recargar la página con cambios sin guardar pide confirmación.
+  useEffect(() => {
+    if (!sucio) return;
+    const avisar = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", avisar);
+    return () => window.removeEventListener("beforeunload", avisar);
+  }, [sucio]);
+
+  const volver = () => {
+    if (sucio && !window.confirm("Tienes cambios sin guardar en este artículo. Si vuelves a la lista se perderán. ¿Volver igual?")) return;
+    // Volver a propósito descarta los cambios: también el respaldo.
+    escribirRespaldo(null);
+    onSalir();
+  };
 
   const cambiar = <K extends keyof ArticuloEntrada>(k: K, v: ArticuloEntrada[K]) => setD((x) => ({ ...x, [k]: v }));
 
@@ -410,12 +583,23 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
         faq: d.faq.filter((p) => p.q.trim() && p.a.trim()),
       };
       return id
-        ? pedir<{ ok: true; articulo: Articulo }>(`/api/admin/articulos/${id}`, { metodo: "PUT", cuerpo })
+        ? pedir<{ ok: true; articulo: Articulo }>(`/api/admin/articulos/${id}`, {
+            metodo: "PUT",
+            cuerpo: { ...cuerpo, versionEsperada: version },
+          })
         : pedir<{ ok: true; articulo: Articulo }>("/api/admin/articulos", { metodo: "POST", cuerpo });
     },
     onSuccess: (r) => {
+      const datos = deArticulo(r.articulo);
+      const et = datos.etiquetas.join(", ");
+      const pc = datos.palabrasClave.join(", ");
       setId(r.articulo.id);
-      setD(deArticulo(r.articulo));
+      setVersion(r.articulo.actualizadoEn);
+      setD(datos);
+      setEtiquetas(et);
+      setPalabras(pc);
+      setGuardado(foto(datos, et, pc));
+      escribirRespaldo(null);
       qc.invalidateQueries({ queryKey: CLAVE_LISTA });
       toast({
         title: r.articulo.estado === "publicado" ? "Artículo publicado" : "Borrador guardado",
@@ -430,7 +614,7 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
   return (
     <Card>
       <CardHeader>
-        <Button variant="ghost" size="sm" className="w-fit gap-1 -ml-2 mb-2" onClick={onSalir}>
+        <Button variant="ghost" size="sm" className="w-fit gap-1 -ml-2 mb-2" onClick={volver}>
           <ArrowLeft className="h-4 w-4" /> Volver a la lista
         </Button>
         <CardTitle className="flex flex-wrap items-center gap-2">
@@ -444,7 +628,15 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
           </CardDescription>
         )}
       </CardHeader>
-      <CardContent className="space-y-5">
+      <CardContent>
+        {/* Mientras se guarda no se puede editar: así lo que devuelve el servidor
+            no borra algo escrito durante el guardado. */}
+        <fieldset disabled={guardar.isPending} className="space-y-5 min-w-0">
+        {sucio && (
+          <p className="text-xs text-amber-600" role="status">
+            Hay cambios sin guardar.
+          </p>
+        )}
         <div className="space-y-2">
           <Label htmlFor="ed-titulo">Título</Label>
           <Input
@@ -467,8 +659,9 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
               value={d.slug}
               onChange={(e) => {
                 setSlugManual(true);
-                cambiar("slug", slugificar(e.target.value));
+                cambiar("slug", slugificarEscribiendo(e.target.value));
               }}
+              onBlur={() => cambiar("slug", slugificar(d.slug))}
             />
           </div>
           {id && d.estado === "publicado" && (
@@ -483,7 +676,7 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label>Categoría</Label>
-            <Select value={d.categoria} onValueChange={(v) => cambiar("categoria", v)}>
+            <Select value={d.categoria} onValueChange={(v) => cambiar("categoria", v)} disabled={guardar.isPending}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -570,12 +763,12 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
           <div className="space-y-4 mt-4">
             <div className="space-y-2">
               <Label htmlFor="ed-meta-t">Título SEO (si se deja vacío, se usa el título)</Label>
-              <Input id="ed-meta-t" value={d.metaTitulo ?? ""} onChange={(e) => cambiar("metaTitulo", e.target.value)} />
+              <Input id="ed-meta-t" value={d.metaTitulo ?? ""} onChange={(e) => cambiar("metaTitulo", e.target.value || null)} />
               <Contador valor={d.metaTitulo ?? ""} ideal={[30, 60]} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="ed-meta-d">Descripción SEO (si se deja vacía, se usa el resumen)</Label>
-              <Textarea id="ed-meta-d" rows={2} value={d.metaDescripcion ?? ""} onChange={(e) => cambiar("metaDescripcion", e.target.value)} />
+              <Textarea id="ed-meta-d" rows={2} value={d.metaDescripcion ?? ""} onChange={(e) => cambiar("metaDescripcion", e.target.value || null)} />
               <Contador valor={d.metaDescripcion ?? ""} ideal={[120, 160]} />
             </div>
             <div className="space-y-2">
@@ -601,6 +794,7 @@ function Editor({ pedir, edicion, onSalir }: { pedir: Pedir; edicion: NonNullabl
             </Button>
           )}
         </div>
+        </fieldset>
       </CardContent>
     </Card>
   );

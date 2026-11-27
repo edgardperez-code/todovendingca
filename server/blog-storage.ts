@@ -15,12 +15,30 @@ export class SlugRepetidoError extends Error {
   }
 }
 
+// Otra persona (u otra pestaña) guardó el artículo después de que se abrió.
+export class VersionCambiadaError extends Error {
+  constructor() {
+    super(
+      "Este artículo cambió mientras lo editabas (en otra pestaña o por otra persona). Vuelve a la lista y ábrelo de nuevo para no borrar esos cambios.",
+    );
+    this.name = "VersionCambiadaError";
+  }
+}
+
+// Las fechas se comparan al milisegundo (Postgres guarda microsegundos; el
+// navegador solo conoce milisegundos).
+function mismaVersion(actual: string, esperada: string | null): boolean {
+  return esperada === null || new Date(actual).getTime() === new Date(esperada).getTime();
+}
+
 export interface BlogStorage {
   listar(opciones?: { soloPublicados?: boolean }): Promise<Articulo[]>;
   obtener(id: string): Promise<Articulo | undefined>;
   obtenerPorSlug(slug: string): Promise<Articulo | undefined>;
   crear(datos: ArticuloEntrada): Promise<Articulo>;
-  actualizar(id: string, datos: ArticuloEntrada): Promise<Articulo | undefined>;
+  // versionEsperada: el actualizadoEn que tenía el artículo al abrirlo; si ya no
+  // coincide lanza VersionCambiadaError en vez de pisar los cambios de otro.
+  actualizar(id: string, datos: ArticuloEntrada, versionEsperada?: string | null): Promise<Articulo | undefined>;
   borrar(id: string): Promise<boolean>;
 }
 
@@ -72,9 +90,10 @@ class MemBlogStorage implements BlogStorage {
     return { ...articulo };
   }
 
-  async actualizar(id: string, datos: ArticuloEntrada) {
+  async actualizar(id: string, datos: ArticuloEntrada, versionEsperada: string | null = null) {
     const anterior = this.articulos.get(id);
     if (!anterior) return undefined;
+    if (!mismaVersion(anterior.actualizadoEn, versionEsperada)) throw new VersionCambiadaError();
     this.revisarSlug(datos.slug, id);
     const articulo: Articulo = {
       ...anterior,
@@ -153,7 +172,7 @@ function esSlugRepetido(error: unknown): boolean {
   return typeof error === "object" && error !== null && (error as { code?: string }).code === "23505";
 }
 
-class PgBlogStorage implements BlogStorage {
+export class PgBlogStorage implements BlogStorage {
   private lista: Promise<void> | null = null;
 
   constructor(private readonly db: NonNullable<typeof pool>) {}
@@ -230,7 +249,7 @@ class PgBlogStorage implements BlogStorage {
     }
   }
 
-  async actualizar(id: string, d: ArticuloEntrada) {
+  async actualizar(id: string, d: ArticuloEntrada, versionEsperada: string | null = null) {
     try {
       const [f] = await this.consulta(
         `UPDATE articulos SET slug = $1, titulo = $2, resumen = $3, contenido = $4, categoria = $5, etiquetas = $6::jsonb,
@@ -238,10 +257,16 @@ class PgBlogStorage implements BlogStorage {
            estado = $12, minutos_lectura = $13, generado_con_ia = $14, prompt = $15,
            publicado_en = COALESCE(publicado_en, CASE WHEN $12 = 'publicado' THEN now() END),
            actualizado_en = now()
-         WHERE id = $16 RETURNING *`,
-        [...this.valores(d), id],
+         WHERE id = $16
+           AND ($17::timestamptz IS NULL OR date_trunc('milliseconds', actualizado_en) = date_trunc('milliseconds', $17::timestamptz))
+         RETURNING *`,
+        [...this.valores(d), id, versionEsperada],
       );
-      return f ? deFila(f) : undefined;
+      if (f) return deFila(f);
+      // Sin fila: o no existe, o alguien lo guardó antes (otra versión).
+      const existe = await this.obtener(id);
+      if (existe) throw new VersionCambiadaError();
+      return undefined;
     } catch (error) {
       if (esSlugRepetido(error)) throw new SlugRepetidoError();
       throw error;

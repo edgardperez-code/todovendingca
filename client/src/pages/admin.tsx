@@ -60,7 +60,7 @@ import {
 } from "@/lib/admin-api";
 import { formatoBs, formatoFechaHora, formatoUsd, metodoPagoLegible } from "@/lib/formato";
 import { useSEO } from "@/lib/seo";
-import { BlogAdmin } from "@/components/admin-blog";
+import { BlogAdmin, hayArticuloSinGuardar } from "@/components/admin-blog";
 import { CLAVE_STOCK } from "@/lib/stock-tienda";
 import { cn } from "@/lib/utils";
 import { PRODUCTOS, buscarProducto } from "@shared/catalogo";
@@ -277,7 +277,13 @@ export default function AdminPage() {
             </div>
           </div>
           {sesion && (
-            <Button variant="outline" size="sm" className="gap-2" onClick={salir} data-testid="button-admin-salir">
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => {
+                // Con un artículo sin guardar se pregunta; igual queda un
+                // respaldo que el blog ofrece recuperar al volver a entrar.
+                if (hayArticuloSinGuardar() && !window.confirm("Tienes un artículo del blog sin guardar. ¿Salir igual? Podrás recuperarlo al volver a entrar.")) return;
+                salir();
+              }}
+              data-testid="button-admin-salir">
               <LogOut className="h-4 w-4" />
               Salir
             </Button>
@@ -403,7 +409,9 @@ function Panel() {
         <TabsContent value="inventario">
           <Inventario />
         </TabsContent>
-        <TabsContent value="blog">
+        {/* forceMount: el blog sigue montado al cambiar de pestaña, así no se
+            pierde un artículo a medio escribir o que la IA está redactando. */}
+        <TabsContent value="blog" forceMount className="data-[state=inactive]:hidden">
           <BlogAdminConSesion />
         </TabsContent>
       </Tabs>

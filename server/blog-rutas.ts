@@ -10,7 +10,7 @@ import {
   type ArticuloPublico,
   type ArticuloResumen,
 } from "@shared/blog";
-import { blogStorage, SlugRepetidoError } from "./blog-storage";
+import { blogStorage, SlugRepetidoError, VersionCambiadaError } from "./blog-storage";
 import { ErrorIa, generarArticulo, iaConfigurada } from "./blog-ia";
 
 const SITE_URL = "https://www.todovendingca.com";
@@ -111,7 +111,9 @@ ${items}
 
 function responderError(res: Response, error: unknown, contexto: string) {
   if (error instanceof ErrorIa) return res.status(error.status).json({ ok: false, error: error.message });
-  if (error instanceof SlugRepetidoError) return res.status(409).json({ ok: false, error: error.message });
+  if (error instanceof SlugRepetidoError || error instanceof VersionCambiadaError) {
+    return res.status(409).json({ ok: false, error: error.message });
+  }
   if (error instanceof z.ZodError) {
     const p = error.issues[0];
     return res.status(400).json({ ok: false, error: p ? `${p.path.join(".") || "datos"}: ${p.message}` : "Datos inválidos" });
@@ -191,7 +193,8 @@ export function registrarRutasBlog(app: Express, verificarAdmin: (req: Request, 
   app.put("/api/admin/articulos/:id", async (req, res) => {
     if (!verificarAdmin(req, res)) return;
     try {
-      const articulo = await blogStorage.actualizar(req.params.id, articuloEntradaSchema.parse(req.body));
+      const version = typeof req.body?.versionEsperada === "string" ? req.body.versionEsperada : null;
+      const articulo = await blogStorage.actualizar(req.params.id, articuloEntradaSchema.parse(req.body), version);
       if (!articulo) return res.status(404).json({ ok: false, error: "Artículo no encontrado" });
       console.log(`[blog] Artículo guardado: ${articulo.slug} (${articulo.estado})`);
       res.json({ ok: true, articulo });

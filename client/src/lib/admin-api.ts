@@ -95,7 +95,10 @@ export async function pedirAdmin<T>(
     throw new ErrorAdmin("La clave de administrador no es válida o ya no está vigente.", 401);
   }
   if (respuesta.status === 429) {
-    throw new ErrorAdmin(MENSAJE_LIMITE, 429);
+    // Solo el bloqueo por intentos fallidos (codigo LIMITE) usa el mensaje de
+    // la red; otros 429 (p. ej. "ya se está generando un artículo") traen el suyo.
+    const codigo = typeof cuerpo === "object" && cuerpo !== null ? (cuerpo as { codigo?: unknown }).codigo : undefined;
+    throw new ErrorAdmin(codigo === "LIMITE" ? MENSAJE_LIMITE : (mensajeDe(cuerpo) ?? MENSAJE_LIMITE), 429);
   }
   const ok =
     respuesta.ok && typeof cuerpo === "object" && cuerpo !== null && (cuerpo as { ok?: unknown }).ok === true;
