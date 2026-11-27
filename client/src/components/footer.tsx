@@ -3,6 +3,7 @@ import { TodoWebBadge } from "./todoweb-badge";
 import { Icono } from "@/components/vitrina/iconos";
 import { MarcaContenido } from "@/components/vitrina/logo";
 import { Ola } from "@/components/vitrina/ola";
+import { PAGINAS_SITIO } from "@shared/paginas";
 
 // Pie del diseño Vitrina (docs/rediseno-vitrina.md): la ola de marca y debajo
 // el gabinete oscuro. Es oscuro en los dos temas, por eso la insignia de
@@ -22,6 +23,8 @@ const navLinks = [
   { href: "/vending-gimnasios", label: "Vending para Gimnasios" },
   { href: "/gift-card", label: "Gift Cards Todo Vending" },
   { href: "/blog", label: "Blog" },
+  // Sectores y paginas de apoyo (shared/paginas.ts).
+  ...PAGINAS_SITIO.map((p) => ({ href: p.path, label: p.nombre })),
 ];
 
 interface FooterProps {

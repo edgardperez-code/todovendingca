@@ -26,9 +26,9 @@ const faqs = [
       "Solo un espacio de aproximadamente 1,5 m x 1 m con acceso a una toma eléctrica. El equipo de Todo Vending CA evalúa el lugar y recomienda el tipo de máquina más adecuado según el flujo de personas.",
   },
   {
-    question: "¿En qué zonas de Lechería y Anzoátegui instalan máquinas?",
+    question: "¿En qué zonas instalan máquinas?",
     answer:
-      "Actualmente Todo Vending CA tiene máquinas operando en Lechería, con clientes en clínicas, centros empresariales, colegios y gimnasios, y presta servicio en toda la región: Lechería, Puerto La Cruz y Barcelona.",
+      "Actualmente Todo Vending CA tiene máquinas operando en Lechería, con clientes en clínicas, centros empresariales, colegios y gimnasios. Por ahora presta servicio solo en Lechería.",
   },
 ];
 
@@ -99,7 +99,7 @@ export default function MaquinasLecheria() {
                   Vending local, sin <em className="n">intermediarios</em>
                 </>
               }
-              lead="Instalamos en oficinas, clínicas, colegios, gimnasios y comercios de alto tráfico en toda la región oriental."
+              lead="Instalamos en oficinas, clínicas, colegios, gimnasios y comercios de alto tráfico de Lechería."
             />
             <BandejaSubpagina items={ventajas} etiqueta="Ventajas" />
           </div>

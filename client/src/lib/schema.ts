@@ -48,10 +48,11 @@ export const organizationSchema = {
   description:
     "Empresa líder en soluciones de máquinas expendedoras en Venezuela. Ofrecemos snacks, bebidas, café, bebidas energéticas y barras de proteínas con instalación gratuita, mantenimiento y reposición incluida.",
   foundingLocation: { "@type": "Place", name: "Lechería, Anzoátegui, Venezuela" },
+  // Zona de servicio real: solo Lechería.
   areaServed: {
-    "@type": "State",
-    name: "Anzoátegui",
-    containedInPlace: { "@type": "Country", name: "Venezuela" },
+    "@type": "City",
+    name: "Lechería",
+    containedInPlace: { "@type": "State", name: "Anzoátegui" },
   },
   brand: { "@id": `${SITE_URL}/#cafeoriente` },
   contactPoint: [
@@ -109,9 +110,6 @@ export const localBusinessSchema = {
   },
   areaServed: [
     { "@type": "City", name: "Lechería" },
-    { "@type": "City", name: "Puerto La Cruz" },
-    { "@type": "City", name: "Barcelona" },
-    { "@type": "State", name: "Anzoátegui" },
   ],
   // Horario COMERCIAL real (atención al cliente). La disponibilidad 24/7 es de las
   // máquinas ya instaladas, no del negocio — se comunica como contenido, no como horario.
@@ -243,7 +241,7 @@ export const homeServicesItemListSchema = {
       serviceType: s.serviceType,
       description: s.description,
       provider: { "@id": `${SITE_URL}/#organization` },
-      areaServed: { "@type": "State", name: "Anzoátegui" },
+      areaServed: { "@type": "City", name: "Lechería" },
       ...(s.id !== "service-monitoreo"
         ? { offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Instalación gratuita", availability: "https://schema.org/InStock" } }
         : {}),
@@ -260,7 +258,7 @@ export const homeFaqSchema = faqSchema([
   { question: "¿Cuánto espacio necesito para instalar una máquina expendedora?", answer: "Generalmente se necesita un área de aproximadamente 1,5 m x 1 m con acceso a toma eléctrica. El equipo de Todo Vending CA evalúa el espacio para recomendar la mejor opción." },
   { question: "¿Puedo elegir los productos que se venden en la máquina?", answer: "Sí. Todo Vending CA trabaja con cada cliente para personalizar la selección de productos según las preferencias de empleados, clientes o usuarios." },
   { question: "¿Cómo solicito una máquina expendedora para mi negocio?", answer: `Puedes contactar a Todo Vending CA vía WhatsApp al ${BUSINESS_PHONE_DISPLAY}, por email a ${BUSINESS_EMAIL} o llenar el formulario de contacto en www.todovendingca.com. El equipo se comunicará para evaluar el espacio y coordinar la instalación.` },
-  { question: "¿Dónde opera Todo Vending CA?", answer: "Todo Vending CA está ubicado en el Centro Comercial Venezuela, Lechería, estado Anzoátegui, Venezuela, y presta servicio en Lechería, Puerto La Cruz, Barcelona y toda la región oriental de Venezuela." },
+  { question: "¿Dónde opera Todo Vending CA?", answer: "Todo Vending CA está ubicado en el Centro Comercial Venezuela, Lechería, estado Anzoátegui, Venezuela, y por ahora presta servicio solo en Lechería." },
   { question: "¿Tienen máquinas expendedoras para gimnasios?", answer: "Sí. Todo Vending CA ofrece máquinas especializadas para gimnasios con bebidas energéticas, barras de proteínas y productos deportivos. Actualmente tiene máquinas en Lion Gym y en la Cancha 3x3 del Parque Caribe, en Lechería." },
 ]);
 

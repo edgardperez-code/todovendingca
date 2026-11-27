@@ -55,7 +55,7 @@ const locationTypes: TipoDeEspacio[] = [
   },
 ];
 
-const currentLocations = [
+export const currentLocations = [
   {
     name: "Clínica Anzoátegui",
     description: "Máquina de snacks y bebidas para pacientes, familiares y personal médico.",

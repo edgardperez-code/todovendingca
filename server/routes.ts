@@ -33,6 +33,7 @@ import { urlPublica } from "./spidi";
 import path from "path";
 import fs from "fs";
 import { entradasSitemapBlog, registrarRutasBlog, seccionLlmsBlog } from "./blog-rutas";
+import { PAGINAS_SITIO } from "@shared/paginas";
 
 // === Ayudantes de la tienda ===
 
@@ -253,6 +254,16 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
   <!-- /carrito y /pago/resultado NO se listan: son pasos de compra privados (noindex). -->
 </urlset>`;
 
+// Sectores y paginas de apoyo (shared/paginas.ts): en el sitemap y en llms.txt.
+const sitemapPaginas = PAGINAS_SITIO.map(
+  (p) =>
+    `  <url>\n    <loc>https://www.todovendingca.com${p.path}</loc>\n    <lastmod>${p.actualizado}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>${p.grupo === "sector" ? "0.8" : "0.7"}</priority>\n  </url>`,
+).join("\n");
+const llmsPaginas =
+  "\n\n## Más páginas\n\n" +
+  PAGINAS_SITIO.map((p) => `- [${p.nombre}](https://www.todovendingca.com${p.path}): ${p.descripcion}`).join("\n") +
+  "\n";
+
 // Robots.txt content — abierto a buscadores y crawlers de IA (SEO + GEO/AIO)
 const robotsTxt = `User-agent: *
 Allow: /
@@ -367,7 +378,7 @@ export async function registerRoutes(
     res.setHeader("Content-Type", "application/xml");
     res.setHeader("Cache-Control", "public, max-age=3600");
     const blog = await entradasSitemapBlog();
-    res.send(sitemapXml.replace("</urlset>", `  <!-- Blog -->\n${blog}\n</urlset>`));
+    res.send(sitemapXml.replace("</urlset>", `  <!-- Sectores y paginas de apoyo -->\n${sitemapPaginas}\n  <!-- Blog -->\n${blog}\n</urlset>`));
   });
 
   // llms.txt: el archivo fijo de client/public mas la lista de articulos del blog.
@@ -380,7 +391,7 @@ export async function registerRoutes(
       const base = await fs.promises.readFile(filePath, "utf-8");
       res.setHeader("Content-Type", "text/plain; charset=utf-8");
       res.setHeader("Cache-Control", "public, max-age=3600");
-      res.send(base.trimEnd() + (await seccionLlmsBlog()));
+      res.send(base.trimEnd() + llmsPaginas + (await seccionLlmsBlog()));
     } catch (error) {
       console.error("[blog] No se pudo leer llms.txt:", error instanceof Error ? error.message : error);
       res.status(500).send("Error");
@@ -432,6 +443,7 @@ export async function registerRoutes(
     }
   });
 
+  // Get all contact messages (for admin purposes)
   // Get all contact messages (for admin purposes)
   app.get("/api/contact", async (req, res) => {
     try {

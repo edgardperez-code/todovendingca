@@ -37,7 +37,7 @@ export default function VendingEmpresas() {
   useSEO({
     title: "Vending para Empresas y Oficinas | Todo Vending CA",
     description:
-      "Máquinas expendedoras para empresas, oficinas y clínicas en Anzoátegui. Snacks, bebidas y café sin costo de instalación, con reposición y mantenimiento incluidos.",
+      "Máquinas expendedoras para empresas, oficinas y clínicas en Lechería. Snacks, bebidas y café sin costo de instalación, con reposición y mantenimiento incluidos.",
     path: "/vending-para-empresas",
     jsonLd: [
       organizationSchema,
@@ -51,10 +51,10 @@ export default function VendingEmpresas() {
         name: "Vending para Empresas y Oficinas",
         serviceType: "Servicio de Máquinas Expendedoras para Empresas",
         provider: { "@id": `${SITE_URL}/#organization` },
-        areaServed: { "@type": "State", name: "Anzoátegui" },
+        areaServed: { "@type": "City", name: "Lechería" },
         audience: { "@type": "Audience", audienceType: "Empresas, Oficinas, Clínicas" },
         description:
-          "Instalación gratuita de máquinas expendedoras para empresas, centros empresariales y clínicas en Anzoátegui, con reposición y mantenimiento incluidos.",
+          "Instalación gratuita de máquinas expendedoras para empresas, centros empresariales y clínicas en Lechería, con reposición y mantenimiento incluidos.",
       },
       faqSchema(faqs),
     ],
@@ -72,7 +72,7 @@ export default function VendingEmpresas() {
           eyebrow="Soluciones B2B"
           titlePlain="Vending para Empresas,"
           titleAccent="Oficinas y Clínicas"
-          lead="Todo Vending CA instala máquinas expendedoras en empresas, centros empresariales y clínicas de Anzoátegui, sin costo de instalación ni cuotas mensuales, con reposición y mantenimiento 24/7 incluidos."
+          lead="Todo Vending CA instala máquinas expendedoras en empresas, centros empresariales y clínicas de Lechería, sin costo de instalación ni cuotas mensuales, con reposición y mantenimiento 24/7 incluidos."
           ctaText="Cotizar para mi empresa"
         />
         <Ola />

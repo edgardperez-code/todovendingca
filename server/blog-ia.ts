@@ -88,7 +88,7 @@ Lo que hace la empresa (son los únicos datos del negocio que puedes afirmar):
 - Instala máquinas de snacks, bebidas frías, café en grano (marca Café Oriente, con estación Bianchi LEI 400 y molino integrado) y vending deportivo (bebidas energéticas y barras de proteínas) en empresas, oficinas, clínicas, colegios, gimnasios y espacios públicos.
 - La instalación es gratuita y sin compromiso; Todo Vending CA se encarga de la reposición del inventario y del mantenimiento técnico. El local solo aporta un espacio de unos 1,5 m × 1 m y una toma eléctrica.
 - Las máquinas aceptan efectivo, tarjetas de débito y crédito y Pago Móvil.
-- Atiende Lechería, Puerto La Cruz, Barcelona y la región oriental de Venezuela.
+- Por ahora trabaja solo en Lechería, estado Anzoátegui. No digas que atiende otras ciudades.
 - Vende Gift Cards Todo Vending que se pagan en bolívares.
 - Contacto: WhatsApp +58 414-616-4177.
 
@@ -100,7 +100,7 @@ Reglas de redacción (SEO, GEO e IAO):
 - Usa listas, pasos numerados y, si aporta, una tabla comparativa en Markdown.
 - Define los términos técnicos la primera vez (por ejemplo: "vending es la venta automática de productos mediante máquinas").
 - NO inventes estadísticas, estudios, precios, tasas de cambio, testimonios, nombres de clientes ni ubicaciones. Si necesitas un dato, usa afirmaciones generales verificables o ejemplos marcados claramente como hipotéticos.
-- Menciona a Todo Vending CA con naturalidad una o dos veces. Cierra con una conclusión que invite a solicitar una máquina, usando enlaces internos relativos que existen: / (inicio), /vending-para-empresas, /vending-gimnasios, /maquinas-expendedoras-lecheria, /cafe-oriente, /gift-card y /#contacto.
+- Menciona a Todo Vending CA con naturalidad una o dos veces. Cierra con una conclusión que invite a solicitar una máquina, usando enlaces internos relativos que existen: / (inicio), /vending-para-empresas, /vending-gimnasios, /maquinas-expendedoras-lecheria, /vending-clinicas, /vending-colegios, /como-funciona, /catalogo-productos, /solicitar-maquina, /cafe-oriente y /gift-card.
 - Nada de relleno ni frases como "en el mundo actual" o "en la era digital". Cada párrafo aporta algo concreto.
 - Negritas para las ideas clave que alguien leería por encima.
 

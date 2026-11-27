@@ -47,7 +47,7 @@ export default function VendingGimnasios() {
   useSEO({
     title: "Vending para Gimnasios | Bebidas Energéticas y Proteínas | Todo Vending CA",
     description:
-      "Máquinas expendedoras para gimnasios en Anzoátegui: bebidas energéticas, barras de proteínas y snacks deportivos, con instalación gratuita y reposición incluida.",
+      "Máquinas expendedoras para gimnasios en Lechería: bebidas energéticas, barras de proteínas y snacks deportivos, con instalación gratuita y reposición incluida.",
     path: "/vending-gimnasios",
     jsonLd: [
       organizationSchema,
@@ -61,7 +61,7 @@ export default function VendingGimnasios() {
         name: "Vending para Gimnasios",
         serviceType: "Máquina Expendedora para Gimnasio",
         provider: { "@id": `${SITE_URL}/#organization` },
-        areaServed: { "@type": "State", name: "Anzoátegui" },
+        areaServed: { "@type": "City", name: "Lechería" },
         audience: { "@type": "Audience", audienceType: "Gimnasios, Centros Deportivos, Deportistas" },
         description:
           "Máquinas expendedoras especializadas para gimnasios y centros deportivos: bebidas energéticas, barras de proteínas y suplementos, con instalación gratuita.",
@@ -80,7 +80,7 @@ export default function VendingGimnasios() {
         <SubpageHero
           eyebrow="Vending deportivo"
           titlePlain="Vending para Gimnasios en"
-          titleAccent="Anzoátegui"
+          titleAccent="Lechería"
           lead="Máquinas expendedoras especializadas para gimnasios y centros deportivos, con bebidas energéticas, barras de proteínas y snacks saludables, instalación gratuita y reposición constante."
           ctaText="Solicitar vending para mi gimnasio"
         />

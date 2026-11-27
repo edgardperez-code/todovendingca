@@ -15,6 +15,12 @@ import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 import Blog from "@/pages/blog";
 import BlogArticulo from "@/pages/blog-articulo";
+import { VendingClinicas, VendingColegios, VendingHoteles, VendingCentrosComerciales, VendingIndustrias } from "@/pages/sectores";
+import Ubicaciones from "@/pages/ubicaciones";
+import ComoFunciona from "@/pages/como-funciona";
+import CatalogoProductos from "@/pages/catalogo-productos";
+import PreguntasFrecuentes from "@/pages/preguntas-frecuentes";
+import SolicitarMaquina from "@/pages/solicitar-maquina";
 import { CarritoProvider } from "@/lib/carrito";
 import { GestorScroll } from "@/lib/navegacion";
 import { MotionConfig } from "framer-motion";
@@ -29,6 +35,17 @@ function AppRoutes() {
       <Route path="/maquinas-expendedoras-lecheria" component={MaquinasLecheria} />
       <Route path="/vending-para-empresas" component={VendingEmpresas} />
       <Route path="/vending-gimnasios" component={VendingGimnasios} />
+      {/* Sectores y paginas de apoyo (lista en shared/paginas.ts). */}
+      <Route path="/vending-clinicas" component={VendingClinicas} />
+      <Route path="/vending-colegios" component={VendingColegios} />
+      <Route path="/vending-hoteles" component={VendingHoteles} />
+      <Route path="/vending-centros-comerciales" component={VendingCentrosComerciales} />
+      <Route path="/vending-industrias" component={VendingIndustrias} />
+      <Route path="/ubicaciones" component={Ubicaciones} />
+      <Route path="/como-funciona" component={ComoFunciona} />
+      <Route path="/catalogo-productos" component={CatalogoProductos} />
+      <Route path="/preguntas-frecuentes" component={PreguntasFrecuentes} />
+      <Route path="/solicitar-maquina" component={SolicitarMaquina} />
       {/* Blog: el servidor precarga los articulos para el SSR (server/blog-rutas.ts). */}
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:slug" component={BlogArticulo} />
