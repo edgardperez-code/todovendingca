@@ -44,6 +44,18 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
   createdAt: true,
 });
 
+// Largo máximo de cada campo del formulario de contacto. La tabla no limita
+// nada: el servidor valida con contactoConLimites y el navegador usa los
+// mismos números para avisar antes de enviar.
+export const LIMITES_CONTACTO = { name: 120, email: 200, phone: 40, company: 160, message: 5000 } as const;
+export const contactoConLimites = insertContactMessageSchema.extend({
+  name: z.string().trim().min(1).max(LIMITES_CONTACTO.name),
+  email: z.string().trim().email().max(LIMITES_CONTACTO.email),
+  phone: z.string().trim().max(LIMITES_CONTACTO.phone).nullable().optional(),
+  company: z.string().trim().max(LIMITES_CONTACTO.company).nullable().optional(),
+  message: z.string().trim().min(1).max(LIMITES_CONTACTO.message),
+});
+
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 
@@ -106,6 +118,8 @@ export const insertEncuestaVasosSchema = createInsertSchema(encuestaVasos).omit(
     "T\u00e9 con Lim\u00f3n",
   ]),
   calificacion: z.coerce.number().int().min(1).max(5),
+  // La página /vasos ya corta en 300; el servidor también.
+  comentario: z.string().trim().max(300).nullable().optional(),
 });
 
 export type InsertEncuestaVasos = z.infer<typeof insertEncuestaVasosSchema>;

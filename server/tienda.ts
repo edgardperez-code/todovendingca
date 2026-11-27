@@ -1622,7 +1622,7 @@ export async function consultarPedidoPublico(id: string, clave: string): Promise
 // En memoria y por IP: suficiente para frenar a quien abre sesiones de pago o
 // consulta pedidos en bucle. Se reinicia con el proceso, lo cual es aceptable
 // para este fin. Lanzan ErrorTienda 429 (codigo "LIMITE").
-function crearLimitador(ventanaMs: number, maximo: number, mensaje: string): (ip: string) => void {
+export function crearLimitador(ventanaMs: number, maximo: number, mensaje: string): (ip: string) => void {
   const intentos = new Map<string, number[]>();
   return (ip: string) => {
     const ahora = Date.now();
